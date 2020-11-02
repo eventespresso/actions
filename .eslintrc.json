@@ -23,6 +23,7 @@
 	"rules": {
 		"@typescript-eslint/no-use-before-define": "off",
 		"comma-dangle": "off",
-		"import/no-namespace": "off"
+		"import/no-namespace": "off",
+		"prefer-promise-reject-errors": "off"
 	}
 }

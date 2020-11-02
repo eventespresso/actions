@@ -34,7 +34,7 @@ jobs:
             - name: Generate POT
               uses: eventespresso/actions/packages/makepot@main
               with:
-                  save-path: 'languages'
-                  slug: 'some-slug'
-                  text-domain: 'event_espresso'
+                  save-path: languages
+                  slug: some-slug
+                  text-domain: event_espresso
 ```
