@@ -23,8 +23,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.existsSync = exports.readdirSync = exports.readFileSync = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readFile = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+exports.existsSync = exports.readdirSync = exports.readFileSync = exports.unlink = exports.rename = exports.readFile = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
 const fs = __importStar(require("fs"));
 __exportStar(require("@actions/io"), exports);
-_a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readFile = _a.readFile, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+_a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readFile = _a.readFile, exports.rename = _a.rename, exports.unlink = _a.unlink;
 exports.readFileSync = fs.readFileSync, exports.readdirSync = fs.readdirSync, exports.existsSync = fs.existsSync;
