@@ -11,6 +11,14 @@ jobs:
               name: Get Yarn cache path
               run: echo "::set-output name=dir::$(yarn cache dir)"
 
+            - id: setup
+              run: |
+                  if ! [[ -z "${{ secrets.API_TOKEN_GITHUB }}" ]]; then
+                    echo 'Token found'
+                  else
+                    echo 'Token not found'
+                  fi
+
             - uses: actions/checkout@v2
               name: Checkout the commit
               with:

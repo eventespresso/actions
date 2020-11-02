@@ -20,17 +20,10 @@ export function getInput(): Input {
 	const include = core.getInput('include');
 	const ignoreDomain = Boolean(core.getInput('ignore-domain'));
 	const packageName = core.getInput('package-name');
-	const savePath = core.getInput('save-path');
-	const slug = core.getInput('slug');
+	const savePath = core.getInput('save-path', { required: true });
+	const slug = core.getInput('slug', { required: true });
 	const textDomain = core.getInput('text-domain') || slug;
 	const headersJsonFile = core.getInput('headers-json-file');
-
-	if (!savePath) {
-		throw new Error('`save-path` input not provided');
-	}
-	if (!slug) {
-		throw new Error('`slug` input not provided');
-	}
 
 	return {
 		exclude,
