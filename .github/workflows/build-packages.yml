@@ -6,7 +6,7 @@ on:
 jobs:
     build-packages-to-js:
         # Avoid recursion
-        if: ${{ github.actor != secrets.GH_ACTIONS_GIT_USER_NAME }}
+        if: "!contains(github.event.head_commit.message, 'gh-actions')"
         runs-on: ubuntu-latest
         steps:
             - id: yarn-cache
@@ -41,6 +41,6 @@ jobs:
             - uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   push_options: --force # required for protected branches
-                  commit_message: Build JS
+                  commit_message: Build JS - gh-actions
                   commit_user_name: ${{ secrets.GH_ACTIONS_GIT_USER_NAME }}
                   commit_user_email: ${{ secrets.GH_ACTIONS_GIT_USER_EMAIL }}
