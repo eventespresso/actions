@@ -32,7 +32,7 @@ async function run(): Promise<void> {
 			throw new Error(error);
 		}
 		/**
-		 * make the file executable
+		 * Make the file executable
 		 * @see https://nodejs.org/api/fs.html#fs_fs_chmod_path_mode_callback
 		 */
 		await io.chmod(wpcliPath, 0o765);
