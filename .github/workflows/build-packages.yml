@@ -11,18 +11,10 @@ jobs:
               name: Get Yarn cache path
               run: echo "::set-output name=dir::$(yarn cache dir)"
 
-            - id: setup
-              run: |
-                  if ! [[ -z "${{ secrets.API_TOKEN_GITHUB }}" ]]; then
-                    echo 'Token found'
-                  else
-                    echo 'Token not found'
-                  fi
-
             - uses: actions/checkout@v2
               name: Checkout the commit
               with:
-                  token: ${{ secrets.API_TOKEN_GITHUB }}
+                  token: ${{ secrets.GH_ACTIONS_ACCESS_TOKEN }}
 
             - uses: dcodeIO/setup-node-nvm@master
               with:
@@ -48,5 +40,5 @@ jobs:
               with:
                   push_options: --force # required for protected branches
                   commit_message: Build JS
-                  commit_user_name: ${{ secrets.GIT_USER_NAME }}
-                  commit_user_email: ${{ secrets.GIT_USER_EMAIL }}
+                  commit_user_name: ${{ secrets.GH_ACTIONS_GIT_USER_NAME }}
+                  commit_user_email: ${{ secrets.GH_ACTIONS_GIT_USER_EMAIL }}
