@@ -5,6 +5,8 @@ on:
         branches: [main]
 jobs:
     build-packages-to-js:
+        # Avoid recursion
+        if: ${{ github.actor != secrets.GH_ACTIONS_GIT_USER_NAME }}
         runs-on: ubuntu-latest
         steps:
             - id: yarn-cache
