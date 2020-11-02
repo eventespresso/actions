@@ -26,10 +26,10 @@ export function getInput(): Input {
 	const headersJsonFile = core.getInput('headers-json-file');
 
 	if (!savePath) {
-		throw new Error('`save-path` input not proved');
+		throw new Error('`save-path` input not provided');
 	}
 	if (!slug) {
-		throw new Error('`slug` input not proved');
+		throw new Error('`slug` input not provided');
 	}
 
 	return {

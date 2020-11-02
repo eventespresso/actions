@@ -1,6 +1,6 @@
 # `makepot` - **Github Action**
 
-This action creates POT file for WordPress plugin or theme.
+This action creates POT file for WordPress plugin or theme. The action only creates the file, it does not commit it to the repo.
 
 ## Input
 
@@ -32,9 +32,9 @@ jobs:
             - name: Checkout the commit
               uses: actions/checkout@v2
             - name: Generate POT
-                uses: eventespresso/actions/packages/makepot@main
-                with:
-                    save-path: "languages"
-                    slug: "some-slug"
-                    text-domain: "event_espresso"
+              uses: eventespresso/actions/packages/makepot@main
+              with:
+                  save-path: 'languages'
+                  slug: 'some-slug'
+                  text-domain: 'event_espresso'
 ```
