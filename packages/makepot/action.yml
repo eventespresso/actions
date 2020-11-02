@@ -1,0 +1,27 @@
+name: 'Your name here'
+description: 'Provide a description here'
+author: 'Your name or organization here'
+inputs:
+    save-path:
+        required: true
+        description: 'POT File path (Required)'
+    slug:
+        required: true
+        description: 'Plugin/Theme slug (Required)'
+    text-domain:
+        description: 'Plugin/Theme text-domain (Default: slug)'
+    package-name:
+        description: 'Plugin/Theme name to use in Project-Id-Version header'
+    ignore-domain:
+        description: 'Ignore the text domain completely and extract strings with any text domain.'
+    include:
+        description: 'Comma-separated list of files and paths that should be used for string extraction.'
+    exclude:
+        description: 'Comma-separated list of files and paths that should be skipped for string extraction.'
+    headers:
+        description: 'Array in JSON format of custom headers which will be added to the POT file. Defaults to empty array.'
+    headers-json-file:
+        description: 'Path of the JSON file to read the POT headers from. Must be relative to root directory. Preferred over headers'
+runs:
+    using: 'node12'
+    main: 'dist/index.js'
