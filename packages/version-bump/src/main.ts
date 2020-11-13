@@ -7,7 +7,7 @@ import {
 	EE_VERSION_REGEX,
 	MAIN_FILE_PLUGIN_NAME_REGEX,
 	MAIN_FILE_PLUGIN_URI_REGEX,
-	MAIN_FILE_VERION_REGEX,
+	MAIN_FILE_VERSION_REGEX,
 	README_FILE_STABLE_TAG_REGEX,
 	getInput,
 } from './utils';
@@ -23,7 +23,7 @@ async function run(): Promise<void> {
 		// read info.json file contents
 		const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
 		// get the current version using regex
-		const currentVersion = mainFileContents.match(MAIN_FILE_VERION_REGEX)?.groups?.version;
+		const currentVersion = mainFileContents.match(MAIN_FILE_VERSION_REGEX)?.groups?.version;
 
 		if (!currentVersion) {
 			throw new Error('Could not parse version string from main file.');

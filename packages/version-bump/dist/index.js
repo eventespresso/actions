@@ -936,7 +936,7 @@ function run() {
             // read info.json file contents
             const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
             // get the current version using regex
-            const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
+            const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
             if (!currentVersion) {
                 throw new Error('Could not parse version string from main file.');
             }
@@ -1059,7 +1059,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERION_REGEX = exports.getInput = exports.DEFAULT_RELEASE_TYPES = void 0;
+exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.DEFAULT_RELEASE_TYPES = void 0;
 const core = __importStar(__webpack_require__(117));
 const io = __importStar(__webpack_require__(666));
 exports.DEFAULT_RELEASE_TYPES = {
@@ -1097,10 +1097,10 @@ function getInput() {
     };
 }
 exports.getInput = getInput;
-exports.MAIN_FILE_VERION_REGEX = /[\s\t/*#@]*Version:\s*(?<version>\S*)/gim;
-exports.MAIN_FILE_PLUGIN_URI_REGEX = /[\s\t/*#@]*Plugin URI:\s*(?<plugin_uri>\S+)/gim;
-exports.MAIN_FILE_PLUGIN_NAME_REGEX = /[\s\t/*#@]*Plugin Name:\s*(?<plugin_name>.+)/gim;
-exports.README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_tag>\S+)/gim;
+exports.MAIN_FILE_VERSION_REGEX = /[\s\t/*#@]*Version:\s*(?<version>\S*)/i;
+exports.MAIN_FILE_PLUGIN_URI_REGEX = /[\s\t/*#@]*Plugin URI:\s*(?<plugin_uri>\S+)/i;
+exports.MAIN_FILE_PLUGIN_NAME_REGEX = /[\s\t/*#@]*Plugin Name:\s*(?<plugin_name>.+)/i;
+exports.README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_tag>\S+)/i;
 /**
  * The regex reperesenting the version schema used by EE.
  *

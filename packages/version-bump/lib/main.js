@@ -42,7 +42,7 @@ function run() {
             // read info.json file contents
             const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
             // get the current version using regex
-            const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
+            const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
             if (!currentVersion) {
                 throw new Error('Could not parse version string from main file.');
             }
