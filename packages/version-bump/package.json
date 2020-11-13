@@ -1,5 +1,5 @@
 {
-	"name": "@eventespresso-actions/makepot",
+	"name": "@eventespresso-actions/version-bump",
 	"version": "0.0.1",
 	"private": true,
 	"main": "lib/index.js",

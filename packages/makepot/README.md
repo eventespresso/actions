@@ -1,6 +1,8 @@
 # `makepot` - **Github Action**
 
-This action creates POT file for WordPress plugin or theme. The action only creates the file, it does not commit it to the repo.
+This action creates POT file for WordPress plugin or theme.
+
+**Note:** The action only creates the file, it does not commit it to the repo.
 
 ## Input
 

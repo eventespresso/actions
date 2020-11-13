@@ -1545,6 +1545,20 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
+/***/ 433:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const main_1 = __importDefault(__webpack_require__(168));
+main_1.default();
+
+
+/***/ }),
+
 /***/ 168:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -1578,6 +1592,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 const core = __importStar(__webpack_require__(117));
 const exec_1 = __webpack_require__(473);
 const io = __importStar(__webpack_require__(666));
@@ -1640,7 +1655,8 @@ function run() {
         }
     });
 }
-run();
+exports.run = run;
+exports.default = run;
 
 
 /***/ }),
@@ -1729,11 +1745,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.existsSync = exports.readdirSync = exports.readFileSync = exports.unlink = exports.rename = exports.readFile = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+exports.writeFileSync = exports.existsSync = exports.readdirSync = exports.readFileSync = exports.unlink = exports.rename = exports.readFile = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
 const fs = __importStar(__webpack_require__(747));
 __exportStar(__webpack_require__(890), exports);
 _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readFile = _a.readFile, exports.rename = _a.rename, exports.unlink = _a.unlink;
-exports.readFileSync = fs.readFileSync, exports.readdirSync = fs.readdirSync, exports.existsSync = fs.existsSync;
+exports.readFileSync = fs.readFileSync, exports.readdirSync = fs.readdirSync, exports.existsSync = fs.existsSync, exports.writeFileSync = fs.writeFileSync;
 
 
 /***/ }),
@@ -1904,7 +1920,7 @@ module.exports = require("util");
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(168);
+/******/ 	return __webpack_require__(433);
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

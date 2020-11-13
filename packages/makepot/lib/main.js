@@ -28,6 +28,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = void 0;
 const core = __importStar(require("@actions/core"));
 const exec_1 = require("@actions/exec");
 const io = __importStar(require("@eventespresso-actions/io"));
@@ -90,4 +91,5 @@ function run() {
         }
     });
 }
-run();
+exports.run = run;
+exports.default = run;
