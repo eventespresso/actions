@@ -124,13 +124,13 @@ export async function run(): Promise<void> {
 			);
 			// now save back to readme.txt
 			io.writeFileSync(readmeFile, readmeContents, { encoding: 'utf8' });
-
-			// set the output
-			core.setOutput('new-version', newVersion);
 		}
 
 		// now finally save the main file contents
 		io.writeFileSync(mainFile, mainFileContents, { encoding: 'utf8' });
+
+		// set the output
+		core.setOutput('new-version', newVersion);
 	} catch (error) {
 		core.setFailed(error.message);
 	}
