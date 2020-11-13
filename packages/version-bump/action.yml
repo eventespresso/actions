@@ -1,0 +1,21 @@
+name: 'Version bumb action'
+description: 'This action helps in bumping the versions in WordPress plugin files.'
+author: 'eventespresso'
+inputs:
+    type:
+        required: true
+        description: 'The version bump type i.e. `pre_release` | `micro_zip` | `decaf` | `rc` | `alpha` | `beta` | `minor` | `major`'
+    main-file:
+        required: true
+        description: 'Path of the plugin main file'
+    readme-file:
+        required: true
+        description: 'Path of the plugin readme.txt file'
+    info-json-file:
+        required: true
+        description: 'Path of the info.json file.'
+    release-types:
+        description: 'JSON serialized string of release type names. For example {"pre_release":"beta","decaf":"decaf","rc":"rc","release":"p"}'
+runs:
+    using: 'node12'
+    main: 'dist/index.js'
