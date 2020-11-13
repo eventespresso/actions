@@ -2,6 +2,8 @@
 
 This action helps in bumping the versions in WordPress plugin files.
 
+**Note:** The action only updates the files, it does not commit them to the repo.
+
 ## Input
 
 | Name             | Description                                                                                                                                             |

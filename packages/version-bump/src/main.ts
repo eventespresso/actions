@@ -12,7 +12,7 @@ import {
 	getInput,
 } from './utils';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
 	const { infoJsonFile, mainFile, readmeFile, releaseTypes, type } = getInput();
 
 	let updateInfoJson = false;
@@ -136,4 +136,4 @@ async function run(): Promise<void> {
 	}
 }
 
-run();
+export default run;

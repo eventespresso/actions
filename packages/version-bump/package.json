@@ -2,7 +2,7 @@
 	"name": "@eventespresso-actions/version-bump",
 	"version": "0.0.1",
 	"private": true,
-	"main": "lib/main.js",
+	"main": "lib/index.js",
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",

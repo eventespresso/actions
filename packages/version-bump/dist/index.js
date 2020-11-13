@@ -889,6 +889,20 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
+/***/ 433:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const main_1 = __importDefault(__webpack_require__(168));
+main_1.default();
+
+
+/***/ }),
+
 /***/ 168:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -922,6 +936,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 const core = __importStar(__webpack_require__(117));
 const io = __importStar(__webpack_require__(666));
 const utils_1 = __webpack_require__(560);
@@ -1030,7 +1045,8 @@ function run() {
         }
     });
 }
-run();
+exports.run = run;
+exports.default = run;
 
 
 /***/ }),
@@ -1244,7 +1260,7 @@ module.exports = require("util");
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(168);
+/******/ 	return __webpack_require__(433);
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

@@ -6,7 +6,7 @@ import { downloadUrl } from '@eventespresso-actions/utils';
 
 import { getInput } from './utils';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
 	const {
 		exclude,
 		headers,
@@ -78,4 +78,4 @@ async function run(): Promise<void> {
 	}
 }
 
-run();
+export default run;
