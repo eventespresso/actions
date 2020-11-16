@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-
+import { filter, map } from 'ramda';
 import * as io from '@eventespresso-actions/io';
 
 import {
@@ -35,10 +35,17 @@ export async function run(): Promise<void> {
 			throw new Error('Invalid version! Version does not match the pattern');
 		}
 
-		// build version parts by setting defaults
-		const versionParts = { ...DEFAULT_VERSION_PARTS, ...versionPartsMatch?.groups };
+		// remove empty matches from groups to avoid them overriding defaults
+		const nonEmptyVersionParts = filter(Boolean, versionPartsMatch?.groups);
 
-		let { major, minor, patch, release, build } = versionParts;
+		// build version parts by setting defaults
+		const versionParts = { ...DEFAULT_VERSION_PARTS, ...nonEmptyVersionParts };
+
+		// extract `release` from the parts as it's the only non-numeric part
+		let { release } = versionParts;
+
+		// make sure the numeric parts of the version are numbers
+		let { major, minor, patch, build } = map(Number, versionParts);
 
 		switch (type) {
 			case 'pre_release':
@@ -60,6 +67,22 @@ export async function run(): Promise<void> {
 				release = type;
 				// if build was not set, then 0 will be incremented to 1, and then set as '.001'
 				build++;
+				break;
+
+			case 'micro_zip':
+				// for micro zips we bump back the minor number and replace rc with p.
+				if (patch === 0) {
+					if (minor === 0) {
+						major--;
+						minor = 9;
+						patch = 9;
+					} else {
+						minor--;
+					}
+				} else {
+					patch--;
+				}
+				release = releaseTypes.release;
 				break;
 
 			case 'minor':
