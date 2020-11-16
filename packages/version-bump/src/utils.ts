@@ -85,3 +85,14 @@ export const DEFAULT_VERSION_PARTS = {
 	release: 'rc',
 	build: 0,
 };
+
+export const bumpTypes: Array<BumpType> = [
+	'pre_release',
+	'micro_zip',
+	'decaf',
+	'rc',
+	'alpha',
+	'beta',
+	'minor',
+	'major',
+];
