@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.DEFAULT_RELEASE_TYPES = void 0;
+exports.bumpTypes = exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.DEFAULT_RELEASE_TYPES = void 0;
 const core = __importStar(require("@actions/core"));
 const io = __importStar(require("@eventespresso-actions/io"));
 exports.DEFAULT_RELEASE_TYPES = {
@@ -83,3 +83,13 @@ exports.DEFAULT_VERSION_PARTS = {
     release: 'rc',
     build: 0,
 };
+exports.bumpTypes = [
+    'pre_release',
+    'micro_zip',
+    'decaf',
+    'rc',
+    'alpha',
+    'beta',
+    'minor',
+    'major',
+];

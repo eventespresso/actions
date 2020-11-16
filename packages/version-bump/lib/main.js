@@ -30,6 +30,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core = __importStar(require("@actions/core"));
+const ramda_1 = require("ramda");
 const io = __importStar(require("@eventespresso-actions/io"));
 const utils_1 = require("./utils");
 function run() {
@@ -51,9 +52,14 @@ function run() {
             if (!(versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups)) {
                 throw new Error('Invalid version! Version does not match the pattern');
             }
+            // remove empty matches from groups to avoid them overriding defaults
+            const nonEmptyVersionParts = ramda_1.filter(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
             // build version parts by setting defaults
-            const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
-            let { major, minor, patch, release, build } = versionParts;
+            const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
+            // extract `release` from the parts as it's the only non-numeric part
+            let { release } = versionParts;
+            // make sure the numeric parts of the version are numbers
+            let { major, minor, patch, build } = ramda_1.map(Number, versionParts);
             switch (type) {
                 case 'pre_release':
                 case 'decaf':
@@ -73,6 +79,23 @@ function run() {
                     release = type;
                     // if build was not set, then 0 will be incremented to 1, and then set as '.001'
                     build++;
+                    break;
+                case 'micro_zip':
+                    // for micro zips we bump back the minor number and replace rc with p.
+                    if (patch === 0) {
+                        if (minor === 0) {
+                            major--;
+                            minor = 9;
+                            patch = 9;
+                        }
+                        else {
+                            minor--;
+                        }
+                    }
+                    else {
+                        patch--;
+                    }
+                    release = releaseTypes.release;
                     break;
                 case 'minor':
                     minor++;
