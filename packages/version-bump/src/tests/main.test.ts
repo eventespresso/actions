@@ -8,7 +8,8 @@ const input = {
 	'info-json-file': 'info.json',
 	'main-file': 'main-file.php',
 	'readme-file': 'readme.txt',
-	type: 'pre_release',
+	type: 'minor',
+	value: null,
 };
 let output: Record<string, string> = {};
 
@@ -48,9 +49,10 @@ describe('version bump main tests', () => {
 	it('returns the expected output for a given input', async () => {
 		checkForDuplicateCases(mainNormalTestCases);
 
-		for (const { type, inputVer, outputVer } of mainNormalTestCases) {
+		for (const { type, inputVer, outputVer, value } of mainNormalTestCases) {
 			// set bump type
 			input.type = type;
+			input.value = value;
 			// set mock to dynamically generate input file
 			const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
 				return getMockedFileContents(path as string, inputVer);

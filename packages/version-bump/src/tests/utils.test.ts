@@ -35,7 +35,7 @@ describe('version bump getInput tests', () => {
 			'info-json-file': 'info.json',
 			'main-file': 'main-file.php',
 			'readme-file': 'readme.txt',
-			type: 'pre_release',
+			type: 'minor',
 		};
 		expect(() => getInput()).not.toThrowError();
 	});
@@ -45,7 +45,7 @@ describe('version bump getInput tests', () => {
 			'info-json-file': 'info.json',
 			'main-file': 'main-file.php',
 			'readme-file': 'readme.txt',
-			type: 'decaf',
+			type: 'patch',
 		};
 		const _input = getInput();
 		expect(_input.infoJsonFile).toBe(input['info-json-file']);
