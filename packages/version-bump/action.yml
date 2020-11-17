@@ -4,7 +4,7 @@ author: 'eventespresso'
 inputs:
     type:
         required: true
-        description: 'The version bump type i.e. `major` | `minor` | `patch` | `set_release_type` | `build`'
+        description: 'The version bump type i.e. `major` | `minor` | `patch` | `release_type` | `build`'
     value:
         description: 'The value to use for bumping. Usually used to set release type or reset build.'
     main-file:
