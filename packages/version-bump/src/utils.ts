@@ -1,27 +1,19 @@
 import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
 
-export type BumpType = 'pre_release' | 'micro_zip' | 'decaf' | 'rc' | 'alpha' | 'beta' | 'minor' | 'major';
+export type BumpType = 'major' | 'minor' | 'patch' | 'release_type' | 'build';
 
-export type ReleaseTypes = {
-	[key in BumpType | 'release']?: string;
-};
+export type ReleaseType = 'alpha' | 'beta' | 'decaf' | 'rc' | 'p';
 
 export interface Input {
 	infoJsonFile: string;
 	mainFile: string;
 	readmeFile: string;
-	releaseTypes?: ReleaseTypes;
+	value?: string;
 	type: BumpType;
 }
 
-export const DEFAULT_RELEASE_TYPES: ReleaseTypes = {
-	// eslint-disable-next-line camelcase
-	pre_release: 'beta',
-	decaf: 'decaf',
-	rc: 'rc',
-	release: 'p',
-};
+export const bumpTypes: Array<BumpType> = ['major', 'minor', 'patch', 'release_type', 'build'];
 
 /**
  * Retrieve the action inputs.
@@ -30,8 +22,8 @@ export function getInput(): Input {
 	const infoJsonFile = core.getInput('info-json-file', { required: true });
 	const mainFile = core.getInput('main-file', { required: true });
 	const readmeFile = core.getInput('readme-file', { required: true });
-	const releaseTypesStr = core.getInput('release-types');
 	const type = core.getInput('type', { required: true }) as BumpType;
+	const value = core.getInput('value');
 
 	if (!io.existsSync(mainFile)) {
 		throw new Error('Main file does not exist.');
@@ -42,15 +34,16 @@ export function getInput(): Input {
 	if (!io.existsSync(readmeFile)) {
 		throw new Error('readme.txt file does not exist.');
 	}
-
-	const releaseTypes = releaseTypesStr ? JSON.parse(releaseTypesStr) : DEFAULT_RELEASE_TYPES;
+	if (!bumpTypes.includes(type)) {
+		throw new Error(`Unknown bump type - ${type}`);
+	}
 
 	return {
 		infoJsonFile,
 		mainFile,
 		readmeFile,
-		releaseTypes,
 		type,
+		value,
 	};
 }
 
@@ -76,23 +69,12 @@ export const README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_
  * BUILD    ([0-9]*)                 maybe match & capture a number
  * @see: https://regex101.com/r/5nSgf3/1/
  */
-export const EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)\.?(?<release>alpha|beta|rc|p|decaf)*\.?(?<build>[0-9]*)$/;
+export const EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)\.?(?<releaseType>alpha|beta|rc|p|decaf)*\.?(?<build>[0-9]*)$/;
 
 export const DEFAULT_VERSION_PARTS = {
 	major: 0,
 	minor: 0,
 	patch: 0,
-	release: 'rc',
+	releaseType: 'rc',
 	build: 0,
 };
-
-export const bumpTypes: Array<BumpType> = [
-	'pre_release',
-	'micro_zip',
-	'decaf',
-	'rc',
-	'alpha',
-	'beta',
-	'minor',
-	'major',
-];

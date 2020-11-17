@@ -13,7 +13,7 @@ import {
 } from './utils';
 
 export async function run(): Promise<void> {
-	const { infoJsonFile, mainFile, readmeFile, releaseTypes, type } = getInput();
+	const { infoJsonFile, mainFile, readmeFile, type, value } = getInput();
 
 	let updateInfoJson = false;
 
@@ -41,74 +41,53 @@ export async function run(): Promise<void> {
 		// build version parts by setting defaults
 		const versionParts = { ...DEFAULT_VERSION_PARTS, ...nonEmptyVersionParts };
 
-		// extract `release` from the parts as it's the only non-numeric part
-		let { release } = versionParts;
+		// extract `releaseType` from the parts as it's the only non-numeric part
+		let { releaseType } = versionParts;
 
 		// make sure the numeric parts of the version are numbers
 		let { major, minor, patch, build } = map(Number, versionParts);
 
 		switch (type) {
-			case 'pre_release':
-			case 'decaf':
-				// we're not bumping just replacing the `release` string
-				release = releaseTypes[type];
-				// reset build if not done so already
-				build = 0;
-				break;
-
-			case 'rc':
-			case 'alpha':
-			case 'beta':
-				// if build number is not set, then increment the patch
-				if (build === 0) {
-					patch++;
-				}
-				// set release type and increment build number
-				release = type;
-				// if build was not set, then 0 will be incremented to 1, and then set as '.001'
-				build++;
-				break;
-
-			case 'micro_zip':
-				// for micro zips we bump back the minor number and replace rc with p.
-				if (patch === 0) {
-					if (minor === 0) {
-						major--;
-						minor = 9;
-						patch = 9;
-					} else {
-						minor--;
-					}
-				} else {
-					patch--;
-				}
-				release = releaseTypes.release;
-				break;
-
-			case 'minor':
-				minor++;
-				// patch and build reset to zero
-				patch = 0;
-				build = 0;
-				release = releaseTypes.release;
-				updateInfoJson = true;
-				break;
-
 			case 'major':
-				major++;
+				// either the value passed explicitly to reset build number or an incremented value
+				major = value || ++major;
 				// both minor, patch and build numbers reset to zero
 				minor = 0;
 				patch = 0;
 				build = 0;
-				release = releaseTypes.release;
+
 				updateInfoJson = true;
+				break;
+
+			case 'minor':
+				minor = value || ++minor;
+				// patch and build reset to zero
+				patch = 0;
+				build = 0;
+
+				updateInfoJson = true;
+				break;
+
+			case 'patch':
+				patch = value || ++patch;
+				build = 0;
+
+				updateInfoJson = true;
+				break;
+
+			case 'build':
+				build = value || ++build;
+				break;
+
+			case 'release_type':
+				releaseType = value || releaseType;
 				break;
 		}
 
-		let newVersion = `${major}.${minor}.${patch}.${release}`;
+		let newVersion = `${major}.${minor}.${patch}.${releaseType}`;
 
 		// add valid build number for alpha, beta, or release candidate versions
-		if (build > 0 && (type === 'alpha' || type === 'beta' || release === 'rc')) {
+		if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
 			newVersion += `.${build.toString().padStart(3, '0')}`;
 		}
 
@@ -124,7 +103,7 @@ export async function run(): Promise<void> {
 		}
 
 		// if version type is decaf then let's update extra values in main file and the readme.txt as well.
-		if (type === 'decaf') {
+		if (releaseType === 'decaf') {
 			// but we're also changing the plugin name and uri
 			const pluginUri = mainFileContents.match(MAIN_FILE_PLUGIN_URI_REGEX)?.groups?.plugin_uri?.trim();
 			const pluginName = mainFileContents.match(MAIN_FILE_PLUGIN_NAME_REGEX)?.groups?.plugin_name?.trim();
