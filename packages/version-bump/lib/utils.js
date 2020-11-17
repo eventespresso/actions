@@ -19,16 +19,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bumpTypes = exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.DEFAULT_RELEASE_TYPES = void 0;
+exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.bumpTypes = void 0;
 const core = __importStar(require("@actions/core"));
 const io = __importStar(require("@eventespresso-actions/io"));
-exports.DEFAULT_RELEASE_TYPES = {
-    // eslint-disable-next-line camelcase
-    pre_release: 'beta',
-    decaf: 'decaf',
-    rc: 'rc',
-    release: 'p',
-};
+exports.bumpTypes = ['major', 'minor', 'patch', 'release_type', 'build'];
 /**
  * Retrieve the action inputs.
  */
@@ -36,8 +30,8 @@ function getInput() {
     const infoJsonFile = core.getInput('info-json-file', { required: true });
     const mainFile = core.getInput('main-file', { required: true });
     const readmeFile = core.getInput('readme-file', { required: true });
-    const releaseTypesStr = core.getInput('release-types');
     const type = core.getInput('type', { required: true });
+    const value = core.getInput('value');
     if (!io.existsSync(mainFile)) {
         throw new Error('Main file does not exist.');
     }
@@ -47,13 +41,15 @@ function getInput() {
     if (!io.existsSync(readmeFile)) {
         throw new Error('readme.txt file does not exist.');
     }
-    const releaseTypes = releaseTypesStr ? JSON.parse(releaseTypesStr) : exports.DEFAULT_RELEASE_TYPES;
+    if (!exports.bumpTypes.includes(type)) {
+        throw new Error(`Unknown bump type - ${type}`);
+    }
     return {
         infoJsonFile,
         mainFile,
         readmeFile,
-        releaseTypes,
         type,
+        value,
     };
 }
 exports.getInput = getInput;
@@ -75,21 +71,11 @@ exports.README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_tag>\
  * BUILD    ([0-9]*)                 maybe match & capture a number
  * @see: https://regex101.com/r/5nSgf3/1/
  */
-exports.EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)\.?(?<release>alpha|beta|rc|p|decaf)*\.?(?<build>[0-9]*)$/;
+exports.EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)\.?(?<releaseType>alpha|beta|rc|p|decaf)*\.?(?<build>[0-9]*)$/;
 exports.DEFAULT_VERSION_PARTS = {
     major: 0,
     minor: 0,
     patch: 0,
-    release: 'rc',
+    releaseType: 'rc',
     build: 0,
 };
-exports.bumpTypes = [
-    'pre_release',
-    'micro_zip',
-    'decaf',
-    'rc',
-    'alpha',
-    'beta',
-    'minor',
-    'major',
-];

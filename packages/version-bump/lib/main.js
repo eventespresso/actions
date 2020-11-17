@@ -36,7 +36,7 @@ const utils_1 = require("./utils");
 function run() {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
-        const { infoJsonFile, mainFile, readmeFile, releaseTypes, type } = utils_1.getInput();
+        const { infoJsonFile, mainFile, readmeFile, type, value } = utils_1.getInput();
         let updateInfoJson = false;
         try {
             // read main file contents
@@ -56,68 +56,42 @@ function run() {
             const nonEmptyVersionParts = ramda_1.filter(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
             // build version parts by setting defaults
             const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
-            // extract `release` from the parts as it's the only non-numeric part
-            let { release } = versionParts;
+            // extract `releaseType` from the parts as it's the only non-numeric part
+            let { releaseType } = versionParts;
             // make sure the numeric parts of the version are numbers
             let { major, minor, patch, build } = ramda_1.map(Number, versionParts);
             switch (type) {
-                case 'pre_release':
-                case 'decaf':
-                    // we're not bumping just replacing the `release` string
-                    release = releaseTypes[type];
-                    // reset build if not done so already
-                    build = 0;
-                    break;
-                case 'rc':
-                case 'alpha':
-                case 'beta':
-                    // if build number is not set, then increment the patch
-                    if (build === 0) {
-                        patch++;
-                    }
-                    // set release type and increment build number
-                    release = type;
-                    // if build was not set, then 0 will be incremented to 1, and then set as '.001'
-                    build++;
-                    break;
-                case 'micro_zip':
-                    // for micro zips we bump back the minor number and replace rc with p.
-                    if (patch === 0) {
-                        if (minor === 0) {
-                            major--;
-                            minor = 9;
-                            patch = 9;
-                        }
-                        else {
-                            minor--;
-                        }
-                    }
-                    else {
-                        patch--;
-                    }
-                    release = releaseTypes.release;
-                    break;
-                case 'minor':
-                    minor++;
-                    // patch and build reset to zero
-                    patch = 0;
-                    build = 0;
-                    release = releaseTypes.release;
-                    updateInfoJson = true;
-                    break;
                 case 'major':
-                    major++;
+                    // either the value passed explicitly to reset build number or an incremented value
+                    major = value || ++major;
                     // both minor, patch and build numbers reset to zero
                     minor = 0;
                     patch = 0;
                     build = 0;
-                    release = releaseTypes.release;
                     updateInfoJson = true;
                     break;
+                case 'minor':
+                    minor = value || ++minor;
+                    // patch and build reset to zero
+                    patch = 0;
+                    build = 0;
+                    updateInfoJson = true;
+                    break;
+                case 'patch':
+                    patch = value || ++patch;
+                    build = 0;
+                    updateInfoJson = true;
+                    break;
+                case 'build':
+                    build = value || ++build;
+                    break;
+                case 'release_type':
+                    releaseType = value || releaseType;
+                    break;
             }
-            let newVersion = `${major}.${minor}.${patch}.${release}`;
+            let newVersion = `${major}.${minor}.${patch}.${releaseType}`;
             // add valid build number for alpha, beta, or release candidate versions
-            if (build > 0 && (type === 'alpha' || type === 'beta' || release === 'rc')) {
+            if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
                 newVersion += `.${build.toString().padStart(3, '0')}`;
             }
             // replace versions in main file with newVersion.
@@ -130,7 +104,7 @@ function run() {
                 io.writeFileSync(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
             }
             // if version type is decaf then let's update extra values in main file and the readme.txt as well.
-            if (type === 'decaf') {
+            if (releaseType === 'decaf') {
                 // but we're also changing the plugin name and uri
                 const pluginUri = (_e = (_d = (_c = mainFileContents.match(utils_1.MAIN_FILE_PLUGIN_URI_REGEX)) === null || _c === void 0 ? void 0 : _c.groups) === null || _d === void 0 ? void 0 : _d.plugin_uri) === null || _e === void 0 ? void 0 : _e.trim();
                 const pluginName = (_h = (_g = (_f = mainFileContents.match(utils_1.MAIN_FILE_PLUGIN_NAME_REGEX)) === null || _f === void 0 ? void 0 : _f.groups) === null || _g === void 0 ? void 0 : _g.plugin_name) === null || _h === void 0 ? void 0 : _h.trim();
