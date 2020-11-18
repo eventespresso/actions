@@ -13,7 +13,7 @@ import {
 } from './utils';
 
 export async function run(): Promise<void> {
-	const { infoJsonFile, mainFile, readmeFile, type, value } = getInput();
+	const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = getInput();
 
 	let updateInfoJson = false;
 
@@ -41,8 +41,9 @@ export async function run(): Promise<void> {
 		// build version parts by setting defaults
 		const versionParts = { ...DEFAULT_VERSION_PARTS, ...nonEmptyVersionParts };
 
+		// prefer releaseType from inputs or
 		// extract `releaseType` from the parts as it's the only non-numeric part
-		let { releaseType } = versionParts;
+		let releaseType = releaseTypeInput || versionParts.releaseType;
 
 		// make sure the numeric parts of the version are numbers
 		let { major, minor, patch, build } = map(Number, versionParts);
@@ -77,14 +78,22 @@ export async function run(): Promise<void> {
 
 			case 'build':
 				build = value || ++build;
+				// to use build number there must be a release type.
+				// if none is present or supplied, use `rc` by default
+				releaseType = releaseType || 'rc';
 				break;
 
 			case 'release_type':
-				releaseType = value || releaseType;
+				releaseType = value || releaseType || 'rc';
 				break;
 		}
 
-		let newVersion = `${major}.${minor}.${patch}.${releaseType}`;
+		let newVersion = `${major}.${minor}.${patch}`;
+
+		// add releaseType if not empty
+		if (releaseType) {
+			newVersion += `.${releaseType}`;
+		}
 
 		// add valid build number for alpha, beta, or release candidate versions
 		if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {

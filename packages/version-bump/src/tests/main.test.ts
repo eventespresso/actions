@@ -10,6 +10,7 @@ const input = {
 	'readme-file': 'readme.txt',
 	type: 'minor',
 	value: null,
+	'release-type': null,
 };
 let output: Record<string, string> = {};
 
@@ -49,10 +50,11 @@ describe('version bump main tests', () => {
 	it('returns the expected output for a given input', async () => {
 		checkForDuplicateCases(mainNormalTestCases);
 
-		for (const { type, inputVer, outputVer, value } of mainNormalTestCases) {
+		for (const { type, inputVer, outputVer, releaseType, value } of mainNormalTestCases) {
 			// set bump type
 			input.type = type;
 			input.value = value;
+			input['release-type'] = releaseType;
 			// set mock to dynamically generate input file
 			const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
 				return getMockedFileContents(path as string, inputVer);
