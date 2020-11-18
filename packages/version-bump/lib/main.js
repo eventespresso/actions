@@ -36,7 +36,7 @@ const utils_1 = require("./utils");
 function run() {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
-        const { infoJsonFile, mainFile, readmeFile, type, value } = utils_1.getInput();
+        const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = utils_1.getInput();
         let updateInfoJson = false;
         try {
             // read main file contents
@@ -56,8 +56,9 @@ function run() {
             const nonEmptyVersionParts = ramda_1.filter(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
             // build version parts by setting defaults
             const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
+            // prefer releaseType from inputs or
             // extract `releaseType` from the parts as it's the only non-numeric part
-            let { releaseType } = versionParts;
+            let releaseType = releaseTypeInput || versionParts.releaseType;
             // make sure the numeric parts of the version are numbers
             let { major, minor, patch, build } = ramda_1.map(Number, versionParts);
             switch (type) {
@@ -84,12 +85,19 @@ function run() {
                     break;
                 case 'build':
                     build = value || ++build;
+                    // to use build number there must be a release type.
+                    // if none is present or supplied, use `rc` by default
+                    releaseType = releaseType || 'rc';
                     break;
                 case 'release_type':
-                    releaseType = value || releaseType;
+                    releaseType = value || releaseType || 'rc';
                     break;
             }
-            let newVersion = `${major}.${minor}.${patch}.${releaseType}`;
+            let newVersion = `${major}.${minor}.${patch}`;
+            // add releaseType if not empty
+            if (releaseType) {
+                newVersion += `.${releaseType}`;
+            }
             // add valid build number for alpha, beta, or release candidate versions
             if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
                 newVersion += `.${build.toString().padStart(3, '0')}`;
