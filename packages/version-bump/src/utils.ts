@@ -9,11 +9,14 @@ export interface Input {
 	infoJsonFile: string;
 	mainFile: string;
 	readmeFile: string;
+	releaseType?: ReleaseType;
 	value?: string;
 	type: BumpType;
 }
 
 export const bumpTypes: Array<BumpType> = ['major', 'minor', 'patch', 'release_type', 'build'];
+
+export const releaseTypes: Array<ReleaseType> = ['alpha', 'beta', 'decaf', 'rc', 'p'];
 
 /**
  * Retrieve the action inputs.
@@ -24,6 +27,7 @@ export function getInput(): Input {
 	const readmeFile = core.getInput('readme-file', { required: true });
 	const type = core.getInput('type', { required: true }) as BumpType;
 	const value = core.getInput('value');
+	const releaseType = core.getInput('release-type') as ReleaseType;
 
 	if (!io.existsSync(mainFile)) {
 		throw new Error('Main file does not exist.');
@@ -37,11 +41,15 @@ export function getInput(): Input {
 	if (!bumpTypes.includes(type)) {
 		throw new Error(`Unknown bump type - ${type}`);
 	}
+	if (releaseType && !releaseTypes.includes(releaseType)) {
+		throw new Error(`Unknown release type - ${releaseType}`);
+	}
 
 	return {
 		infoJsonFile,
 		mainFile,
 		readmeFile,
+		releaseType,
 		type,
 		value,
 	};
@@ -58,23 +66,21 @@ export const README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_
 /**
  * The regex reperesenting the version schema used by EE.
  *
- * MAJOR    ([0-9]+)                 MUST match & capture a number
- * DOT      \.                       MUST match a period
- * MINOR    ([0-9]+)                 MUST match & capture a number
- * DOT      \.                       MUST match a period
- * PATCH    ([0-9]+)                 MUST match & capture a number
- * DOT      \.?                      maybe match a period
- * RELEASE  (alpha|beta|rc|p|decaf)* maybe match one of values in brackets
- * DOT      \.?                      maybe match a period
- * BUILD    ([0-9]*)                 maybe match & capture a number
+ * MAJOR    ([0-9]+)                  MUST match & capture a number
+ * DOT      \.                        MUST match a period
+ * MINOR    ([0-9]+)                  MUST match & capture a number
+ * DOT      \.                        MUST match a period
+ * PATCH    ([0-9]+)                  MUST match & capture a number
+ * RELEASE  \.(alpha|beta|rc|p|decaf) optionally match a dot and one of values in brackets
+ * BUILD    \.([0-9]*)                optionally match a dot & capture a number
  * @see: https://regex101.com/r/5nSgf3/1/
  */
-export const EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)\.?(?<releaseType>alpha|beta|rc|p|decaf)*\.?(?<build>[0-9]*)$/;
+export const EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(?:\.(?<releaseType>alpha|beta|rc|p|decaf))?(?:\.(?<build>[0-9]*))?$/;
 
 export const DEFAULT_VERSION_PARTS = {
 	major: 0,
 	minor: 0,
 	patch: 0,
-	releaseType: 'rc',
+	releaseType: '',
 	build: 0,
 };
