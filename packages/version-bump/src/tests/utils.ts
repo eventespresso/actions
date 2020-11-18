@@ -1,4 +1,4 @@
-import { BumpType } from '../utils';
+import { BumpType, ReleaseType } from '../utils';
 
 export const getMockedFileContents = (path: string, version?: string): string => {
 	switch (path) {
@@ -32,6 +32,7 @@ type MainTestCase = {
 	type: BumpType;
 	inputVer: string;
 	outputVer: string;
+	releaseType?: ReleaseType;
 	value?: string;
 };
 
@@ -85,14 +86,28 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		type: 'major',
 		inputVer: '0.0.0',
-		outputVer: '1.0.0.rc',
+		outputVer: '1.0.0',
 	},
 	{
 		type: 'major',
 		inputVer: '0.0.0',
-		outputVer: '5.0.0.rc',
+		outputVer: '5.0.0',
 		// explicitly set the version
 		value: '5',
+	},
+	{
+		type: 'major',
+		inputVer: '0.0.0',
+		outputVer: '1.0.0.beta',
+		// explicitly set the release type, when there is none
+		releaseType: 'beta',
+	},
+	{
+		type: 'major',
+		inputVer: '4.0.0.beta',
+		outputVer: '5.0.0.rc',
+		// explicitly set the release type, when there is already one
+		releaseType: 'rc',
 	},
 	{
 		type: 'minor',
@@ -119,14 +134,28 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		type: 'minor',
 		inputVer: '0.0.0',
-		outputVer: '0.1.0.rc',
+		outputVer: '0.1.0',
 	},
 	{
 		type: 'minor',
 		inputVer: '5.3.1',
-		outputVer: '5.5.0.rc',
+		outputVer: '5.5.0',
 		// explicitly set the version
 		value: '5',
+	},
+	{
+		type: 'minor',
+		inputVer: '0.0.0',
+		outputVer: '0.1.0.beta',
+		// explicitly set the release type, when there is none
+		releaseType: 'beta',
+	},
+	{
+		type: 'minor',
+		inputVer: '4.4.0.beta',
+		outputVer: '4.5.0.rc',
+		// explicitly set the release type, when there is already one
+		releaseType: 'rc',
 	},
 	{
 		type: 'patch',
@@ -150,7 +179,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		type: 'patch',
 		inputVer: '0.0.0',
 		// patch shoud be incremented
-		outputVer: '0.0.1.rc',
+		outputVer: '0.0.1',
 	},
 	{
 		type: 'patch',
@@ -161,9 +190,23 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		type: 'patch',
 		inputVer: '1.0.6',
-		outputVer: '1.0.5.rc',
+		outputVer: '1.0.5',
 		// explicitly set the version
 		value: '5',
+	},
+	{
+		type: 'patch',
+		inputVer: '0.0.0',
+		outputVer: '0.0.1.beta',
+		// explicitly set the release type, when there is none
+		releaseType: 'beta',
+	},
+	{
+		type: 'patch',
+		inputVer: '4.0.3.beta',
+		outputVer: '4.0.4.rc',
+		// explicitly set the release type, when there is already one
+		releaseType: 'rc',
 	},
 	{
 		type: 'release_type',
