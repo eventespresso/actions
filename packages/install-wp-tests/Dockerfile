@@ -1,7 +1,7 @@
 FROM debian:stable-slim
 
 RUN apt-get update \
-	&& apt-get install -y curl mariadb-client subversion \
+	&& apt-get install -y curl default-mysql-client subversion \
 	&& apt-get clean -y \
 	&& rm -rf /var/lib/apt/lists/*
 
