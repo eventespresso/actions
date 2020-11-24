@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/usr/bin/env bash
 # source https://github.com/wp-cli/sample-plugin/tree/master/bin
 
 if [ $# -lt 3 ]; then
