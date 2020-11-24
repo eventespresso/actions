@@ -1,0 +1,30 @@
+name: 'Install WP Tests'
+description: 'This action installs wp for tests'
+author: 'eventespresso'
+inputs:
+    database:
+        required: true
+        description: 'The database name.'
+    username:
+        required: true
+        description: 'The database username.'
+    password:
+        required: true
+        description: 'The database password.'
+    host:
+        required: true
+        description: 'The database host.'
+        default: localhost
+    wp-version:
+        required: true
+        description: 'The WordPress version'
+        default: latest
+runs:
+    using: 'docker'
+    image: 'Dockerfile'
+    args:
+        - ${{ inputs.database }}
+        - ${{ inputs.username }}
+        - ${{ inputs.password }}
+        - ${{ inputs.host }}
+        - ${{ inputs.wp-version }}
