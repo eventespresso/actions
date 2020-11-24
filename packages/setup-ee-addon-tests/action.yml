@@ -1,0 +1,13 @@
+name: 'Setup EE addon tests'
+description: 'This action sets up test env for EE addons'
+author: 'eventespresso'
+inputs:
+    ee-version:
+        required: true
+        description: 'EE version to use'
+        default: master
+runs:
+    using: 'docker'
+    image: 'Dockerfile'
+    args:
+        - ${{ inputs.ee-version }}
