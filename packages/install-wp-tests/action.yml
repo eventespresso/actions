@@ -20,11 +20,7 @@ inputs:
         description: 'The WordPress version'
         default: latest
 runs:
-    using: 'docker'
-    image: 'Dockerfile'
-    args:
-        - ${{ inputs.database }}
-        - ${{ inputs.username }}
-        - ${{ inputs.password }}
-        - ${{ inputs.host }}
-        - ${{ inputs.wp-version }}
+    using: 'composite'
+    steps:
+        - run: ${{ github.action_path }}/install-wp-tests.sh ${{ inputs.database }} ${{ inputs.username }} ${{ inputs.password }} ${{ inputs.host }} ${{ inputs.wp-version }}
+          shell: bash

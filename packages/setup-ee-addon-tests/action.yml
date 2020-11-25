@@ -7,7 +7,7 @@ inputs:
         description: 'EE version to use'
         default: master
 runs:
-    using: 'docker'
-    image: 'Dockerfile'
-    args:
-        - ${{ inputs.ee-version }}
+    using: 'composite'
+    steps:
+        - run: ${{ github.action_path }}/setup-ee-addon-tests.sh ${{ inputs.ee-version }}
+          shell: bash
