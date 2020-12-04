@@ -1,0 +1,10 @@
+name: 'Remove files/directories'
+description: 'With this action, you can remove files or direcories.'
+author: 'eventespresso'
+inputs:
+    paths:
+        required: true
+        description: 'A JSON serialized array of file paths to remove.'
+runs:
+    using: 'node12'
+    main: 'dist/index.js'
