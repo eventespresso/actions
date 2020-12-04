@@ -1,0 +1,15 @@
+name: 'Get JSON prop'
+description: 'With this action, you can retrieve the value of a specified property/path in a JSON file'
+author: 'eventespresso'
+inputs:
+    file-path:
+        required: true
+        description: 'Path of the JSON file.'
+    prop-path:
+        required: true
+        description: 'Path of the prop to retrieve.'
+    output-as-json:
+        description: 'Whether to convert the output value to JSON'
+runs:
+    using: 'node12'
+    main: 'dist/index.js'
