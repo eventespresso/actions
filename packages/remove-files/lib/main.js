@@ -40,7 +40,7 @@ function run() {
             if (!Array.isArray(pathsArr)) {
                 throw new Error(`An array of paths was not supplied.`);
             }
-            yield Promise.all(pathsArr.map((path) => io.unlink(path)));
+            yield Promise.all(pathsArr.map((path) => io.rmRF(path)));
         }
         catch (error) {
             core.setFailed(error.message);

@@ -14,7 +14,7 @@ export async function run(): Promise<void> {
 			throw new Error(`An array of paths was not supplied.`);
 		}
 
-		await Promise.all(pathsArr.map((path) => io.unlink(path)));
+		await Promise.all(pathsArr.map((path) => io.rmRF(path)));
 	} catch (error) {
 		core.setFailed(error.message);
 	}
