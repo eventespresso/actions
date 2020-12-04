@@ -21,29 +21,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getInput = void 0;
 const core = __importStar(require("@actions/core"));
+const io = __importStar(require("@eventespresso-actions/io"));
 /**
  * Retrieve the action inputs.
  */
 function getInput() {
-    const exclude = core.getInput('exclude');
-    const headers = core.getInput('headers');
-    const include = core.getInput('include');
-    const ignoreDomain = Boolean(core.getInput('ignore-domain'));
-    const packageName = core.getInput('package-name');
-    const savePath = core.getInput('save-path', { required: true });
-    const slug = core.getInput('slug', { required: true });
-    const textDomain = core.getInput('text-domain') || slug;
-    const headersJsonFile = core.getInput('headers-json-file');
+    const filePath = core.getInput('file-path', { required: true });
+    const propPath = core.getInput('prop-path', { required: true });
+    const outputAsJson = Boolean(core.getInput('output-as-json'));
+    if (!io.existsSync(filePath)) {
+        throw new Error('File does not exist.');
+    }
     return {
-        exclude,
-        headers,
-        headersJsonFile,
-        ignoreDomain,
-        include,
-        packageName,
-        savePath,
-        slug,
-        textDomain,
+        filePath,
+        outputAsJson,
+        propPath,
     };
 }
 exports.getInput = getInput;

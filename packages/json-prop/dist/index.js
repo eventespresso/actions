@@ -17160,110 +17160,23 @@ exports.run = void 0;
 const core = __importStar(__webpack_require__(7117));
 const ramda_1 = __webpack_require__(8014);
 const io = __importStar(__webpack_require__(5666));
-const utils_1 = __webpack_require__(2560);
+const utils_1 = __webpack_require__(1927);
+const utils_2 = __webpack_require__(2560);
 function run() {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
-        const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = utils_1.getInput();
-        let updateInfoJson = false;
+        const { filePath, outputAsJson, propPath } = utils_2.getInput();
         try {
-            // read main file contents
-            let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' });
-            // read info.json file contents
-            const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
-            // get the current version using regex
-            const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
-            if (!currentVersion) {
-                throw new Error('Could not parse version string from main file.');
+            // read the JSOn file
+            const obj = JSON.parse(io.readFileSync(filePath, { encoding: 'utf8' }));
+            // get the value from the given path
+            let propValue = ramda_1.path(utils_1.toPath(propPath), obj);
+            if (typeof propValue === 'undefined') {
+                throw new Error(`Path ${propPath} does not exist in ${filePath}`);
             }
-            const versionPartsMatch = currentVersion.match(utils_1.EE_VERSION_REGEX);
-            if (!(versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups)) {
-                throw new Error('Invalid version! Version does not match the pattern');
+            if (outputAsJson) {
+                propValue = JSON.stringify(propValue);
             }
-            // remove empty matches from groups to avoid them overriding defaults
-            const nonEmptyVersionParts = ramda_1.filter(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
-            // build version parts by setting defaults
-            const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
-            // prefer releaseType from inputs or
-            // extract `releaseType` from the parts as it's the only non-numeric part
-            let releaseType = releaseTypeInput || versionParts.releaseType;
-            // make sure the numeric parts of the version are numbers
-            let { major, minor, patch, build } = ramda_1.map(Number, versionParts);
-            switch (type) {
-                case 'major':
-                    // either the value passed explicitly to reset build number or an incremented value
-                    major = value || ++major;
-                    // both minor, patch and build numbers reset to zero
-                    minor = 0;
-                    patch = 0;
-                    build = 0;
-                    updateInfoJson = true;
-                    break;
-                case 'minor':
-                    minor = value || ++minor;
-                    // patch and build reset to zero
-                    patch = 0;
-                    build = 0;
-                    updateInfoJson = true;
-                    break;
-                case 'patch':
-                    patch = value || ++patch;
-                    build = 0;
-                    updateInfoJson = true;
-                    break;
-                case 'build':
-                    build = value || ++build;
-                    // to use build number there must be a release type.
-                    // if none is present or supplied, use `rc` by default
-                    releaseType = releaseType || 'rc';
-                    break;
-                case 'release_type':
-                    releaseType = value || releaseType || 'rc';
-                    break;
-            }
-            let newVersion = `${major}.${minor}.${patch}`;
-            // add releaseType if not empty
-            if (releaseType) {
-                newVersion += `.${releaseType}`;
-            }
-            // add valid build number for alpha, beta, or release candidate versions
-            if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
-                newVersion += `.${build.toString().padStart(3, '0')}`;
-            }
-            // replace versions in main file with newVersion.
-            mainFileContents = mainFileContents.replace(currentVersion, newVersion);
-            // update info.json, so decaf release get built off of this tag.
-            if (updateInfoJson && infoJson) {
-                infoJson.wpOrgRelease = newVersion;
-                const infoJsonContents = JSON.stringify(infoJson, null, 2);
-                // now save back to info.json
-                io.writeFileSync(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
-            }
-            // if version type is decaf then let's update extra values in main file and the readme.txt as well.
-            if (releaseType === 'decaf') {
-                // but we're also changing the plugin name and uri
-                const pluginUri = (_e = (_d = (_c = mainFileContents.match(utils_1.MAIN_FILE_PLUGIN_URI_REGEX)) === null || _c === void 0 ? void 0 : _c.groups) === null || _d === void 0 ? void 0 : _d.plugin_uri) === null || _e === void 0 ? void 0 : _e.trim();
-                const pluginName = (_h = (_g = (_f = mainFileContents.match(utils_1.MAIN_FILE_PLUGIN_NAME_REGEX)) === null || _f === void 0 ? void 0 : _f.groups) === null || _g === void 0 ? void 0 : _g.plugin_name) === null || _h === void 0 ? void 0 : _h.trim();
-                if (pluginUri) {
-                    mainFileContents = mainFileContents.replace(pluginUri, infoJson.wpOrgPluginUrl);
-                }
-                if (pluginName) {
-                    mainFileContents = mainFileContents.replace(pluginName, infoJson.wpOrgPluginName);
-                }
-                // get readme.txt file contents.
-                let readmeContents = io.readFileSync(readmeFile, { encoding: 'utf8' });
-                // replace stable tag in readme.txt
-                readmeContents = readmeContents.replace(utils_1.README_FILE_STABLE_TAG_REGEX, 
-                // `match` is like "Stable tag: 4.10.4.decaf"
-                // `p1` is the first and only capturing group like "4.10.4.decaf"
-                (match, p1) => match.replace(p1, newVersion));
-                // now save back to readme.txt
-                io.writeFileSync(readmeFile, readmeContents, { encoding: 'utf8' });
-            }
-            // now finally save the main file contents
-            io.writeFileSync(mainFile, mainFileContents, { encoding: 'utf8' });
-            // set the output
-            core.setOutput('new-version', newVersion);
+            core.setOutput('value', propValue);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -17301,70 +17214,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.releaseTypes = exports.bumpTypes = void 0;
+exports.getInput = void 0;
 const core = __importStar(__webpack_require__(7117));
 const io = __importStar(__webpack_require__(5666));
-exports.bumpTypes = ['major', 'minor', 'patch', 'release_type', 'build'];
-exports.releaseTypes = ['alpha', 'beta', 'decaf', 'rc', 'p'];
 /**
  * Retrieve the action inputs.
  */
 function getInput() {
-    const infoJsonFile = core.getInput('info-json-file', { required: true });
-    const mainFile = core.getInput('main-file', { required: true });
-    const readmeFile = core.getInput('readme-file', { required: true });
-    const type = core.getInput('type', { required: true });
-    const value = core.getInput('value');
-    const releaseType = core.getInput('release-type');
-    if (!io.existsSync(mainFile)) {
-        throw new Error('Main file does not exist.');
-    }
-    if (!io.existsSync(infoJsonFile)) {
-        throw new Error('info.json file does not exist.');
-    }
-    if (!io.existsSync(readmeFile)) {
-        throw new Error('readme.txt file does not exist.');
-    }
-    if (!exports.bumpTypes.includes(type)) {
-        throw new Error(`Unknown bump type - ${type}`);
-    }
-    if (releaseType && !exports.releaseTypes.includes(releaseType)) {
-        throw new Error(`Unknown release type - ${releaseType}`);
+    const filePath = core.getInput('file-path', { required: true });
+    const propPath = core.getInput('prop-path', { required: true });
+    const outputAsJson = Boolean(core.getInput('output-as-json'));
+    if (!io.existsSync(filePath)) {
+        throw new Error('File does not exist.');
     }
     return {
-        infoJsonFile,
-        mainFile,
-        readmeFile,
-        releaseType,
-        type,
-        value,
+        filePath,
+        outputAsJson,
+        propPath,
     };
 }
 exports.getInput = getInput;
-exports.MAIN_FILE_VERSION_REGEX = /[\s\t/*#@]*Version:\s*(?<version>\S*)/i;
-exports.MAIN_FILE_PLUGIN_URI_REGEX = /[\s\t/*#@]*Plugin URI:\s*(?<plugin_uri>\S+)/i;
-exports.MAIN_FILE_PLUGIN_NAME_REGEX = /[\s\t/*#@]*Plugin Name:\s*(?<plugin_name>.+)/i;
-exports.README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_tag>\S+)/i;
-/**
- * The regex reperesenting the version schema used by EE.
- *
- * MAJOR    ([0-9]+)                  MUST match & capture a number
- * DOT      \.                        MUST match a period
- * MINOR    ([0-9]+)                  MUST match & capture a number
- * DOT      \.                        MUST match a period
- * PATCH    ([0-9]+)                  MUST match & capture a number
- * RELEASE  \.(alpha|beta|rc|p|decaf) optionally match a dot and one of values in brackets
- * BUILD    \.([0-9]*)                optionally match a dot & capture a number
- * @see: https://regex101.com/r/5nSgf3/1/
- */
-exports.EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(?:\.(?<releaseType>alpha|beta|rc|p|decaf))?(?:\.(?<build>[0-9]*))?$/;
-exports.DEFAULT_VERSION_PARTS = {
-    major: 0,
-    minor: 0,
-    patch: 0,
-    releaseType: '',
-    build: 0,
-};
 
 
 /***/ }),
@@ -17407,6 +17276,109 @@ exports.readFileSync = fs.readFileSync, exports.readdirSync = fs.readdirSync, ex
 
 /***/ }),
 
+/***/ 1709:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.downloadUrl = void 0;
+const https_1 = __importDefault(__webpack_require__(7211));
+const fs_1 = __importDefault(__webpack_require__(5747));
+/**
+ * Download the given URL to the given destination.
+ */
+exports.downloadUrl = (url, dest) => {
+    return new Promise((resolve, reject) => {
+        const file = fs_1.default.createWriteStream(dest, { flags: 'wx' });
+        const request = https_1.default.get(url, (response) => {
+            // make sure we have a valid status code
+            if (response.statusCode === 200) {
+                response.pipe(file);
+            }
+            else {
+                file.close();
+                fs_1.default.unlink(dest, () => null);
+                reject(`Download failed! Server responded with ${response.statusCode}: ${response.statusMessage}`);
+            }
+        });
+        request.on('error', (err) => {
+            file.close();
+            fs_1.default.unlink(dest, () => null);
+            reject(err.message);
+        });
+        file.on('finish', () => {
+            resolve();
+        });
+        file.on('error', (err) => {
+            file.close();
+            if (err.name === 'EEXIST') {
+                reject('File already exists');
+            }
+            else {
+                fs_1.default.unlink(dest, () => null);
+                reject(err.message);
+            }
+        });
+    });
+};
+
+
+/***/ }),
+
+/***/ 1927:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(1709), exports);
+__exportStar(__webpack_require__(1123), exports);
+
+
+/***/ }),
+
+/***/ 1123:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toPath = void 0;
+/**
+ * Converts a string path to array path
+ * that can be used in ramda path functions
+ *
+ * 'foo[1].bar' to ['foo', '1', 'bar']
+ *
+ * Source https://github.com/final-form/final-form
+ */
+exports.toPath = (key) => {
+    if (key === null || key === undefined || !key.length) {
+        return [];
+    }
+    if (typeof key !== 'string') {
+        throw new Error('toPath() expects a string');
+    }
+    return key.split(/[.[\]]+/).filter(Boolean);
+};
+
+
+/***/ }),
+
 /***/ 9059:
 /***/ ((module) => {
 
@@ -17428,6 +17400,14 @@ module.exports = require("child_process");;
 
 "use strict";
 module.exports = require("fs");;
+
+/***/ }),
+
+/***/ 7211:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("https");;
 
 /***/ }),
 
