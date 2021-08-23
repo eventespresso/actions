@@ -9,28 +9,26 @@ jobs:
         if: "!contains(github.event.head_commit.message, 'gh-actions')"
         runs-on: ubuntu-latest
         steps:
-            - id: yarn-cache
-              name: Get Yarn cache path
-              run: echo "::set-output name=dir::$(yarn cache dir)"
-
             - uses: actions/checkout@v2
               name: Checkout the commit
               with:
                   token: ${{ secrets.GH_ACTIONS_ACCESS_TOKEN }}
 
-            - uses: dcodeIO/setup-node-nvm@master
+            - name: Set up Node
+              uses: actions/setup-node@v2
               with:
                   node-version: lts/*
 
-            - uses: actions/cache@master
-              name: Load Yarn cache
+            - name: Cache dependencies
+              id: cache-deps
+              uses: actions/cache@v2
               with:
-                  path: ${{ steps.yarn-cache.outputs.dir }}
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-yarn-
+                  path: '**/node_modules'
+                  key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
             - name: Install dependencies
+              # install deps only if lockfile has changed
+              if: steps.cache-deps.outputs.cache-hit != 'true'
               run: yarn install --frozen-lockfile
 
             # Build the packages
