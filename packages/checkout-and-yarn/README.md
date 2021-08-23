@@ -12,7 +12,7 @@ This action checks out the commit, sets up Node and installs deps using yarn.
 ## Example Workflow File
 
 ```yaml
-name: Checout and install deps
+name: Checkout and install deps
 
 on: [pull_request]
 
