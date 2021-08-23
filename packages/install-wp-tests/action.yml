@@ -24,3 +24,7 @@ runs:
     steps:
         - run: ${{ github.action_path }}/install-wp-tests.sh ${{ inputs.database }} ${{ inputs.username }} ${{ inputs.password }} ${{ inputs.host }} ${{ inputs.wp-version }}
           shell: bash
+
+        - name: Fix MySQL authentication for PHP < 7.4
+          run: mysql --user="${{ inputs.username }}" --password="${{ inputs.password }}" --database="${{ inputs.database }}" --execute="ALTER USER '${{ inputs.username }}'@'${{ inputs.host }}' IDENTIFIED WITH mysql_native_password BY '${{ inputs.password }}';"
+          shell: bash
