@@ -19,7 +19,7 @@ jobs:
     checkout-and-yarn:
         runs-on: ubuntu-latest
         steps:
-            - name: Install WP Tests
+            - name: Checkout and yarn
               uses: eventespresso/actions/packages/checkout-and-yarn@main
               with:
                   fetch-depth: '1'
