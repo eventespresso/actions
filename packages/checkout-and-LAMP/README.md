@@ -14,7 +14,7 @@ This action checks out the commit, sets up LAMP stack and runs composer install.
 ## Example Workflow File
 
 ```yaml
-name: Checout and set up LAMP
+name: Checkout and set up LAMP
 
 on: [pull_request]
 
