@@ -9,6 +9,7 @@ inputs:
     token:
         required: false
         description: 'Personal access token (PAT) used to fetch the repository.'
+        default: ''
 runs:
     using: 'composite'
     steps:
