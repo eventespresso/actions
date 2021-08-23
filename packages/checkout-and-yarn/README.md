@@ -7,6 +7,7 @@ This action checks out the commit, sets up Node and installs deps using yarn.
 | Name          | Description                                                                                    |
 | ------------- | ---------------------------------------------------------------------------------------------- |
 | `fetch-depth` | Number of commits to fetch during checkout. 0 indicates all history for all branches and tags. |
+| `token`       | Personal access token (PAT) used to fetch the repository.                                      |
 
 ## Example Workflow File
 
