@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout and yarn
-              uses: ./packages/checkout-and-yarn
+              uses: eventespresso/actions/packages/checkout-and-yarn@checkout-and-yarn-action
               with:
                   token: ${{ secrets.GH_ACTIONS_ACCESS_TOKEN }}
 

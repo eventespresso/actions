@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout and yarn
-              uses: ./packages/checkout-and-yarn
+              uses: eventespresso/actions/packages/checkout-and-yarn@checkout-and-yarn-action
 
             - name: Run all scripts
               run: yarn run:all
