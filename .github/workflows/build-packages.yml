@@ -9,27 +9,10 @@ jobs:
         if: "!contains(github.event.head_commit.message, 'gh-actions')"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-              name: Checkout the commit
+            - name: Checkout and yarn
+              uses: ./packages/checkout-and-yarn@checkout-and-yarn-action
               with:
                   token: ${{ secrets.GH_ACTIONS_ACCESS_TOKEN }}
-
-            - name: Set up Node
-              uses: actions/setup-node@v2
-              with:
-                  node-version: lts/*
-
-            - name: Cache dependencies
-              id: cache-deps
-              uses: actions/cache@v2
-              with:
-                  path: '**/node_modules'
-                  key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
-            - name: Install dependencies
-              # install deps only if lockfile has changed
-              if: steps.cache-deps.outputs.cache-hit != 'true'
-              run: yarn install --frozen-lockfile
 
             # Build the packages
             - name: Build all packages
