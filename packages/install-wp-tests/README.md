@@ -22,7 +22,7 @@ on:
         branches: [master]
 
 jobs:
-    makepot:
+    install-wp-tests:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the commit

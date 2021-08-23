@@ -1,0 +1,15 @@
+name: Build & Test CI
+
+on: [pull_request]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Checkout and yarn
+              uses: ./packages/checkout-and-yarn
+
+            - name: Run all scripts
+              run: yarn run:all
