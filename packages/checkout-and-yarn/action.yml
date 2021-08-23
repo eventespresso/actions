@@ -9,7 +9,7 @@ inputs:
     token:
         required: false
         description: 'Personal access token (PAT) used to fetch the repository.'
-        default: ''
+        default: ${{ github.token }}
 runs:
     using: 'composite'
     steps:
