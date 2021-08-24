@@ -46,7 +46,6 @@ runs:
               path: ${{ steps.composercache.outputs.dir }}
               # Use composer.lock for key.
               key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-              restore-keys: ${{ runner.os }}-composer-
 
         - name: Check PHP Version
           run: php -v
