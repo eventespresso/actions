@@ -35,22 +35,11 @@ runs:
           run: sudo systemctl start mysql.service
           shell: bash
 
-        - name: Get composer cache directory
-          id: composercache
-          run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-          shell: bash
-
-        - name: Cache composer dependencies
-          uses: actions/cache@v2
-          with:
-              path: ${{ steps.composercache.outputs.dir }}
-              # Use composer.lock for key.
-              key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-
         - name: Check PHP Version
           run: php -v
           shell: bash
 
         - name: Composer install
-          run: composer install --optimize-autoloader --prefer-dist
-          shell: bash
+          uses: 'ramsey/composer-install@v1'
+          with:
+              composer-options: '--optimize-autoloader --prefer-dist'
