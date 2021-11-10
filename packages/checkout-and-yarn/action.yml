@@ -33,7 +33,6 @@ runs:
 
         - name: Install dependencies
           # install deps only if lockfile has changed
-          #   TODO enable 'if' when composite actions support it
-          #   if: steps.cache-deps.outputs.cache-hit != 'true'
+          if: steps.cache-deps.outputs.cache-hit != 'true'
           run: yarn install --frozen-lockfile
           shell: bash
