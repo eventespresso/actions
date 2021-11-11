@@ -42,4 +42,5 @@ runs:
         - name: Composer install
           uses: 'ramsey/composer-install@v1'
           with:
-              composer-options: '--optimize-autoloader --prefer-dist'
+              composer-options: '--optimize-autoloader --with-dependencies'
+              dependency-versions: 'lowest'
