@@ -43,4 +43,4 @@ runs:
           uses: 'ramsey/composer-install@v1'
           with:
               composer-options: '--optimize-autoloader --with-dependencies'
-              dependency-versions: 'locked'
+              dependency-versions: 'lowest'
