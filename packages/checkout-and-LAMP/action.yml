@@ -5,6 +5,10 @@ inputs:
     php-version:
         required: true
         description: 'The PHP version to set up.'
+    composer-dependencies:
+        required: false
+        description: 'Composer dependency version strategy to use. Options: locked, lowest, highest (default).'
+        default: 'highest'
     php-tools:
         required: false
         description: 'Tools to set up for PHP.'
@@ -43,4 +47,4 @@ runs:
           uses: 'ramsey/composer-install@v1'
           with:
               composer-options: '--optimize-autoloader --with-dependencies'
-              dependency-versions: 'highest'
+              dependency-versions: ${{ inputs.composer-dependencies }}
