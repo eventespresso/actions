@@ -12,7 +12,7 @@ inputs:
     composer-options:
         required: false
         description: 'Composer command options. Default: "--optimize-autoloader --with-dependencies".'
-        default: 'highest'
+        default: '--optimize-autoloader --with-dependencies'
     php-tools:
         required: false
         description: 'Tools to set up for PHP.'
