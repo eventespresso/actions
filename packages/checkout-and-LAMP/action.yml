@@ -9,6 +9,10 @@ inputs:
         required: false
         description: 'Composer dependency version strategy to use. Options: locked, lowest, highest (default).'
         default: 'highest'
+    composer-options:
+        required: false
+        description: 'Composer command options. Default: "--optimize-autoloader --with-dependencies".'
+        default: 'highest'
     php-tools:
         required: false
         description: 'Tools to set up for PHP.'
@@ -46,5 +50,5 @@ runs:
         - name: Composer install
           uses: 'ramsey/composer-install@v1'
           with:
-              composer-options: '--optimize-autoloader --with-dependencies'
+              composer-options: ${{ inputs.composer-options }}
               dependency-versions: ${{ inputs.composer-dependencies }}
