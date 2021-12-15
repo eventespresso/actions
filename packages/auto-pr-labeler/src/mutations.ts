@@ -116,6 +116,8 @@ export const assignStatusLabels = async (pullRequest: PullRequest, token: string
 	await removeAllStatusLabels(pullRequest.id, token);
 	switch (pullRequest.state) {
 		case 'OPEN':
+			// for OPEN PRs, let's first look whether a code review has either been requested or received a response
+			// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 			switch (pullRequest.reviewDecision) {
 				case 'APPROVED':
 					await assignLabelsAfterReviewApproved(pullRequest.id, token);
