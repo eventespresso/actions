@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
-import run from '../main';
 import { checkForDuplicateCases, getMockedFileContents, mainNormalTestCases } from './utils';
 import { bumpTypes } from '../utils';
+import run from '../main';
 
 const input = {
 	'info-json-file': 'info.json',
