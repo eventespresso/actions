@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.downloadUrl = void 0;
-const https_1 = __importDefault(require("https"));
 const fs_1 = __importDefault(require("fs"));
+const https_1 = __importDefault(require("https"));
 /**
  * Download the given URL to the given destination.
  */
-exports.downloadUrl = (url, dest) => {
+const downloadUrl = (url, dest) => {
     return new Promise((resolve, reject) => {
         const file = fs_1.default.createWriteStream(dest, { flags: 'wx' });
         const request = https_1.default.get(url, (response) => {
@@ -29,7 +29,7 @@ exports.downloadUrl = (url, dest) => {
             reject(err.message);
         });
         file.on('finish', () => {
-            resolve();
+            resolve('Success');
         });
         file.on('error', (err) => {
             file.close();
@@ -43,3 +43,4 @@ exports.downloadUrl = (url, dest) => {
         });
     });
 };
+exports.downloadUrl = downloadUrl;

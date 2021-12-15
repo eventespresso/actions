@@ -30,13 +30,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core = __importStar(require("@actions/core"));
-const ramda_1 = require("ramda");
 const io = __importStar(require("@eventespresso-actions/io"));
 const utils_1 = require("./utils");
+const ramda_1 = require("ramda");
 function run() {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
-        const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = utils_1.getInput();
+        const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = (0, utils_1.getInput)();
         let updateInfoJson = false;
         try {
             // read main file contents
@@ -53,14 +53,14 @@ function run() {
                 throw new Error('Invalid version! Version does not match the pattern');
             }
             // remove empty matches from groups to avoid them overriding defaults
-            const nonEmptyVersionParts = ramda_1.filter(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
+            const nonEmptyVersionParts = (0, ramda_1.filter)(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
             // build version parts by setting defaults
             const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
             // prefer releaseType from inputs or
             // extract `releaseType` from the parts as it's the only non-numeric part
             let releaseType = releaseTypeInput || versionParts.releaseType;
             // make sure the numeric parts of the version are numbers
-            let { major, minor, patch, build } = ramda_1.map(Number, versionParts);
+            let { major, minor, patch, build } = (0, ramda_1.map)(Number, versionParts);
             switch (type) {
                 case 'major':
                     // either the value passed explicitly to reset build number or an incremented value

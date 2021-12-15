@@ -30,19 +30,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core = __importStar(require("@actions/core"));
-const exec_1 = require("@actions/exec");
 const io = __importStar(require("@eventespresso-actions/io"));
 const utils_1 = require("@eventespresso-actions/utils");
+const exec_1 = require("@actions/exec");
 const utils_2 = require("./utils");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { exclude, headers, headersJsonFile, ignoreDomain, include, packageName, savePath, slug, textDomain, } = utils_2.getInput();
+        const { exclude, headers, headersJsonFile, ignoreDomain, include, packageName, savePath, slug, textDomain } = (0, utils_2.getInput)();
         try {
             //#region WP CLI setup
             core.startGroup('Setup WP-CLI');
             const wpcliPath = 'wp-cli.phar';
             // download WP CLI executable
-            const error = yield utils_1.downloadUrl('https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', wpcliPath);
+            const error = yield (0, utils_1.downloadUrl)('https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', wpcliPath);
             if (error) {
                 throw new Error(error);
             }
@@ -52,7 +52,7 @@ function run() {
              */
             yield io.chmod(wpcliPath, 0o765);
             // move to path
-            yield exec_1.exec('sudo mv', [wpcliPath, '/usr/local/bin/wp']);
+            yield (0, exec_1.exec)('sudo mv', [wpcliPath, '/usr/local/bin/wp']);
             core.endGroup();
             //#endregion
             //#region Configuration
@@ -80,7 +80,7 @@ function run() {
             //#endregion
             //#region POT file generation
             core.startGroup('Generating POT File');
-            yield exec_1.exec('wp i18n make-pot .', [potPath, ...args, `--allow-root`]);
+            yield (0, exec_1.exec)('wp i18n make-pot .', [potPath, ...args, `--allow-root`]);
             // temporary - output POT file contents
             core.info(io.readFileSync(potPath, { encoding: 'utf8' }));
             core.endGroup();

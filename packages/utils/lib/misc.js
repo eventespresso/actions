@@ -9,7 +9,7 @@ exports.toPath = void 0;
  *
  * Source https://github.com/final-form/final-form
  */
-exports.toPath = (key) => {
+const toPath = (key) => {
     if (key === null || key === undefined || !key.length) {
         return [];
     }
@@ -18,3 +18,4 @@ exports.toPath = (key) => {
     }
     return key.split(/[.[\]]+/).filter(Boolean);
 };
+exports.toPath = toPath;

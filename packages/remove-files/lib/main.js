@@ -34,7 +34,7 @@ const io = __importStar(require("@eventespresso-actions/io"));
 const utils_1 = require("./utils");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { paths } = utils_1.getInput();
+        const { paths } = (0, utils_1.getInput)();
         try {
             const pathsArr = JSON.parse(paths);
             if (!Array.isArray(pathsArr)) {

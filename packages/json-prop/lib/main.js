@@ -30,18 +30,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core = __importStar(require("@actions/core"));
-const ramda_1 = require("ramda");
 const io = __importStar(require("@eventespresso-actions/io"));
-const utils_1 = require("@eventespresso-actions/utils");
-const utils_2 = require("./utils");
+const utils_1 = require("./utils");
+const ramda_1 = require("ramda");
+const utils_2 = require("@eventespresso-actions/utils");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { filePath, outputAsJson, propPath } = utils_2.getInput();
+        const { filePath, outputAsJson, propPath } = (0, utils_1.getInput)();
         try {
             // read the JSOn file
             const obj = JSON.parse(io.readFileSync(filePath, { encoding: 'utf8' }));
             // get the value from the given path
-            let propValue = ramda_1.path(utils_1.toPath(propPath), obj);
+            let propValue = (0, ramda_1.path)((0, utils_2.toPath)(propPath), obj);
             if (typeof propValue === 'undefined') {
                 throw new Error(`Path ${propPath} does not exist in ${filePath}`);
             }

@@ -75,7 +75,8 @@ export const README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_
  * BUILD    \.([0-9]*)                optionally match a dot & capture a number
  * @see: https://regex101.com/r/5nSgf3/1/
  */
-export const EE_VERSION_REGEX = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(?:\.(?<releaseType>alpha|beta|rc|p|decaf))?(?:\.(?<build>[0-9]*))?$/;
+export const EE_VERSION_REGEX =
+	/^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(?:\.(?<releaseType>alpha|beta|rc|p|decaf))?(?:\.(?<build>[0-9]*))?$/;
 
 export const DEFAULT_VERSION_PARTS = {
 	major: 0,
