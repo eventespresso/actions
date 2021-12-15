@@ -1,10 +1,8 @@
 import * as core from '@actions/core';
-import { path } from 'ramda';
-
 import * as io from '@eventespresso-actions/io';
-import { toPath } from '@eventespresso-actions/utils';
-
 import { getInput } from './utils';
+import { path } from 'ramda';
+import { toPath } from '@eventespresso-actions/utils';
 
 export async function run(): Promise<void> {
 	const { filePath, outputAsJson, propPath } = getInput();
