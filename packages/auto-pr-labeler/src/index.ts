@@ -1,5 +1,5 @@
+import * as core from '@actions/core';
 import { assignStatusLabels } from './mutations';
-import core from '@actions/core';
 import { getPullRequest } from './queries';
 
 const assignStatusLabelsToPullRequest = async (): Promise<void> => {
