@@ -1,3 +1,4 @@
+import * as core from '@actions/core';
 import type { LabelsQueryResponse, PullRequest } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 import { graphqlWithAuth } from './utils';
@@ -111,40 +112,44 @@ const removeAllStatusLabels = async (
 };
 
 export const assignStatusLabels = async (pullRequest: PullRequest, token: string): Promise<void> => {
-	// eslint-disable-next-line no-console
-	console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-	await removeAllStatusLabels(pullRequest.id, token);
-	switch (pullRequest.state) {
-		case 'OPEN':
-			// for OPEN PRs, let's first look whether a code review has either been requested or received a response
-			// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
-			switch (pullRequest.reviewDecision) {
-				case 'APPROVED':
-					await assignLabelsAfterReviewApproved(pullRequest.id, token);
-					break;
-				case 'CHANGES_REQUESTED':
-					await assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
-					break;
-				case 'REVIEW_REQUIRED':
-					await assignLabelsAfterReviewRequested(pullRequest.id, token);
-					break;
-				case null:
-					await assignLabelsAfterCreated(pullRequest.id, token);
-					break;
-			}
-			break;
-		case 'CLOSED':
-			switch (pullRequest.reviewDecision) {
-				case 'APPROVED':
-					await assignLabelsAfterMerge(pullRequest.id, token);
-					break;
-				case null:
-					await assignLabelsAfterClose(pullRequest.id, token);
-					break;
-			}
-			break;
-		case 'MERGED':
-			await assignLabelsAfterMerge(pullRequest.id, token);
-			break;
+	try {
+		// eslint-disable-next-line no-console
+		console.log('%c pullRequest', 'color: HotPink;', pullRequest);
+		await removeAllStatusLabels(pullRequest.id, token);
+		switch (pullRequest.state) {
+			case 'OPEN':
+				// for OPEN PRs, let's first look whether a code review has either been requested or received a response
+				// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
+				switch (pullRequest.reviewDecision) {
+					case 'APPROVED':
+						await assignLabelsAfterReviewApproved(pullRequest.id, token);
+						break;
+					case 'CHANGES_REQUESTED':
+						await assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
+						break;
+					case 'REVIEW_REQUIRED':
+						await assignLabelsAfterReviewRequested(pullRequest.id, token);
+						break;
+					case null:
+						await assignLabelsAfterCreated(pullRequest.id, token);
+						break;
+				}
+				break;
+			case 'CLOSED':
+				switch (pullRequest.reviewDecision) {
+					case 'APPROVED':
+						await assignLabelsAfterMerge(pullRequest.id, token);
+						break;
+					case null:
+						await assignLabelsAfterClose(pullRequest.id, token);
+						break;
+				}
+				break;
+			case 'MERGED':
+				await assignLabelsAfterMerge(pullRequest.id, token);
+				break;
+		}
+	} catch (error) {
+		core.setFailed(error.message);
 	}
 };
