@@ -24,6 +24,7 @@
 	"rules": {
 		"@typescript-eslint/no-use-before-define": "off",
 		"comma-dangle": "off",
+		"filenames/match-regex": "off",
 		"i18n-text/no-en": "off",
 		"import/no-namespace": "off",
 		"prefer-promise-reject-errors": "off"
