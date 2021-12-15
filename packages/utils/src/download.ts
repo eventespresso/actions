@@ -4,8 +4,8 @@ import https from 'https';
 /**
  * Download the given URL to the given destination.
  */
-export const downloadUrl = (url: string, dest: string): Promise<void> => {
-	return new Promise<void>((resolve, reject) => {
+export const downloadUrl = (url: string, dest: string): Promise<string> => {
+	return new Promise<string>((resolve, reject) => {
 		const file = fs.createWriteStream(dest, { flags: 'wx' });
 
 		const request = https.get(url, (response) => {
@@ -26,7 +26,7 @@ export const downloadUrl = (url: string, dest: string): Promise<void> => {
 		});
 
 		file.on('finish', () => {
-			resolve();
+			resolve('Success');
 		});
 
 		file.on('error', (err) => {
