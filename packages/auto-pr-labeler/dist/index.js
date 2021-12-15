@@ -6460,23 +6460,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(117));
 const mutations_1 = __webpack_require__(89);
 const queries_1 = __webpack_require__(360);
-const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
-    const org = core.getInput('org', { required: true }) || 'eventespresso';
-    const repo = core.getInput('repo', { required: true }) || 'barista';
-    const pr = Number(core.getInput('pr', { required: true }));
-    const token = core.getInput('token', { required: true });
-    // eslint-disable-next-line no-console
-    console.log('%c organization', 'color: LimeGreen;', org);
-    // eslint-disable-next-line no-console
-    console.log('%c repository', 'color: Yellow;', pr);
-    // eslint-disable-next-line no-console
-    console.log('%c pull request #', 'color: HotPink;', pr);
-    const { pullRequest } = yield (0, queries_1.getPullRequest)(org, repo, pr, token);
-    if (pullRequest) {
-        (0, mutations_1.assignStatusLabels)(pullRequest, token);
-    }
-});
 try {
+    const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+        const org = core.getInput('org', { required: true }) || 'eventespresso';
+        const repo = core.getInput('repo', { required: true }) || 'barista';
+        const pr = Number(core.getInput('pr', { required: true }));
+        const token = core.getInput('token', { required: true });
+        // eslint-disable-next-line no-console
+        console.log('%c organization', 'color: LimeGreen;', org);
+        // eslint-disable-next-line no-console
+        console.log('%c repository', 'color: Yellow;', pr);
+        // eslint-disable-next-line no-console
+        console.log('%c pull request #', 'color: HotPink;', pr);
+        const { pullRequest } = yield (0, queries_1.getPullRequest)(org, repo, pr, token);
+        if (pullRequest) {
+            (0, mutations_1.assignStatusLabels)(pullRequest, token);
+        }
+    });
     assignStatusLabelsToPullRequest();
 }
 catch (error) {
@@ -6676,6 +6676,25 @@ exports.labels = {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -6687,6 +6706,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignStatusLabels = void 0;
+const core = __importStar(__webpack_require__(117));
 const utils_1 = __webpack_require__(560);
 const labels_1 = __webpack_require__(921);
 const addLabelsMutation = `
@@ -6767,41 +6787,46 @@ const removeAllStatusLabels = (labelableId, token) => __awaiter(void 0, void 0, 
     return yield (0, utils_1.graphqlWithAuth)(token)(removeLabelsMutation, { labelIds, labelableId });
 });
 const assignStatusLabels = (pullRequest, token) => __awaiter(void 0, void 0, void 0, function* () {
-    // eslint-disable-next-line no-console
-    console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-    yield removeAllStatusLabels(pullRequest.id, token);
-    switch (pullRequest.state) {
-        case 'OPEN':
-            // for OPEN PRs, let's first look whether a code review has either been requested or received a response
-            // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
-            switch (pullRequest.reviewDecision) {
-                case 'APPROVED':
-                    yield assignLabelsAfterReviewApproved(pullRequest.id, token);
-                    break;
-                case 'CHANGES_REQUESTED':
-                    yield assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
-                    break;
-                case 'REVIEW_REQUIRED':
-                    yield assignLabelsAfterReviewRequested(pullRequest.id, token);
-                    break;
-                case null:
-                    yield assignLabelsAfterCreated(pullRequest.id, token);
-                    break;
-            }
-            break;
-        case 'CLOSED':
-            switch (pullRequest.reviewDecision) {
-                case 'APPROVED':
-                    yield assignLabelsAfterMerge(pullRequest.id, token);
-                    break;
-                case null:
-                    yield assignLabelsAfterClose(pullRequest.id, token);
-                    break;
-            }
-            break;
-        case 'MERGED':
-            yield assignLabelsAfterMerge(pullRequest.id, token);
-            break;
+    try {
+        // eslint-disable-next-line no-console
+        console.log('%c pullRequest', 'color: HotPink;', pullRequest);
+        yield removeAllStatusLabels(pullRequest.id, token);
+        switch (pullRequest.state) {
+            case 'OPEN':
+                // for OPEN PRs, let's first look whether a code review has either been requested or received a response
+                // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
+                switch (pullRequest.reviewDecision) {
+                    case 'APPROVED':
+                        yield assignLabelsAfterReviewApproved(pullRequest.id, token);
+                        break;
+                    case 'CHANGES_REQUESTED':
+                        yield assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
+                        break;
+                    case 'REVIEW_REQUIRED':
+                        yield assignLabelsAfterReviewRequested(pullRequest.id, token);
+                        break;
+                    case null:
+                        yield assignLabelsAfterCreated(pullRequest.id, token);
+                        break;
+                }
+                break;
+            case 'CLOSED':
+                switch (pullRequest.reviewDecision) {
+                    case 'APPROVED':
+                        yield assignLabelsAfterMerge(pullRequest.id, token);
+                        break;
+                    case null:
+                        yield assignLabelsAfterClose(pullRequest.id, token);
+                        break;
+                }
+                break;
+            case 'MERGED':
+                yield assignLabelsAfterMerge(pullRequest.id, token);
+                break;
+        }
+    }
+    catch (error) {
+        core.setFailed(error.message);
     }
 });
 exports.assignStatusLabels = assignStatusLabels;

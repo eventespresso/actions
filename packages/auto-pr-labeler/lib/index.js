@@ -31,23 +31,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const mutations_1 = require("./mutations");
 const queries_1 = require("./queries");
-const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
-    const org = core.getInput('org', { required: true }) || 'eventespresso';
-    const repo = core.getInput('repo', { required: true }) || 'barista';
-    const pr = Number(core.getInput('pr', { required: true }));
-    const token = core.getInput('token', { required: true });
-    // eslint-disable-next-line no-console
-    console.log('%c organization', 'color: LimeGreen;', org);
-    // eslint-disable-next-line no-console
-    console.log('%c repository', 'color: Yellow;', pr);
-    // eslint-disable-next-line no-console
-    console.log('%c pull request #', 'color: HotPink;', pr);
-    const { pullRequest } = yield (0, queries_1.getPullRequest)(org, repo, pr, token);
-    if (pullRequest) {
-        (0, mutations_1.assignStatusLabels)(pullRequest, token);
-    }
-});
 try {
+    const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+        const org = core.getInput('org', { required: true }) || 'eventespresso';
+        const repo = core.getInput('repo', { required: true }) || 'barista';
+        const pr = Number(core.getInput('pr', { required: true }));
+        const token = core.getInput('token', { required: true });
+        // eslint-disable-next-line no-console
+        console.log('%c organization', 'color: LimeGreen;', org);
+        // eslint-disable-next-line no-console
+        console.log('%c repository', 'color: Yellow;', pr);
+        // eslint-disable-next-line no-console
+        console.log('%c pull request #', 'color: HotPink;', pr);
+        const { pullRequest } = yield (0, queries_1.getPullRequest)(org, repo, pr, token);
+        if (pullRequest) {
+            (0, mutations_1.assignStatusLabels)(pullRequest, token);
+        }
+    });
     assignStatusLabelsToPullRequest();
 }
 catch (error) {
