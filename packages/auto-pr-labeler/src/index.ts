@@ -2,7 +2,7 @@ import { assignStatusLabels } from './mutations';
 import core from '@actions/core';
 import { getPullRequest } from './queries';
 
-const assignStatusLabelsToPullRequest = async () => {
+const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	const org = core.getInput('org', { required: true }) || 'eventespresso';
 	const repo = core.getInput('repo', { required: true }) || 'barista';
 	const pr = Number(core.getInput('pr', { required: true }));
