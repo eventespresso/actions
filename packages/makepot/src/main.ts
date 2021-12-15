@@ -1,23 +1,12 @@
 import * as core from '@actions/core';
-import { exec } from '@actions/exec';
-
 import * as io from '@eventespresso-actions/io';
 import { downloadUrl } from '@eventespresso-actions/utils';
-
+import { exec } from '@actions/exec';
 import { getInput } from './utils';
 
 export async function run(): Promise<void> {
-	const {
-		exclude,
-		headers,
-		headersJsonFile,
-		ignoreDomain,
-		include,
-		packageName,
-		savePath,
-		slug,
-		textDomain,
-	} = getInput();
+	const { exclude, headers, headersJsonFile, ignoreDomain, include, packageName, savePath, slug, textDomain } =
+		getInput();
 
 	try {
 		//#region WP CLI setup

@@ -1,5 +1,5 @@
-import https from 'https';
 import fs from 'fs';
+import https from 'https';
 
 /**
  * Download the given URL to the given destination.
@@ -26,7 +26,7 @@ export const downloadUrl = (url: string, dest: string): Promise<string> => {
 		});
 
 		file.on('finish', () => {
-			resolve();
+			resolve('Success');
 		});
 
 		file.on('error', (err) => {

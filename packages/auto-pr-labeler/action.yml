@@ -1,0 +1,19 @@
+name: 'Auto PR Labeler'
+description: 'Action for adding and/or removing labels on Pull Requests'
+inputs:
+    org:
+      description: 'Organization Name / Repo Owner'
+      required: true
+    prNumber:
+      description: 'Pull Request Number'
+      required: true
+    repo:
+      description: 'Repository Name'
+      required: true
+    token:
+        required: false
+        description: 'Personal access token (PAT) used to fetch the repository.'
+        default: ${{ github.token }}
+runs:
+  using: 'node12'
+  main: 'index.js'

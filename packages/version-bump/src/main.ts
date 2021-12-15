@@ -1,7 +1,5 @@
 import * as core from '@actions/core';
-import { filter, map } from 'ramda';
 import * as io from '@eventespresso-actions/io';
-
 import {
 	DEFAULT_VERSION_PARTS,
 	EE_VERSION_REGEX,
@@ -11,6 +9,7 @@ import {
 	README_FILE_STABLE_TAG_REGEX,
 	getInput,
 } from './utils';
+import { filter, map } from 'ramda';
 
 export async function run(): Promise<void> {
 	const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = getInput();
