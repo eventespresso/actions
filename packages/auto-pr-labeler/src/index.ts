@@ -4,6 +4,8 @@ import { getPullRequest } from './queries';
 import { pr } from './utils';
 
 const assignStatusLabelsToPullRequest = async (): Promise<void> => {
+	// eslint-disable-next-line no-console
+	console.log('%c pull request #', 'color: HotPink;', pr);
 	const { pullRequest } = await getPullRequest(pr);
 	// eslint-disable-next-line no-console
 	console.log('%c pull request', 'color: cyan;', pullRequest);
