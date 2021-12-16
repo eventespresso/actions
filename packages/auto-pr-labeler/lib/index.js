@@ -31,18 +31,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const mutations_1 = require("./mutations");
 const queries_1 = require("./queries");
+const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    const pr = Number(core.getInput('prNumber', { required: true }));
+    // eslint-disable-next-line no-console
+    console.log('%c pull request #', 'color: HotPink;', pr);
+    const { pullRequest } = yield (0, queries_1.getPullRequest)(pr);
+    // eslint-disable-next-line no-console
+    console.log('%c pull request', 'color: cyan;', pullRequest);
+    if (pullRequest) {
+        (0, mutations_1.assignStatusLabels)(pullRequest);
+    }
+});
 try {
-    const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
-        const pr = Number(core.getInput('prNumber', { required: true }));
-        // eslint-disable-next-line no-console
-        console.log('%c pull request #', 'color: HotPink;', pr);
-        const { pullRequest } = yield (0, queries_1.getPullRequest)(pr);
-        // eslint-disable-next-line no-console
-        console.log('%c pull request', 'color: cyan;', pullRequest);
-        if (pullRequest) {
-            (0, mutations_1.assignStatusLabels)(pullRequest);
-        }
-    });
     assignStatusLabelsToPullRequest();
 }
 catch (error) {
