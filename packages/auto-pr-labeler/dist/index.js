@@ -6462,13 +6462,13 @@ const mutations_1 = __webpack_require__(89);
 const queries_1 = __webpack_require__(360);
 const utils_1 = __webpack_require__(560);
 const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    const results = yield (0, queries_1.getPullRequest)(utils_1.pr);
     // eslint-disable-next-line no-console
-    console.log('%c pull request #', 'color: HotPink;', utils_1.pr);
-    const { pullRequest } = yield (0, queries_1.getPullRequest)(utils_1.pr);
-    // eslint-disable-next-line no-console
-    console.log('%c pull request', 'color: cyan;', pullRequest);
-    if (pullRequest) {
-        (0, mutations_1.assignStatusLabels)(pullRequest);
+    console.log('%c pull request query results', 'color: cyan;', results);
+    if (results.pullRequest) {
+        // eslint-disable-next-line no-console
+        console.log('%c pull request', 'color: cyan;', results.pullRequest);
+        (0, mutations_1.assignStatusLabels)(results.pullRequest);
     }
 });
 try {
