@@ -33,13 +33,14 @@ const mutations_1 = require("./mutations");
 const queries_1 = require("./queries");
 const utils_1 = require("./utils");
 const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const results = yield (0, queries_1.getPullRequest)(utils_1.pr);
     // eslint-disable-next-line no-console
     console.log('%c pull request query results', 'color: cyan;', results);
-    if (results.pullRequest) {
+    if ((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) {
         // eslint-disable-next-line no-console
-        console.log('%c pull request', 'color: cyan;', results.pullRequest);
-        (0, mutations_1.assignStatusLabels)(results.pullRequest);
+        console.log('%c pull request', 'color: cyan;', results.repository.pullRequest);
+        (0, mutations_1.assignStatusLabels)(results.repository.pullRequest);
     }
 });
 try {
