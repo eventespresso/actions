@@ -4,11 +4,11 @@ inputs:
     owner:
       description: 'Organization Name'
       required: true
-        default: 'eventespresso'
+      default: 'eventespresso'
     repo:
       description: 'Repository Name'
       required: true
-        default: 'barista'
+      default: 'barista'
     prNumber:
       description: 'Pull Request Number'
       required: true
