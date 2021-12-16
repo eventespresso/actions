@@ -4,7 +4,7 @@ author: 'eventespresso'
 inputs:
     cache-version:
         required: false
-        description: 'used for refreshing the cache, value doesn't matter as long as it changes when you need a refresh'
+        description: 'used for refreshing the cache by simply changing value to something new'
         default: '1'
     fetch-depth:
         required: false
