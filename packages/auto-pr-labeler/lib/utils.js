@@ -21,24 +21,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gqlVariables = exports.pr = void 0;
 const core = __importStar(require("@actions/core"));
-const dotenv = __importStar(require("dotenv"));
-dotenv.config();
-const ownerRepo = process.env.GITHUB_REPOSITORY;
-// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
-const eventPayload = require(process.env.GITHUB_EVENT_PATH);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo);
+const ownerRepo = core.getInput('ownerRepo', { required: true });
 // eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-// const owner = core.getInput('owner', { required: true });
-// const owner = core.getInput('owner', { required: true });
+const ownerRepoArray = ownerRepo.split('/');
+const owner = ownerRepoArray[0];
+const repo = ownerRepoArray[1];
 const token = core.getInput('token', { required: true });
-// export const pr = Number(core.getInput('prNumber', { required: true }));
-const owner = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner;
-const repo = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo;
-exports.pr = Number(eventPayload.issue.number);
+exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console

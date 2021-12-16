@@ -2187,131 +2187,6 @@ exports.Deprecation = Deprecation;
 
 /***/ }),
 
-/***/ 397:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-/* @flow */
-/*::
-
-type DotenvParseOptions = {
-  debug?: boolean
-}
-
-// keys and values from src
-type DotenvParseOutput = { [string]: string }
-
-type DotenvConfigOptions = {
-  path?: string, // path to .env file
-  encoding?: string, // encoding of .env file
-  debug?: string // turn on logging for debugging purposes
-}
-
-type DotenvConfigOutput = {
-  parsed?: DotenvParseOutput,
-  error?: Error
-}
-
-*/
-
-const fs = __webpack_require__(747)
-const path = __webpack_require__(622)
-const os = __webpack_require__(87)
-
-function log (message /*: string */) {
-  console.log(`[dotenv][DEBUG] ${message}`)
-}
-
-const NEWLINE = '\n'
-const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
-const RE_NEWLINES = /\\n/g
-const NEWLINES_MATCH = /\r\n|\n|\r/
-
-// Parses src into an Object
-function parse (src /*: string | Buffer */, options /*: ?DotenvParseOptions */) /*: DotenvParseOutput */ {
-  const debug = Boolean(options && options.debug)
-  const obj = {}
-
-  // convert Buffers before splitting into lines and processing
-  src.toString().split(NEWLINES_MATCH).forEach(function (line, idx) {
-    // matching "KEY' and 'VAL' in 'KEY=VAL'
-    const keyValueArr = line.match(RE_INI_KEY_VAL)
-    // matched?
-    if (keyValueArr != null) {
-      const key = keyValueArr[1]
-      // default undefined or missing values to empty string
-      let val = (keyValueArr[2] || '')
-      const end = val.length - 1
-      const isDoubleQuoted = val[0] === '"' && val[end] === '"'
-      const isSingleQuoted = val[0] === "'" && val[end] === "'"
-
-      // if single or double quoted, remove quotes
-      if (isSingleQuoted || isDoubleQuoted) {
-        val = val.substring(1, end)
-
-        // if double quoted, expand newlines
-        if (isDoubleQuoted) {
-          val = val.replace(RE_NEWLINES, NEWLINE)
-        }
-      } else {
-        // remove surrounding whitespace
-        val = val.trim()
-      }
-
-      obj[key] = val
-    } else if (debug) {
-      log(`did not match key and value when parsing line ${idx + 1}: ${line}`)
-    }
-  })
-
-  return obj
-}
-
-function resolveHome (envPath) {
-  return envPath[0] === '~' ? path.join(os.homedir(), envPath.slice(1)) : envPath
-}
-
-// Populates process.env from .env file
-function config (options /*: ?DotenvConfigOptions */) /*: DotenvConfigOutput */ {
-  let dotenvPath = path.resolve(process.cwd(), '.env')
-  let encoding /*: string */ = 'utf8'
-  let debug = false
-
-  if (options) {
-    if (options.path != null) {
-      dotenvPath = resolveHome(options.path)
-    }
-    if (options.encoding != null) {
-      encoding = options.encoding
-    }
-    if (options.debug != null) {
-      debug = true
-    }
-  }
-
-  try {
-    // specifying an encoding returns a string instead of a buffer
-    const parsed = parse(fs.readFileSync(dotenvPath, { encoding }), { debug })
-
-    Object.keys(parsed).forEach(function (key) {
-      if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
-        process.env[key] = parsed[key]
-      } else if (debug) {
-        log(`"${key}" is already defined in \`process.env\` and will not be overwritten`)
-      }
-    })
-
-    return { parsed }
-  } catch (e) {
-    return { error: e }
-  }
-}
-
-module.exports.config = config
-module.exports.parse = parse
-
-
-/***/ }),
-
 /***/ 197:
 /***/ ((module, exports, __webpack_require__) => {
 
@@ -7002,24 +6877,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.gqlVariables = exports.pr = void 0;
 const core = __importStar(__webpack_require__(117));
-const dotenv = __importStar(__webpack_require__(397));
-dotenv.config();
-const ownerRepo = process.env.GITHUB_REPOSITORY;
-// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
-const eventPayload = require(process.env.GITHUB_EVENT_PATH);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo);
+const ownerRepo = core.getInput('ownerRepo', { required: true });
 // eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-// const owner = core.getInput('owner', { required: true });
-// const owner = core.getInput('owner', { required: true });
+const ownerRepoArray = ownerRepo.split('/');
+const owner = ownerRepoArray[0];
+const repo = ownerRepoArray[1];
 const token = core.getInput('token', { required: true });
-// export const pr = Number(core.getInput('prNumber', { required: true }));
-const owner = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner;
-const repo = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo;
-exports.pr = Number(eventPayload.issue.number);
+exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console
