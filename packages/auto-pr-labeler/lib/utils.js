@@ -21,7 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gqlVariables = void 0;
 const core = __importStar(require("@actions/core"));
-const owner = core.getInput('org', { required: true });
+const owner = core.getInput('owner', { required: true });
 const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
 // eslint-disable-next-line no-console
