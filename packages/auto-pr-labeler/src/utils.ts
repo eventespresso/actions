@@ -1,24 +1,13 @@
 import * as core from '@actions/core';
-import * as dotenv from 'dotenv';
 
-dotenv.config();
-const ownerRepo = process.env.GITHUB_REPOSITORY;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
-const eventPayload = require(process.env.GITHUB_EVENT_PATH);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload?.owner);
-// eslint-disable-next-line no-console
-console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload?.repo);
+const ownerRepo = core.getInput('ownerRepo', { required: true });
 // eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-// const owner = core.getInput('owner', { required: true });
-// const owner = core.getInput('owner', { required: true });
+const ownerRepoArray = ownerRepo.split('/');
+const owner = ownerRepoArray[0];
+const repo = ownerRepoArray[1];
 const token = core.getInput('token', { required: true });
-// export const pr = Number(core.getInput('prNumber', { required: true }));
-const owner = eventPayload?.owner;
-const repo = eventPayload?.repo;
-export const pr = Number(eventPayload.issue.number);
+export const pr = Number(core.getInput('prNumber', { required: true }));
 
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
