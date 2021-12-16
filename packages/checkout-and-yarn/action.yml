@@ -2,6 +2,10 @@ name: 'Checkout and run yarn'
 description: 'This action checks out the commit, sets up Node and installs deps using yarn.'
 author: 'eventespresso'
 inputs:
+    cache-version:
+        required: false
+        description: 'used for refreshing the cache, value doesn't matter as long as it changes when you need a refresh'
+        default: '1'
     fetch-depth:
         required: false
         description: 'Number of commits to fetch during checkout. 0 indicates all history for all branches and tags.'
@@ -29,7 +33,7 @@ runs:
           uses: actions/cache@v2
           with:
               path: '**/node_modules'
-              key: ${{ runner.os }}-modules-${{ secrets.GH_ACTIONS_CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
+              key: ${{ runner.os }}-modules-${{ inputs.cache-version }}-${{ hashFiles('**/yarn.lock') }}
 
         - name: Install dependencies
           # install deps only if lockfile has changed
