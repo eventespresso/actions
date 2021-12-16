@@ -21,12 +21,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gqlVariables = exports.pr = void 0;
 const core = __importStar(require("@actions/core"));
-const ownerRepo = core.getInput('ownerRepo', { required: true });
-// eslint-disable-next-line no-console
-console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-const ownerRepoArray = ownerRepo.split('/');
-const owner = ownerRepoArray[0];
-const repo = ownerRepoArray[1];
+const owner = core.getInput('owner', { required: true });
+const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
 exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console

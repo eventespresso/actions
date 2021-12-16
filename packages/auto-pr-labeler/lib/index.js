@@ -33,6 +33,8 @@ const mutations_1 = require("./mutations");
 const queries_1 = require("./queries");
 const utils_1 = require("./utils");
 const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    // eslint-disable-next-line no-console
+    console.log('%c pull request #', 'color: HotPink;', utils_1.pr);
     const { pullRequest } = yield (0, queries_1.getPullRequest)(utils_1.pr);
     // eslint-disable-next-line no-console
     console.log('%c pull request', 'color: cyan;', pullRequest);
