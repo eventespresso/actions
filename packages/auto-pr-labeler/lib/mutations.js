@@ -14,11 +14,11 @@ const utils_1 = require("./utils");
 const graphql_1 = require("@octokit/graphql");
 const labels_1 = require("./labels");
 const addLabelsMutation = `
-			mutation {
+			mutation AddLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				addLabelsToLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {
@@ -32,11 +32,11 @@ const addLabelsMutation = `
 			}
 	`;
 const removeLabelsMutation = `
-			mutation {
+			mutation RemoveLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				removeLabelsFromLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {

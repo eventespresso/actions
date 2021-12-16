@@ -6685,11 +6685,11 @@ const utils_1 = __webpack_require__(560);
 const graphql_1 = __webpack_require__(559);
 const labels_1 = __webpack_require__(921);
 const addLabelsMutation = `
-			mutation {
+			mutation AddLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				addLabelsToLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {
@@ -6703,11 +6703,11 @@ const addLabelsMutation = `
 			}
 	`;
 const removeLabelsMutation = `
-			mutation {
+			mutation RemoveLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				removeLabelsFromLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {
