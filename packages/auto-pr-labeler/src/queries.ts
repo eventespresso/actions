@@ -1,25 +1,27 @@
 import type { LabelsQueryResponse, PullRequestQueryResponse } from './types';
-import { graphqlWithAuth } from './utils';
+import { gqlVariables } from './utils';
+import { graphql } from '@octokit/graphql';
 
 export const getLabels = (): Promise<LabelsQueryResponse> => {
-	return graphqlWithAuth(
+	return graphql(
 		`
-		query ($owner: String!, $repo: String!) {
-			repository(name: $repo, owner: $owner) {
-				labels(first: 100, orderBy: {direction:ASC, field: NAME}) {
-					nodes {
-					name
-					id
+			query ($owner: String!, $repo: String!) {
+				repository(name: $repo, owner: $owner) {
+					labels(first: 100, orderBy: { direction: ASC, field: NAME }) {
+						nodes {
+							name
+							id
+						}
 					}
 				}
 			}
-		}
-	`
+		`,
+		gqlVariables
 	);
 };
 
 export const getPullRequest = (pr: number): Promise<PullRequestQueryResponse> => {
-	return graphqlWithAuth(
+	return graphql(
 		`
 			query ($pr: Int!, $owner: String!, $repo: String!) {
 				repository(name: $repo, owner: $owner) {
@@ -43,6 +45,6 @@ export const getPullRequest = (pr: number): Promise<PullRequestQueryResponse> =>
 				}
 			}
 		`,
-		{ pr }
+		{ pr, ...gqlVariables }
 	);
 };

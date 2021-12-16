@@ -1,6 +1,7 @@
 import type { LabelsQueryResponse, PullRequest } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
-import { graphqlWithAuth } from './utils';
+import { gqlVariables } from './utils';
+import { graphql } from '@octokit/graphql';
 import { labels } from './labels';
 
 const addLabelsMutation = `
@@ -43,34 +44,34 @@ const removeLabelsMutation = `
 
 const assignLabelsAfterClose = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusInvalid];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterMerge = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCompleted];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterCreated = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusNew];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterReviewApproved = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterReviewChangesRequested = (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusPleaseFix];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterReviewRequested = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview];
-	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	return graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const removeAllStatusLabels = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
@@ -88,7 +89,7 @@ const removeAllStatusLabels = (labelableId: string): Promise<GraphQlQueryRespons
 		labels.statusDuplicate,
 		labels.statusInvalid,
 	];
-	return graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
+	return graphql(removeLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 export const assignStatusLabels = async (

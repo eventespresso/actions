@@ -1,5 +1,4 @@
 import * as core from '@actions/core';
-import { graphql } from '@octokit/graphql';
 
 const owner = core.getInput('org', { required: true });
 const repo = core.getInput('repo', { required: true });
@@ -14,5 +13,5 @@ const headers = {
 	'Content-Type': 'application/json',
 	authorization: `Bearer ${token}`,
 };
-// ex: {"owner": "eventespresso", "repo":"barista"}
-export const graphqlWithAuth = graphql.defaults({ owner, repo, headers });
+
+export const gqlVariables = { owner, repo, headers };
