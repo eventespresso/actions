@@ -42,58 +42,43 @@ const removeLabelsMutation = `
 			}
 	`;
 
-const assignLabelsAfterClose = async (
-	labelableId: string,
-	token: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterClose = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusInvalid];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterMerge = async (
-	labelableId: string,
-	token: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterMerge = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCompleted];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterCreated = async (
-	labelableId: string,
-	token: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusNew];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
 const assignLabelsAfterReviewApproved = async (
-	labelableId: string,
-	token: string
+	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
 const assignLabelsAfterReviewChangesRequested = async (
-	labelableId: string,
-	token: string
+	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusPleaseFix];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
 const assignLabelsAfterReviewRequested = async (
-	labelableId: string,
-	token: string
+	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview];
-	return await graphqlWithAuth(token)(addLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const removeAllStatusLabels = async (
-	labelableId: string,
-	token: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const removeAllStatusLabels = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [
 		labels.statusNew,
 		labels.statusPlanning,
@@ -108,45 +93,45 @@ const removeAllStatusLabels = async (
 		labels.statusDuplicate,
 		labels.statusInvalid,
 	];
-	return await graphqlWithAuth(token)(removeLabelsMutation, { labelIds, labelableId });
+	return await graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
 };
 
-export const assignStatusLabels = async (pullRequest: PullRequest, token: string): Promise<void> => {
+export const assignStatusLabels = async (pullRequest: PullRequest): Promise<void> => {
 	try {
 		// eslint-disable-next-line no-console
 		console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-		await removeAllStatusLabels(pullRequest.id, token);
+		await removeAllStatusLabels(pullRequest.id);
 		switch (pullRequest.state) {
 			case 'OPEN':
 				// for OPEN PRs, let's first look whether a code review has either been requested or received a response
 				// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 				switch (pullRequest.reviewDecision) {
 					case 'APPROVED':
-						await assignLabelsAfterReviewApproved(pullRequest.id, token);
+						await assignLabelsAfterReviewApproved(pullRequest.id);
 						break;
 					case 'CHANGES_REQUESTED':
-						await assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
+						await assignLabelsAfterReviewChangesRequested(pullRequest.id);
 						break;
 					case 'REVIEW_REQUIRED':
-						await assignLabelsAfterReviewRequested(pullRequest.id, token);
+						await assignLabelsAfterReviewRequested(pullRequest.id);
 						break;
 					case null:
-						await assignLabelsAfterCreated(pullRequest.id, token);
+						await assignLabelsAfterCreated(pullRequest.id);
 						break;
 				}
 				break;
 			case 'CLOSED':
 				switch (pullRequest.reviewDecision) {
 					case 'APPROVED':
-						await assignLabelsAfterMerge(pullRequest.id, token);
+						await assignLabelsAfterMerge(pullRequest.id);
 						break;
 					case null:
-						await assignLabelsAfterClose(pullRequest.id, token);
+						await assignLabelsAfterClose(pullRequest.id);
 						break;
 				}
 				break;
 			case 'MERGED':
-				await assignLabelsAfterMerge(pullRequest.id, token);
+				await assignLabelsAfterMerge(pullRequest.id);
 				break;
 		}
 	} catch (error) {
