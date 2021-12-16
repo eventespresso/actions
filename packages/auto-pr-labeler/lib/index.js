@@ -38,8 +38,6 @@ const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, 
     // eslint-disable-next-line no-console
     console.log('%c pull request query results', 'color: cyan;', results);
     if ((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) {
-        // eslint-disable-next-line no-console
-        console.log('%c pull request', 'color: cyan;', results.repository.pullRequest);
         (0, mutations_1.assignStatusLabels)(results.repository.pullRequest);
     }
 });

@@ -57,7 +57,9 @@ const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQue
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const assignLabelsAfterReviewApproved = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewApproved = async (
+	labelableId: string
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved];
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
@@ -69,7 +71,9 @@ const assignLabelsAfterReviewChangesRequested = async (
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const assignLabelsAfterReviewRequested = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewRequested = async (
+	labelableId: string
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview];
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
