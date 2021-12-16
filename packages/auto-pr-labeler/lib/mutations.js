@@ -50,55 +50,55 @@ const removeLabelsMutation = `
 			}
 	`;
 const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusInvalid];
+    const labelIds = [labels_1.labels.statusInvalid.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterClose', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusCompleted];
+    const labelIds = [labels_1.labels.statusCompleted.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterMerge', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusNew];
+    const labelIds = [labels_1.labels.statusNew.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterCreated', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusApproved];
+    const labelIds = [labels_1.labels.statusApproved.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusPleaseFix];
+    const labelIds = [labels_1.labels.statusPleaseFix.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusCodeReview];
+    const labelIds = [labels_1.labels.statusCodeReview.id];
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', labelableId, labelIds);
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [
-        labels_1.labels.statusNew,
-        labels_1.labels.statusPlanning,
-        labels_1.labels.statusNeedsFeedback,
-        labels_1.labels.statusInProgress,
-        labels_1.labels.statusCodeReview,
-        labels_1.labels.statusPleaseFix,
-        labels_1.labels.statusApproved,
-        labels_1.labels.statusNeedsTesting,
-        labels_1.labels.statusCompleted,
-        labels_1.labels.statusBlocked,
-        labels_1.labels.statusDuplicate,
-        labels_1.labels.statusInvalid,
+        labels_1.labels.statusNew.id,
+        labels_1.labels.statusPlanning.id,
+        labels_1.labels.statusNeedsFeedback.id,
+        labels_1.labels.statusInProgress.id,
+        labels_1.labels.statusCodeReview.id,
+        labels_1.labels.statusPleaseFix.id,
+        labels_1.labels.statusApproved.id,
+        labels_1.labels.statusNeedsTesting.id,
+        labels_1.labels.statusCompleted.id,
+        labels_1.labels.statusBlocked.id,
+        labels_1.labels.statusDuplicate.id,
+        labels_1.labels.statusInvalid.id,
     ];
     // eslint-disable-next-line no-console
     console.log('%c removeAllStatusLabels', 'color: HotPink;', labelableId, labelIds);
