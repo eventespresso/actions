@@ -69,45 +69,80 @@ const removeLabelsMutation = `
 			}
 	`;
 const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusInvalid];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusInvalid];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusCompleted];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusCompleted];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusNew];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusNew];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusApproved];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusApproved];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusPleaseFix];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusPleaseFix];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [labels_1.labels.statusCodeReview];
-    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [labels_1.labels.statusCodeReview];
+        return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    const labelIds = [
-        labels_1.labels.statusNew,
-        labels_1.labels.statusPlanning,
-        labels_1.labels.statusNeedsFeedback,
-        labels_1.labels.statusInProgress,
-        labels_1.labels.statusCodeReview,
-        labels_1.labels.statusPleaseFix,
-        labels_1.labels.statusApproved,
-        labels_1.labels.statusNeedsTesting,
-        labels_1.labels.statusCompleted,
-        labels_1.labels.statusBlocked,
-        labels_1.labels.statusDuplicate,
-        labels_1.labels.statusInvalid,
-    ];
-    return yield (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
+    try {
+        const labelIds = [
+            labels_1.labels.statusNew,
+            labels_1.labels.statusPlanning,
+            labels_1.labels.statusNeedsFeedback,
+            labels_1.labels.statusInProgress,
+            labels_1.labels.statusCodeReview,
+            labels_1.labels.statusPleaseFix,
+            labels_1.labels.statusApproved,
+            labels_1.labels.statusNeedsTesting,
+            labels_1.labels.statusCompleted,
+            labels_1.labels.statusBlocked,
+            labels_1.labels.statusDuplicate,
+            labels_1.labels.statusInvalid,
+        ];
+        return yield (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 });
 const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     try {
