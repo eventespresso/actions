@@ -1,15 +1,15 @@
-import type { LabelsQueryResponse, PullRequest } from './types';
+import type { ID, LabelsQueryResponse, PullRequest } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 import { gqlVariables } from './utils';
 import { graphql } from '@octokit/graphql';
 import { labels } from './labels';
 
 const addLabelsMutation = `
-			mutation {
+			mutation AddLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				addLabelsToLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {
@@ -24,11 +24,11 @@ const addLabelsMutation = `
 	`;
 
 const removeLabelsMutation = `
-			mutation {
+			mutation RemoveLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
 				removeLabelsFromLabelable(
 					input: {
-						labelIds: labelIds,
-						labelableId: labelableId
+						labelIds: $labelIds,
+						labelableId: $labelableId
 					}
 				) {
 					labelable {
@@ -42,30 +42,28 @@ const removeLabelsMutation = `
 			}
 	`;
 
-const assignLabelsAfterClose = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterClose = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusInvalid.id];
 	// eslint-disable-next-line no-console
 	console.log('%c assignLabelsAfterClose', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const assignLabelsAfterMerge = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterMerge = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCompleted.id];
 	// eslint-disable-next-line no-console
 	console.log('%c assignLabelsAfterMerge', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterCreated = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusNew.id];
 	// eslint-disable-next-line no-console
 	console.log('%c assignLabelsAfterCreated', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const assignLabelsAfterReviewApproved = async (
-	labelableId: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewApproved = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved.id];
 	// eslint-disable-next-line no-console
 	console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', labelableId, labelIds);
@@ -73,7 +71,7 @@ const assignLabelsAfterReviewApproved = async (
 };
 
 const assignLabelsAfterReviewChangesRequested = async (
-	labelableId: string
+	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusPleaseFix.id];
 	// eslint-disable-next-line no-console
@@ -82,7 +80,7 @@ const assignLabelsAfterReviewChangesRequested = async (
 };
 
 const assignLabelsAfterReviewRequested = async (
-	labelableId: string
+	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview.id];
 	// eslint-disable-next-line no-console
@@ -90,7 +88,7 @@ const assignLabelsAfterReviewRequested = async (
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
-const removeAllStatusLabels = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const removeAllStatusLabels = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [
 		labels.statusNew.id,
 		labels.statusPlanning.id,
