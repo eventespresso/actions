@@ -4,8 +4,8 @@ import { graphqlWithAuth } from './utils';
 export const getLabels = async (): Promise<LabelsQueryResponse> => {
 	return await graphqlWithAuth(
 		`
-		query ($org: String!, $repo: String!) {
-			repository(name: $repo, owner: $org) {
+		query ($owner: String!, $repo: String!) {
+			repository(name: $repo, owner: $owner) {
 				labels(first: 100, orderBy: {direction:ASC, field: NAME}) {
 					nodes {
 					name
@@ -21,8 +21,8 @@ export const getLabels = async (): Promise<LabelsQueryResponse> => {
 export const getPullRequest = async (pr: number): Promise<PullRequestQueryResponse> => {
 	return await graphqlWithAuth(
 		`
-			query ($pr: Int!, $org: String!, $repo: String!) {
-				repository(name: $repo, owner: $org) {
+			query ($pr: Int!, $owner: String!, $repo: String!) {
+				repository(name: $repo, owner: $owner) {
 					pullRequest(number: $pr) {
 						id
 						labels(first: 10) {
