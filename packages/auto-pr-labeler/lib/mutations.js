@@ -68,31 +68,31 @@ const removeLabelsMutation = `
 				}
 			}
 	`;
-const assignLabelsAfterClose = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusInvalid];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterMerge = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCompleted];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterCreated = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusNew];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewApproved = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusApproved];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewChangesRequested = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusPleaseFix];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewRequested = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCodeReview];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const removeAllStatusLabels = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [
         labels_1.labels.statusNew,
         labels_1.labels.statusPlanning,
@@ -107,44 +107,44 @@ const removeAllStatusLabels = (labelableId, token) => __awaiter(void 0, void 0, 
         labels_1.labels.statusDuplicate,
         labels_1.labels.statusInvalid,
     ];
-    return yield (0, utils_1.graphqlWithAuth)(token)(removeLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
 });
-const assignStatusLabels = (pullRequest, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // eslint-disable-next-line no-console
         console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-        yield removeAllStatusLabels(pullRequest.id, token);
+        yield removeAllStatusLabels(pullRequest.id);
         switch (pullRequest.state) {
             case 'OPEN':
                 // for OPEN PRs, let's first look whether a code review has either been requested or received a response
                 // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
                 switch (pullRequest.reviewDecision) {
                     case 'APPROVED':
-                        yield assignLabelsAfterReviewApproved(pullRequest.id, token);
+                        yield assignLabelsAfterReviewApproved(pullRequest.id);
                         break;
                     case 'CHANGES_REQUESTED':
-                        yield assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
+                        yield assignLabelsAfterReviewChangesRequested(pullRequest.id);
                         break;
                     case 'REVIEW_REQUIRED':
-                        yield assignLabelsAfterReviewRequested(pullRequest.id, token);
+                        yield assignLabelsAfterReviewRequested(pullRequest.id);
                         break;
                     case null:
-                        yield assignLabelsAfterCreated(pullRequest.id, token);
+                        yield assignLabelsAfterCreated(pullRequest.id);
                         break;
                 }
                 break;
             case 'CLOSED':
                 switch (pullRequest.reviewDecision) {
                     case 'APPROVED':
-                        yield assignLabelsAfterMerge(pullRequest.id, token);
+                        yield assignLabelsAfterMerge(pullRequest.id);
                         break;
                     case null:
-                        yield assignLabelsAfterClose(pullRequest.id, token);
+                        yield assignLabelsAfterClose(pullRequest.id);
                         break;
                 }
                 break;
             case 'MERGED':
-                yield assignLabelsAfterMerge(pullRequest.id, token);
+                yield assignLabelsAfterMerge(pullRequest.id);
                 break;
         }
     }

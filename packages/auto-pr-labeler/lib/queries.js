@@ -11,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPullRequest = exports.getLabels = void 0;
 const utils_1 = require("./utils");
-const getLabels = (org, repo, token) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, utils_1.graphqlWithAuth)(token)(`
+const getLabels = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, utils_1.graphqlWithAuth)(`
 		query ($org: String!, $repo: String!) {
 			repository(name: $repo, owner: $org) {
 				labels(first: 100, orderBy: {direction:ASC, field: NAME}) {
@@ -23,13 +23,11 @@ const getLabels = (org, repo, token) => __awaiter(void 0, void 0, void 0, functi
 				}
 			}
 		}
-	`, 
-    // ex: {"org": "eventespresso", "repo":"barista"}
-    { org, repo });
+	`);
 });
 exports.getLabels = getLabels;
-const getPullRequest = (org, repo, pr, token) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, utils_1.graphqlWithAuth)(token)(`
+const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, utils_1.graphqlWithAuth)(`
 			query ($pr: Int!, $org: String!, $repo: String!) {
 				repository(name: $repo, owner: $org) {
 					pullRequest(number: $pr) {
@@ -51,8 +49,6 @@ const getPullRequest = (org, repo, pr, token) => __awaiter(void 0, void 0, void 
 					}
 				}
 			}
-		`, 
-    // ex: {"org": "eventespresso", "repo":"barista", "pr":1098}
-    { org, repo, pr });
+		`, { pr });
 });
 exports.getPullRequest = getPullRequest;

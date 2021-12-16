@@ -6462,19 +6462,14 @@ const mutations_1 = __webpack_require__(89);
 const queries_1 = __webpack_require__(360);
 try {
     const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
-        const org = core.getInput('org', { required: true }) || 'eventespresso';
-        const repo = core.getInput('repo', { required: true }) || 'barista';
         const pr = Number(core.getInput('prNumber', { required: true }));
-        const token = core.getInput('token', { required: true });
-        // eslint-disable-next-line no-console
-        console.log('%c organization', 'color: LimeGreen;', org);
-        // eslint-disable-next-line no-console
-        console.log('%c repository', 'color: Yellow;', repo);
         // eslint-disable-next-line no-console
         console.log('%c pull request #', 'color: HotPink;', pr);
-        const { pullRequest } = yield (0, queries_1.getPullRequest)(org, repo, pr, token);
+        const { pullRequest } = yield (0, queries_1.getPullRequest)(pr);
+        // eslint-disable-next-line no-console
+        console.log('%c pull request', 'color: cyan;', pullRequest);
         if (pullRequest) {
-            (0, mutations_1.assignStatusLabels)(pullRequest, token);
+            (0, mutations_1.assignStatusLabels)(pullRequest);
         }
     });
     assignStatusLabelsToPullRequest();
@@ -6745,31 +6740,31 @@ const removeLabelsMutation = `
 				}
 			}
 	`;
-const assignLabelsAfterClose = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusInvalid];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterMerge = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCompleted];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterCreated = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusNew];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewApproved = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusApproved];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewChangesRequested = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusPleaseFix];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const assignLabelsAfterReviewRequested = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCodeReview];
-    return yield (0, utils_1.graphqlWithAuth)(token)(addLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
 });
-const removeAllStatusLabels = (labelableId, token) => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [
         labels_1.labels.statusNew,
         labels_1.labels.statusPlanning,
@@ -6784,44 +6779,44 @@ const removeAllStatusLabels = (labelableId, token) => __awaiter(void 0, void 0, 
         labels_1.labels.statusDuplicate,
         labels_1.labels.statusInvalid,
     ];
-    return yield (0, utils_1.graphqlWithAuth)(token)(removeLabelsMutation, { labelIds, labelableId });
+    return yield (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
 });
-const assignStatusLabels = (pullRequest, token) => __awaiter(void 0, void 0, void 0, function* () {
+const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // eslint-disable-next-line no-console
         console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-        yield removeAllStatusLabels(pullRequest.id, token);
+        yield removeAllStatusLabels(pullRequest.id);
         switch (pullRequest.state) {
             case 'OPEN':
                 // for OPEN PRs, let's first look whether a code review has either been requested or received a response
                 // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
                 switch (pullRequest.reviewDecision) {
                     case 'APPROVED':
-                        yield assignLabelsAfterReviewApproved(pullRequest.id, token);
+                        yield assignLabelsAfterReviewApproved(pullRequest.id);
                         break;
                     case 'CHANGES_REQUESTED':
-                        yield assignLabelsAfterReviewChangesRequested(pullRequest.id, token);
+                        yield assignLabelsAfterReviewChangesRequested(pullRequest.id);
                         break;
                     case 'REVIEW_REQUIRED':
-                        yield assignLabelsAfterReviewRequested(pullRequest.id, token);
+                        yield assignLabelsAfterReviewRequested(pullRequest.id);
                         break;
                     case null:
-                        yield assignLabelsAfterCreated(pullRequest.id, token);
+                        yield assignLabelsAfterCreated(pullRequest.id);
                         break;
                 }
                 break;
             case 'CLOSED':
                 switch (pullRequest.reviewDecision) {
                     case 'APPROVED':
-                        yield assignLabelsAfterMerge(pullRequest.id, token);
+                        yield assignLabelsAfterMerge(pullRequest.id);
                         break;
                     case null:
-                        yield assignLabelsAfterClose(pullRequest.id, token);
+                        yield assignLabelsAfterClose(pullRequest.id);
                         break;
                 }
                 break;
             case 'MERGED':
-                yield assignLabelsAfterMerge(pullRequest.id, token);
+                yield assignLabelsAfterMerge(pullRequest.id);
                 break;
         }
     }
@@ -6851,8 +6846,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getPullRequest = exports.getLabels = void 0;
 const utils_1 = __webpack_require__(560);
-const getLabels = (org, repo, token) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, utils_1.graphqlWithAuth)(token)(`
+const getLabels = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, utils_1.graphqlWithAuth)(`
 		query ($org: String!, $repo: String!) {
 			repository(name: $repo, owner: $org) {
 				labels(first: 100, orderBy: {direction:ASC, field: NAME}) {
@@ -6863,13 +6858,11 @@ const getLabels = (org, repo, token) => __awaiter(void 0, void 0, void 0, functi
 				}
 			}
 		}
-	`, 
-    // ex: {"org": "eventespresso", "repo":"barista"}
-    { org, repo });
+	`);
 });
 exports.getLabels = getLabels;
-const getPullRequest = (org, repo, pr, token) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield (0, utils_1.graphqlWithAuth)(token)(`
+const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, utils_1.graphqlWithAuth)(`
 			query ($pr: Int!, $org: String!, $repo: String!) {
 				repository(name: $repo, owner: $org) {
 					pullRequest(number: $pr) {
@@ -6891,9 +6884,7 @@ const getPullRequest = (org, repo, pr, token) => __awaiter(void 0, void 0, void 
 					}
 				}
 			}
-		`, 
-    // ex: {"org": "eventespresso", "repo":"barista", "pr":1098}
-    { org, repo, pr });
+		`, { pr });
 });
 exports.getPullRequest = getPullRequest;
 
@@ -6901,19 +6892,46 @@ exports.getPullRequest = getPullRequest;
 /***/ }),
 
 /***/ 560:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.graphqlWithAuth = void 0;
+const core = __importStar(__webpack_require__(117));
 const graphql_1 = __webpack_require__(559);
-const graphqlWithAuth = (token) => graphql_1.graphql.defaults({
-    headers: {
-        authorization: token,
-    },
-});
-exports.graphqlWithAuth = graphqlWithAuth;
+const owner = core.getInput('org', { required: true });
+const repo = core.getInput('repo', { required: true });
+const token = core.getInput('token', { required: true });
+// eslint-disable-next-line no-console
+console.log('%c organization', 'color: LimeGreen;', owner);
+// eslint-disable-next-line no-console
+console.log('%c repository', 'color: Yellow;', repo);
+const headers = {
+    'Content-Type': 'application/json',
+    authorization: `Bearer ${token}`,
+};
+// ex: {"owner": "eventespresso", "repo":"barista"}
+exports.graphqlWithAuth = graphql_1.graphql.defaults({ owner, repo, headers });
 
 
 /***/ }),
