@@ -43,57 +43,85 @@ const removeLabelsMutation = `
 	`;
 
 const assignLabelsAfterClose = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusInvalid];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusInvalid];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const assignLabelsAfterMerge = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusCompleted];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusCompleted];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusNew];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusNew];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const assignLabelsAfterReviewApproved = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusApproved];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusApproved];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const assignLabelsAfterReviewChangesRequested = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusPleaseFix];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusPleaseFix];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const assignLabelsAfterReviewRequested = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [labels.statusCodeReview];
-	return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [labels.statusCodeReview];
+		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 const removeAllStatusLabels = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	const labelIds = [
-		labels.statusNew,
-		labels.statusPlanning,
-		labels.statusNeedsFeedback,
-		labels.statusInProgress,
-		labels.statusCodeReview,
-		labels.statusPleaseFix,
-		labels.statusApproved,
-		labels.statusNeedsTesting,
-		labels.statusCompleted,
-		labels.statusBlocked,
-		labels.statusDuplicate,
-		labels.statusInvalid,
-	];
-	return await graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
+	try {
+		const labelIds = [
+			labels.statusNew,
+			labels.statusPlanning,
+			labels.statusNeedsFeedback,
+			labels.statusInProgress,
+			labels.statusCodeReview,
+			labels.statusPleaseFix,
+			labels.statusApproved,
+			labels.statusNeedsTesting,
+			labels.statusCompleted,
+			labels.statusBlocked,
+			labels.statusDuplicate,
+			labels.statusInvalid,
+		];
+		return await graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
 };
 
 export const assignStatusLabels = async (pullRequest: PullRequest): Promise<void> => {
