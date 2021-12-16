@@ -1,4 +1,3 @@
-import * as core from '@actions/core';
 import type { LabelsQueryResponse, PullRequest } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 import { graphqlWithAuth } from './utils';
@@ -42,127 +41,86 @@ const removeLabelsMutation = `
 			}
 	`;
 
-const assignLabelsAfterClose = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusInvalid];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
+const assignLabelsAfterClose = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [labels.statusInvalid];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterMerge = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusCompleted];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
+const assignLabelsAfterMerge = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [labels.statusCompleted];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusNew];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
+const assignLabelsAfterCreated = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [labels.statusNew];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterReviewApproved = async (
+const assignLabelsAfterReviewApproved = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [labels.statusApproved];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+};
+
+const assignLabelsAfterReviewChangesRequested = (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusApproved];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
+	const labelIds = [labels.statusPleaseFix];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
 };
 
-const assignLabelsAfterReviewChangesRequested = async (
-	labelableId: string
+const assignLabelsAfterReviewRequested = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [labels.statusCodeReview];
+	return graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
+};
+
+const removeAllStatusLabels = (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	const labelIds = [
+		labels.statusNew,
+		labels.statusPlanning,
+		labels.statusNeedsFeedback,
+		labels.statusInProgress,
+		labels.statusCodeReview,
+		labels.statusPleaseFix,
+		labels.statusApproved,
+		labels.statusNeedsTesting,
+		labels.statusCompleted,
+		labels.statusBlocked,
+		labels.statusDuplicate,
+		labels.statusInvalid,
+	];
+	return graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
+};
+
+export const assignStatusLabels = async (
+	pullRequest: PullRequest
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusPleaseFix];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
-};
-
-const assignLabelsAfterReviewRequested = async (
-	labelableId: string
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [labels.statusCodeReview];
-		return await graphqlWithAuth(addLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
-};
-
-const removeAllStatusLabels = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	try {
-		const labelIds = [
-			labels.statusNew,
-			labels.statusPlanning,
-			labels.statusNeedsFeedback,
-			labels.statusInProgress,
-			labels.statusCodeReview,
-			labels.statusPleaseFix,
-			labels.statusApproved,
-			labels.statusNeedsTesting,
-			labels.statusCompleted,
-			labels.statusBlocked,
-			labels.statusDuplicate,
-			labels.statusInvalid,
-		];
-		return await graphqlWithAuth(removeLabelsMutation, { labelIds, labelableId });
-	} catch (error) {
-		core.setFailed(error.message);
-	}
-};
-
-export const assignStatusLabels = async (pullRequest: PullRequest): Promise<void> => {
-	try {
-		// eslint-disable-next-line no-console
-		console.log('%c pullRequest', 'color: HotPink;', pullRequest);
-		await removeAllStatusLabels(pullRequest.id);
-		switch (pullRequest.state) {
-			case 'OPEN':
-				// for OPEN PRs, let's first look whether a code review has either been requested or received a response
-				// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
-				switch (pullRequest.reviewDecision) {
-					case 'APPROVED':
-						await assignLabelsAfterReviewApproved(pullRequest.id);
-						break;
-					case 'CHANGES_REQUESTED':
-						await assignLabelsAfterReviewChangesRequested(pullRequest.id);
-						break;
-					case 'REVIEW_REQUIRED':
-						await assignLabelsAfterReviewRequested(pullRequest.id);
-						break;
-					case null:
-						await assignLabelsAfterCreated(pullRequest.id);
-						break;
-				}
-				break;
-			case 'CLOSED':
-				switch (pullRequest.reviewDecision) {
-					case 'APPROVED':
-						await assignLabelsAfterMerge(pullRequest.id);
-						break;
-					case null:
-						await assignLabelsAfterClose(pullRequest.id);
-						break;
-				}
-				break;
-			case 'MERGED':
-				await assignLabelsAfterMerge(pullRequest.id);
-				break;
-		}
-	} catch (error) {
-		core.setFailed(error.message);
+	// eslint-disable-next-line no-console
+	console.log('%c pullRequest', 'color: HotPink;', pullRequest);
+	await removeAllStatusLabels(pullRequest.id);
+	switch (pullRequest.state) {
+		case 'OPEN':
+			// for OPEN PRs, let's first look whether a code review has either been requested or received a response
+			// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
+			switch (pullRequest.reviewDecision) {
+				case 'APPROVED':
+					return assignLabelsAfterReviewApproved(pullRequest.id);
+				case 'CHANGES_REQUESTED':
+					return assignLabelsAfterReviewChangesRequested(pullRequest.id);
+				case 'REVIEW_REQUIRED':
+					return assignLabelsAfterReviewRequested(pullRequest.id);
+				case null:
+					return assignLabelsAfterCreated(pullRequest.id);
+			}
+			break;
+		case 'CLOSED':
+			switch (pullRequest.reviewDecision) {
+				case 'APPROVED':
+					return assignLabelsAfterMerge(pullRequest.id);
+				case null:
+					return assignLabelsAfterClose(pullRequest.id);
+			}
+			break;
+		case 'MERGED':
+			return assignLabelsAfterMerge(pullRequest.id);
 	}
 };
