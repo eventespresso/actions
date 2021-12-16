@@ -4,14 +4,14 @@ import { getPullRequest } from './queries';
 import { pr } from './utils';
 
 const assignStatusLabelsToPullRequest = async (): Promise<void> => {
+	const results = await getPullRequest(pr);
 	// eslint-disable-next-line no-console
-	console.log('%c pull request #', 'color: HotPink;', pr);
-	const { pullRequest } = await getPullRequest(pr);
-	// eslint-disable-next-line no-console
-	console.log('%c pull request', 'color: cyan;', pullRequest);
+	console.log('%c pull request query results', 'color: cyan;', results);
 
-	if (pullRequest) {
-		assignStatusLabels(pullRequest);
+	if (results.pullRequest) {
+		// eslint-disable-next-line no-console
+		console.log('%c pull request', 'color: cyan;', results.pullRequest);
+		assignStatusLabels(results.pullRequest);
 	}
 };
 
