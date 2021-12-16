@@ -19,15 +19,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gqlVariables = void 0;
+exports.gqlVariables = exports.pr = void 0;
 const core = __importStar(require("@actions/core"));
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+const ownerRepo = process.env.GITHUB_REPOSITORY;
+// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
+const eventPayload = require(process.env.GITHUB_EVENT_PATH);
+// eslint-disable-next-line no-console
+console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner);
+// eslint-disable-next-line no-console
+console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo);
+// eslint-disable-next-line no-console
+console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
 const owner = core.getInput('owner', { required: true });
 const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
+exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console
 console.log('%c repository', 'color: Yellow;', repo);
+// eslint-disable-next-line no-console
+console.log('%c pull request #', 'color: HotPink;', exports.pr);
 const headers = {
     'Content-Type': 'application/json',
     authorization: `Bearer ${token}`,
