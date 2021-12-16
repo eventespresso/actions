@@ -1,9 +1,16 @@
 import * as core from '@actions/core';
+import * as dotenv from 'dotenv';
 
-const eventPayload = require(process?.env?.GITHUB_EVENT_PATH);
-const ownerRepo = require(process?.env?.GITHUB_REPOSITORY);
+dotenv.config();
+const ownerRepo = process.env.GITHUB_REPOSITORY;
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
+const eventPayload = require(process.env.GITHUB_EVENT_PATH);
+// eslint-disable-next-line no-console
 console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload?.owner);
+// eslint-disable-next-line no-console
 console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload?.repo);
+// eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
 const owner = core.getInput('owner', { required: true });
 const repo = core.getInput('repo', { required: true });
