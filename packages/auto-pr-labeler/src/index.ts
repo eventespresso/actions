@@ -9,8 +9,6 @@ const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	console.log('%c pull request query results', 'color: cyan;', results);
 
 	if (results?.repository?.pullRequest) {
-		// eslint-disable-next-line no-console
-		console.log('%c pull request', 'color: cyan;', results.repository.pullRequest);
 		assignStatusLabels(results.repository.pullRequest);
 	}
 };
