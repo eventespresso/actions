@@ -7013,10 +7013,13 @@ console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload === null
 console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo);
 // eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-const owner = core.getInput('owner', { required: true });
-const repo = core.getInput('repo', { required: true });
+// const owner = core.getInput('owner', { required: true });
+// const owner = core.getInput('owner', { required: true });
 const token = core.getInput('token', { required: true });
-exports.pr = Number(core.getInput('prNumber', { required: true }));
+// export const pr = Number(core.getInput('prNumber', { required: true }));
+const owner = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.owner;
+const repo = eventPayload === null || eventPayload === void 0 ? void 0 : eventPayload.repo;
+exports.pr = Number(eventPayload.issue.number);
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console
