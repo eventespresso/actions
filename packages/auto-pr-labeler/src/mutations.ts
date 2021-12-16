@@ -44,16 +44,22 @@ const removeLabelsMutation = `
 
 const assignLabelsAfterClose = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusInvalid];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterClose', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterMerge = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCompleted];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterMerge', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterCreated = async (labelableId: string): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusNew];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterCreated', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -61,6 +67,8 @@ const assignLabelsAfterReviewApproved = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -68,6 +76,8 @@ const assignLabelsAfterReviewChangesRequested = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusPleaseFix];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -75,6 +85,8 @@ const assignLabelsAfterReviewRequested = async (
 	labelableId: string
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview];
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -93,6 +105,8 @@ const removeAllStatusLabels = async (labelableId: string): Promise<GraphQlQueryR
 		labels.statusDuplicate,
 		labels.statusInvalid,
 	];
+	// eslint-disable-next-line no-console
+	console.log('%c removeAllStatusLabels', 'color: HotPink;', labelableId, labelIds);
 	return await graphql(removeLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
