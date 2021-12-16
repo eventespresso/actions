@@ -29,7 +29,7 @@ runs:
           uses: actions/cache@v2
           with:
               path: '**/node_modules'
-              key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+              key: ${{ runner.os }}-modules-${{ secrets.GH_ACTIONS_CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
 
         - name: Install dependencies
           # install deps only if lockfile has changed
