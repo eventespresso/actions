@@ -19,5 +19,7 @@ export interface PullRequest {
 }
 
 export interface PullRequestQueryResponse {
-	pullRequest: PullRequest;
+	repository: {
+		pullRequest: PullRequest;
+	};
 }
