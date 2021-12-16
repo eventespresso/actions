@@ -6683,6 +6683,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignStatusLabels = void 0;
 const utils_1 = __webpack_require__(560);
+const graphql_1 = __webpack_require__(559);
 const labels_1 = __webpack_require__(921);
 const addLabelsMutation = `
 			mutation {
@@ -6722,27 +6723,27 @@ const removeLabelsMutation = `
 	`;
 const assignLabelsAfterClose = (labelableId) => {
     const labelIds = [labels_1.labels.statusInvalid];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterMerge = (labelableId) => {
     const labelIds = [labels_1.labels.statusCompleted];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterCreated = (labelableId) => {
     const labelIds = [labels_1.labels.statusNew];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewApproved = (labelableId) => {
     const labelIds = [labels_1.labels.statusApproved];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewChangesRequested = (labelableId) => {
     const labelIds = [labels_1.labels.statusPleaseFix];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewRequested = (labelableId) => {
     const labelIds = [labels_1.labels.statusCodeReview];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const removeAllStatusLabels = (labelableId) => {
     const labelIds = [
@@ -6759,7 +6760,7 @@ const removeAllStatusLabels = (labelableId) => {
         labels_1.labels.statusDuplicate,
         labels_1.labels.statusInvalid,
     ];
-    return (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(removeLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line no-console
@@ -6805,23 +6806,24 @@ exports.assignStatusLabels = assignStatusLabels;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getPullRequest = exports.getLabels = void 0;
 const utils_1 = __webpack_require__(560);
+const graphql_1 = __webpack_require__(559);
 const getLabels = () => {
-    return (0, utils_1.graphqlWithAuth)(`
-		query ($owner: String!, $repo: String!) {
-			repository(name: $repo, owner: $owner) {
-				labels(first: 100, orderBy: {direction:ASC, field: NAME}) {
-					nodes {
-					name
-					id
+    return (0, graphql_1.graphql)(`
+			query ($owner: String!, $repo: String!) {
+				repository(name: $repo, owner: $owner) {
+					labels(first: 100, orderBy: { direction: ASC, field: NAME }) {
+						nodes {
+							name
+							id
+						}
 					}
 				}
 			}
-		}
-	`);
+		`, utils_1.gqlVariables);
 };
 exports.getLabels = getLabels;
 const getPullRequest = (pr) => {
-    return (0, utils_1.graphqlWithAuth)(`
+    return (0, graphql_1.graphql)(`
 			query ($pr: Int!, $owner: String!, $repo: String!) {
 				repository(name: $repo, owner: $owner) {
 					pullRequest(number: $pr) {
@@ -6843,7 +6845,7 @@ const getPullRequest = (pr) => {
 					}
 				}
 			}
-		`, { pr });
+		`, Object.assign({ pr }, utils_1.gqlVariables));
 };
 exports.getPullRequest = getPullRequest;
 
@@ -6875,9 +6877,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.graphqlWithAuth = void 0;
+exports.gqlVariables = void 0;
 const core = __importStar(__webpack_require__(117));
-const graphql_1 = __webpack_require__(559);
 const owner = core.getInput('org', { required: true });
 const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
@@ -6889,8 +6890,7 @@ const headers = {
     'Content-Type': 'application/json',
     authorization: `Bearer ${token}`,
 };
-// ex: {"owner": "eventespresso", "repo":"barista"}
-exports.graphqlWithAuth = graphql_1.graphql.defaults({ owner, repo, headers });
+exports.gqlVariables = { owner, repo, headers };
 
 
 /***/ }),

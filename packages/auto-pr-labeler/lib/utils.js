@@ -19,9 +19,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.graphqlWithAuth = void 0;
+exports.gqlVariables = void 0;
 const core = __importStar(require("@actions/core"));
-const graphql_1 = require("@octokit/graphql");
 const owner = core.getInput('org', { required: true });
 const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
@@ -33,5 +32,4 @@ const headers = {
     'Content-Type': 'application/json',
     authorization: `Bearer ${token}`,
 };
-// ex: {"owner": "eventespresso", "repo":"barista"}
-exports.graphqlWithAuth = graphql_1.graphql.defaults({ owner, repo, headers });
+exports.gqlVariables = { owner, repo, headers };

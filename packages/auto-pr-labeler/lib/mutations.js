@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assignStatusLabels = void 0;
 const utils_1 = require("./utils");
+const graphql_1 = require("@octokit/graphql");
 const labels_1 = require("./labels");
 const addLabelsMutation = `
 			mutation {
@@ -50,27 +51,27 @@ const removeLabelsMutation = `
 	`;
 const assignLabelsAfterClose = (labelableId) => {
     const labelIds = [labels_1.labels.statusInvalid];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterMerge = (labelableId) => {
     const labelIds = [labels_1.labels.statusCompleted];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterCreated = (labelableId) => {
     const labelIds = [labels_1.labels.statusNew];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewApproved = (labelableId) => {
     const labelIds = [labels_1.labels.statusApproved];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewChangesRequested = (labelableId) => {
     const labelIds = [labels_1.labels.statusPleaseFix];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignLabelsAfterReviewRequested = (labelableId) => {
     const labelIds = [labels_1.labels.statusCodeReview];
-    return (0, utils_1.graphqlWithAuth)(addLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const removeAllStatusLabels = (labelableId) => {
     const labelIds = [
@@ -87,7 +88,7 @@ const removeAllStatusLabels = (labelableId) => {
         labels_1.labels.statusDuplicate,
         labels_1.labels.statusInvalid,
     ];
-    return (0, utils_1.graphqlWithAuth)(removeLabelsMutation, { labelIds, labelableId });
+    return (0, graphql_1.graphql)(removeLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 };
 const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line no-console
