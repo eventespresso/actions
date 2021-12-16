@@ -12,10 +12,13 @@ console.log('%c eventPayload?.owner', 'color: LimeGreen;', eventPayload?.owner);
 console.log('%c eventPayload?.repo', 'color: LimeGreen;', eventPayload?.repo);
 // eslint-disable-next-line no-console
 console.log('%c ownerRepo', 'color: LimeGreen;', ownerRepo);
-const owner = core.getInput('owner', { required: true });
-const repo = core.getInput('repo', { required: true });
+// const owner = core.getInput('owner', { required: true });
+// const owner = core.getInput('owner', { required: true });
 const token = core.getInput('token', { required: true });
-export const pr = Number(core.getInput('prNumber', { required: true }));
+// export const pr = Number(core.getInput('prNumber', { required: true }));
+const owner = eventPayload?.owner;
+const repo = eventPayload?.repo;
+export const pr = Number(eventPayload.issue.number);
 
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
