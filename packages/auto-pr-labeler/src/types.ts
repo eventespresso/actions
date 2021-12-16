@@ -1,10 +1,12 @@
+type ID = string;
+
 export interface Label {
 	name: string;
-	id: string;
+	id: ID;
 }
 
 export interface LabelList {
-	[key: string]: Label;
+	[key: ID]: Label;
 }
 
 export interface LabelsQueryResponse {
@@ -12,7 +14,7 @@ export interface LabelsQueryResponse {
 }
 
 export interface PullRequest {
-	id: string;
+	id: ID;
 	number: number;
 	reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | null;
 	state: 'CLOSED' | 'MERGED' | 'OPEN';
