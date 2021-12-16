@@ -1,7 +1,7 @@
 name: 'Auto PR Labeler'
 description: 'Action for adding and/or removing labels on Pull Requests'
 inputs:
-    org:
+    owner:
       description: 'Organization Name / Repo Owner'
       required: true
     prNumber:

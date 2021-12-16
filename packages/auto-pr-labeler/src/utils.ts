@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 
-const owner = core.getInput('org', { required: true });
+const owner = core.getInput('owner', { required: true });
 const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
 
