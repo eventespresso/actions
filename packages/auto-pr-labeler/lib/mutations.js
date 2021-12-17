@@ -14,7 +14,7 @@ const utils_1 = require("./utils");
 const graphql_1 = require("@octokit/graphql");
 const labels_1 = require("./labels");
 const addLabelsMutation = `
-			mutation AddLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
+			mutation {
 				addLabelsToLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -32,7 +32,7 @@ const addLabelsMutation = `
 			}
 	`;
 const removeLabelsMutation = `
-			mutation RemoveLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
+			mutation {
 				removeLabelsFromLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -52,37 +52,37 @@ const removeLabelsMutation = `
 const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusInvalid.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterClose', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterClose', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCompleted.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterMerge', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusNew.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterCreated', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterCreated', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusApproved.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusPleaseFix.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     const labelIds = [labels_1.labels.statusCodeReview.id];
     // eslint-disable-next-line no-console
-    console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -101,7 +101,7 @@ const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0,
         labels_1.labels.statusInvalid.id,
     ];
     // eslint-disable-next-line no-console
-    console.log('%c removeAllStatusLabels', 'color: HotPink;', labelableId, labelIds);
+    console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
     return yield (0, graphql_1.graphql)(removeLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
 });
 const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
