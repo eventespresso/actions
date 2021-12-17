@@ -6806,6 +6806,17 @@ const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void
         core.setFailed(error.message);
     }
 });
+const assignLabelsAfterReviewRequestRemoved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const labelIds = [labels_1.labels.statusInProgress.id];
+        // eslint-disable-next-line no-console
+        console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
+        return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+});
 const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const labelIds = [
@@ -6847,8 +6858,14 @@ const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, fu
                     yield removeAllStatusLabels(pullRequest.id);
                     return yield assignLabelsAfterReviewChangesRequested(pullRequest.id);
                 case 'REVIEW_REQUIRED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterReviewRequested(pullRequest.id);
+                    if (pullRequest.reviewRequests.totalCount > 0) {
+                        yield removeAllStatusLabels(pullRequest.id);
+                        return yield assignLabelsAfterReviewRequested(pullRequest.id);
+                    }
+                    else {
+                        yield removeAllStatusLabels(pullRequest.id);
+                        return yield assignLabelsAfterReviewRequestRemoved(pullRequest.id);
+                    }
                 default:
                     break;
             }
@@ -6925,6 +6942,9 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 								id
 								number
 							}
+						}
+						reviewRequests(first: 10) {
+							totalCount
 						}
 					}
 				}
