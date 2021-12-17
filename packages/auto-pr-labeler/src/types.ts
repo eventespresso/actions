@@ -1,8 +1,13 @@
 export type ID = string;
 
-export interface Label {
-	name: string;
+interface ClosingIssuesReference {
 	id: ID;
+	name: number;
+}
+
+export interface Label {
+	id: ID;
+	name: string;
 }
 
 export interface LabelList {
@@ -10,13 +15,19 @@ export interface LabelList {
 }
 
 export interface LabelsQueryResponse {
-	labels: Label;
+	labels: LabelList;
+}
+
+interface ReviewRequests {
+	totalCount: number;
 }
 
 export interface PullRequest {
+	closingIssuesReferences: ClosingIssuesReference[];
 	id: ID;
 	number: number;
 	reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | null;
+	reviewRequests: ReviewRequests;
 	state: 'CLOSED' | 'MERGED' | 'OPEN';
 }
 
