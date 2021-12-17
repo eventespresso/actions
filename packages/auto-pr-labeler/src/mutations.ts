@@ -113,6 +113,19 @@ const assignLabelsAfterReviewRequested = async (
 	}
 };
 
+const assignLabelsAfterReviewRequestRemoved = async (
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	try {
+		const labelIds = [labels.statusInProgress.id];
+		// eslint-disable-next-line no-console
+		console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
+		return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
+};
+
 const removeAllStatusLabels = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds = [
@@ -156,8 +169,13 @@ export const assignStatusLabels = async (
 					await removeAllStatusLabels(pullRequest.id);
 					return await assignLabelsAfterReviewChangesRequested(pullRequest.id);
 				case 'REVIEW_REQUIRED':
-					await removeAllStatusLabels(pullRequest.id);
-					return await assignLabelsAfterReviewRequested(pullRequest.id);
+					if (pullRequest.reviewRequests.totalCount > 0) {
+						await removeAllStatusLabels(pullRequest.id);
+						return await assignLabelsAfterReviewRequested(pullRequest.id);
+					} else {
+						await removeAllStatusLabels(pullRequest.id);
+						return await assignLabelsAfterReviewRequestRemoved(pullRequest.id);
+					}
 				default:
 					break;
 			}

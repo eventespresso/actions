@@ -41,6 +41,9 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 								number
 							}
 						}
+						reviewRequests(first: 10) {
+							totalCount
+						}
 					}
 				}
 			}
