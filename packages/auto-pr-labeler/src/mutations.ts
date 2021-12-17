@@ -5,7 +5,7 @@ import { graphql } from '@octokit/graphql';
 import { labels } from './labels';
 
 const addLabelsMutation = `
-			mutation AddLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
+			mutation {
 				addLabelsToLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -24,7 +24,7 @@ const addLabelsMutation = `
 	`;
 
 const removeLabelsMutation = `
-			mutation RemoveLabelsMutation($labelIds: [ID]!, labelableId: ID!) {
+			mutation {
 				removeLabelsFromLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -45,28 +45,28 @@ const removeLabelsMutation = `
 const assignLabelsAfterClose = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusInvalid.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterClose', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterClose', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterMerge = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCompleted.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterMerge', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterCreated = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusNew.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterCreated', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterCreated', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
 const assignLabelsAfterReviewApproved = async (labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusApproved.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -75,7 +75,7 @@ const assignLabelsAfterReviewChangesRequested = async (
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusPleaseFix.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -84,7 +84,7 @@ const assignLabelsAfterReviewRequested = async (
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	const labelIds = [labels.statusCodeReview.id];
 	// eslint-disable-next-line no-console
-	console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
@@ -104,7 +104,7 @@ const removeAllStatusLabels = async (labelableId: ID): Promise<GraphQlQueryRespo
 		labels.statusInvalid.id,
 	];
 	// eslint-disable-next-line no-console
-	console.log('%c removeAllStatusLabels', 'color: HotPink;', labelableId, labelIds);
+	console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
 	return await graphql(removeLabelsMutation, { labelIds, labelableId, ...gqlVariables });
 };
 
