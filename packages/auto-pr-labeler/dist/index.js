@@ -6589,7 +6589,7 @@ exports.labels = {
         id: 'MDU6TGFiZWwyMzY3Mjc0Nzkw',
     },
     statusInProgress: {
-        name: 'S4: in progress 👷🏽',
+        name: 'S4: in progress 🚧',
         id: 'MDU6TGFiZWwyMjExODIxMTUx',
     },
     statusCodeReview: {
@@ -6609,7 +6609,7 @@ exports.labels = {
         id: 'MDU6TGFiZWw5MDYyNjIwMTI=',
     },
     statusCompleted: {
-        name: 'S9: completed 🐑',
+        name: 'S9: completed 🚀',
         id: 'MDU6TGFiZWw4NzA2NjYyMTc=',
     },
     statusBlocked: {
