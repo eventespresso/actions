@@ -8,7 +8,7 @@ inputs:
     composer-dependencies:
         required: false
         description: 'Composer dependency version strategy to use. Options: locked, lowest, highest (default).'
-        default: 'locked'
+        default: 'highest'
     composer-options:
         required: false
         description: 'Composer command options. Default: "--optimize-autoloader".'
