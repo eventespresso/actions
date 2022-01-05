@@ -11,8 +11,8 @@ inputs:
         default: 'highest'
     composer-options:
         required: false
-        description: 'Composer command options. Default: "--optimize-autoloader --prefer-dist".'
-        default: '--optimize-autoloader --prefer-dist'
+        description: 'Composer command options. Default: "--optimize-autoloader --ignore-platform-reqs".'
+        default: '--optimize-autoloader --ignore-platform-reqs'
     php-tools:
         required: false
         description: 'Tools to set up for PHP.'
