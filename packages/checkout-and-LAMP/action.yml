@@ -8,11 +8,11 @@ inputs:
     composer-dependencies:
         required: false
         description: 'Composer dependency version strategy to use. Options: locked, lowest, highest (default).'
-        default: 'highest'
+        default: 'locked'
     composer-options:
         required: false
-        description: 'Composer command options. Default: "--optimize-autoloader --with-dependencies".'
-        default: '--optimize-autoloader --with-dependencies'
+        description: 'Composer command options. Default: "--optimize-autoloader".'
+        default: '--optimize-autoloader'
     php-tools:
         required: false
         description: 'Tools to set up for PHP.'
