@@ -7,8 +7,8 @@ inputs:
         description: 'The PHP version to set up.'
     composer-dependencies:
         required: false
-        description: 'Composer dependency version strategy to use. Options: locked, lowest, highest (default).'
-        default: 'highest'
+        description: 'Composer dependency version strategy to use. Options: locked, lowest (default), highest.'
+        default: 'lowest'
     composer-options:
         required: false
         description: 'Composer command options. Default: "--optimize-autoloader".'
