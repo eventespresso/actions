@@ -28,6 +28,7 @@ inputs:
         required: false
         description: 'key used for setting and reading cache.'
         default: ${{ github.cache-key }}
+
 runs:
     using: 'composite'
     steps:
@@ -52,7 +53,7 @@ runs:
           shell: bash
 
         - name: Composer install
-          uses: 'ramsey/composer-install@v1'
+          uses: 'ramsey/composer-install@v2'
           with:
               composer-options: ${{ inputs.composer-options }}
               dependency-versions: ${{ inputs.composer-dependencies }}
