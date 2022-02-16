@@ -24,6 +24,10 @@ inputs:
         required: false
         description: 'Personal access token (PAT) used to fetch the repository.'
         default: ${{ github.token }}
+    cache-key:
+        required: false
+        description: 'key used for setting and reading cache.'
+        default: ${{ secrets.GH_ACTIONS_CACHE_VERSION }}
 runs:
     using: 'composite'
     steps:
@@ -52,4 +56,4 @@ runs:
           with:
               composer-options: ${{ inputs.composer-options }}
               dependency-versions: ${{ inputs.composer-dependencies }}
-              custom-cache-key: ${{ secrets.GH_ACTIONS_CACHE_VERSION }}
+              custom-cache-key: ${{ inputs.cache-key }}
