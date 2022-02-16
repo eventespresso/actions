@@ -27,7 +27,7 @@ inputs:
     cache-key:
         required: false
         description: 'key used for setting and reading cache.'
-        default: ${{ secrets.GH_ACTIONS_CACHE_VERSION }}
+        default: ${{ github.cache-key }}
 runs:
     using: 'composite'
     steps:
