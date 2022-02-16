@@ -1,6 +1,13 @@
 name: 'Checkout and set up LAMP'
+
 description: 'This action checks out the commit, sets up LAMP stack and runs composer install.'
+
 author: 'eventespresso'
+
+branding:
+    icon: 'calendar'
+    color: 'blue'
+
 inputs:
     php-version:
         required: true
@@ -38,6 +45,11 @@ runs:
               fetch-depth: ${{ inputs.fetch-depth }}
               token: ${{ inputs.token }}
 
+        - name: Set Timestamp
+          id: timestamp
+          run: echo "::set-output name=hour::$(date +'%Y-%m-%d-%H')"
+          shell: bash
+
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
           with:
@@ -57,4 +69,4 @@ runs:
           with:
               composer-options: ${{ inputs.composer-options }}
               dependency-versions: ${{ inputs.composer-dependencies }}
-              custom-cache-key: ${{ inputs.cache-key }}
+              custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}
