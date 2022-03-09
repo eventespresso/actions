@@ -6,7 +6,7 @@ import { graphql } from '@octokit/graphql';
 import { labels } from './labels';
 
 const addLabelsMutation = `
-			mutation ($labelIds: [String]!, $labelableId: String!) {
+			mutation ($labelIds: [ID]!, $labelableId: ID!) {
 				addLabelsToLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -25,7 +25,7 @@ const addLabelsMutation = `
 	`;
 
 const removeLabelsMutation = `
-			mutation ($labelIds: [String]!, $labelableId: String!) {
+			mutation ($labelIds: [ID]!, $labelableId: ID!) {
 				removeLabelsFromLabelable(
 					input: {
 						labelIds: $labelIds,
