@@ -6705,7 +6705,7 @@ const utils_1 = __webpack_require__(560);
 const graphql_1 = __webpack_require__(559);
 const labels_1 = __webpack_require__(921);
 const addLabelsMutation = `
-			mutation ($labelIds: [String]!, $labelableId: String!) {
+			mutation ($labelIds: [String!]!, $labelableId: String!) {
 				addLabelsToLabelable(
 					input: {
 						labelIds: $labelIds,
@@ -6723,7 +6723,7 @@ const addLabelsMutation = `
 			}
 	`;
 const removeLabelsMutation = `
-			mutation ($labelIds: [String]!, $labelableId: String!) {
+			mutation ($labelIds: [String!]!, $labelableId: String!) {
 				removeLabelsFromLabelable(
 					input: {
 						labelIds: $labelIds,
