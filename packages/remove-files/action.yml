@@ -1,5 +1,5 @@
 name: 'Remove files/directories'
-description: 'With this action, you can remove files or direcories.'
+description: 'With this action, you can remove files or directories.'
 author: 'eventespresso'
 inputs:
     paths:
