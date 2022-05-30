@@ -47,8 +47,8 @@ runs:
 
         - name: Set Timestamp
           id: timestamp
-          run: echo "::set-output name=hour::$(date +'%Y-%m-%d-%H')"
           shell: bash
+          run: echo "::set-output name=hour::$(date +'%Y-%m-%d-%H')"
 
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
@@ -56,17 +56,17 @@ runs:
               php-version: ${{ inputs.php-version }}
               tools: ${{ inputs.php-tools }}
 
-        - name: Start mysql service
-          run: sudo systemctl start mysql.service
-          shell: bash
-
         - name: Check PHP Version
-          run: php -v
           shell: bash
+          run: php -v
+
+        - name: Start mysql service
+          shell: bash
+          run: sudo systemctl start mysql.service
 
         - name: Remove vendor directory
-          run: rm -rf vendor/*
           shell: bash
+          run: rm -rf vendor/*
 
         - name: Composer install
           uses: 'ramsey/composer-install@v2'
@@ -74,3 +74,7 @@ runs:
               composer-options: ${{ inputs.composer-options }}
               dependency-versions: ${{ inputs.composer-dependencies }}
               custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}
+
+        - name: Check Composer Dependency Versions
+          shell: bash
+          run: phpunit --version
