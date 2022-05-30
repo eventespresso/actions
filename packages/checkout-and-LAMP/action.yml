@@ -64,6 +64,10 @@ runs:
           run: php -v
           shell: bash
 
+        - name: Remove vendor directory
+          run: rm -rf vendor/*
+          shell: bash
+
         - name: Composer install
           uses: 'ramsey/composer-install@v2'
           with:
