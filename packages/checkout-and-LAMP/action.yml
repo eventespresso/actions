@@ -9,9 +9,10 @@ branding:
     color: 'blue'
 
 inputs:
-    php-version:
-        required: true
-        description: 'The PHP version to set up.'
+    cache-key:
+        required: false
+        description: 'key used for setting and reading cache.'
+        default: ${{ github.cache-key }}
     composer-dependencies:
         required: false
         description: 'Composer dependency version strategy to use. Options: locked (default), lowest, highest.'
@@ -20,21 +21,20 @@ inputs:
         required: false
         description: 'Composer command options. Default: "--optimize-autoloader --ignore-platform-reqs".'
         default: '--optimize-autoloader --ignore-platform-reqs'
-    php-tools:
-        required: false
-        description: 'Tools to set up for PHP.'
     fetch-depth:
         required: false
         description: 'Number of commits to fetch during checkout. 0 indicates all history for all branches and tags.'
         default: '1'
+    php-version:
+        required: true
+        description: 'The PHP version to set up.'
+    php-tools:
+        required: false
+        description: 'Tools to set up for PHP.'
     token:
         required: false
         description: 'Personal access token (PAT) used to fetch the repository.'
         default: ${{ github.token }}
-    cache-key:
-        required: false
-        description: 'key used for setting and reading cache.'
-        default: ${{ github.cache-key }}
 
 runs:
     using: 'composite'
