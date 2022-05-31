@@ -47,7 +47,7 @@ runs:
 
         - name: Set Timestamp
           id: timestamp
-          shell: bash
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
           run: echo "::set-output name=hour::$(date +'%Y-%m-%d-%H')"
 
         - name: Setup PHP
@@ -57,11 +57,11 @@ runs:
               tools: ${{ inputs.php-tools }}
 
         - name: Check PHP Version
-          shell: bash
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
           run: php -v
 
         - name: Start mysql service
-          shell: bash
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
           run: sudo systemctl start mysql.service
 
 #        - name: Remove vendor directory
