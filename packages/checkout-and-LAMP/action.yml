@@ -64,9 +64,9 @@ runs:
           shell: bash
           run: sudo systemctl start mysql.service
 
-        - name: Remove vendor directory
-          shell: bash
-          run: rm -rf vendor/*
+#        - name: Remove vendor directory
+#          shell: bash
+#          run: rm -rf vendor/*
 
         - name: Composer install
           uses: 'ramsey/composer-install@v2'
@@ -75,6 +75,6 @@ runs:
               dependency-versions: ${{ inputs.composer-dependencies }}
               custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}
 
-        - name: Check Composer Dependency Versions
-          shell: bash
-          run: phpunit --version
+#        - name: Check Composer Dependency Versions
+#          shell: bash
+#          run: phpunit --version
