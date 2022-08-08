@@ -26,7 +26,7 @@ on:
         branches: [master]
 
 jobs:
-    makepot:
+    get-json-property:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the commit

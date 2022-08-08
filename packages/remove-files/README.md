@@ -18,7 +18,7 @@ on:
         branches: [master]
 
 jobs:
-    makepot:
+    remove-files-folders:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the commit
