@@ -13,13 +13,8 @@ export async function run(): Promise<void> {
 		core.startGroup('Setup WP-CLI');
 		const wpcliPath = 'wp-cli.phar';
 		// download WP CLI executable
-		const error = await downloadUrl(
-			'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
-			wpcliPath
-		);
-		if (error) {
-			throw new Error(error);
-		}
+		await downloadUrl('https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', wpcliPath);
+
 		/**
 		 * Make the file executable
 		 * @see https://nodejs.org/api/fs.html#fs_fs_chmod_path_mode_callback
