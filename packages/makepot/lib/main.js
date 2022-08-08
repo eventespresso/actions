@@ -42,10 +42,7 @@ function run() {
             core.startGroup('Setup WP-CLI');
             const wpcliPath = 'wp-cli.phar';
             // download WP CLI executable
-            const error = yield (0, utils_1.downloadUrl)('https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', wpcliPath);
-            if (error) {
-                throw new Error(error);
-            }
+            yield (0, utils_1.downloadUrl)('https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', wpcliPath);
             /**
              * Make the file executable
              * @see https://nodejs.org/api/fs.html#fs_fs_chmod_path_mode_callback
