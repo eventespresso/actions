@@ -14,7 +14,6 @@ console.log('%c pull request #', 'color: HotPink;', pr);
 
 const headers = {
 	'Content-Type': 'application/json',
-	authorization: `Bearer ${token}`,
+	'Authorization': `bearer ${token}`,
 };
-
 export const gqlVariables = { owner, repo, headers };
