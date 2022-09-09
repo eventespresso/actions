@@ -11,7 +11,6 @@ const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	if (results?.repository?.pullRequest) {
 		assignStatusLabels(results.repository.pullRequest);
 	} else {
-	const results = await getPullRequest(pr);
 		 throw 'Could not retrieve a valid Pull Request with ID: ' + pr;
 	}
 };
