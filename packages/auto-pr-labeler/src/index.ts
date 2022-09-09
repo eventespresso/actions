@@ -8,7 +8,7 @@ const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	// eslint-disable-next-line no-console
 	console.log('%c pull request query results', 'color: cyan;', results);
 
-	if (results?.repository?.pullRequest) {
+	if (results?.repository?.pullRequest && results.repository.pullRequest !== null) {
 		assignStatusLabels(results.repository.pullRequest);
 	} else {
 		 throw 'Could not retrieve a valid Pull Request with ID: ' + pr;
