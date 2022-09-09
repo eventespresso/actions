@@ -13,7 +13,7 @@ inputs:
       description: 'Pull Request Number'
       required: true
     token:
-        required: false
+        required: true
         description: 'Personal access token (PAT) used to fetch the repository.'
         default: ${{ github.token }}
 runs:
