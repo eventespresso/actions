@@ -1,4 +1,5 @@
 export type ID = string | number;
+export type RepoName = string;
 
 interface ClosingIssuesReference {
 	id: ID;
@@ -8,6 +9,10 @@ interface ClosingIssuesReference {
 export interface Label {
 	id: ID;
 	name: string;
+}
+
+export interface RepoLabels {
+	[key: RepoName]: LabelList;
 }
 
 export interface LabelList {
