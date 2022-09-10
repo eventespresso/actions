@@ -33,6 +33,6 @@ console.log('%c repository', 'color: Yellow;', exports.repo);
 console.log('%c pull request #', 'color: HotPink;', exports.pr);
 const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `bearer ${token}`,
+    Authorization: `bearer ${token}`,
 };
 exports.gqlVariables = { owner, repo: exports.repo, headers };

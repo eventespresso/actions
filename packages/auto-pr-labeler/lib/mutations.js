@@ -146,7 +146,7 @@ const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter
         core.setFailed(error.message);
     }
 });
-const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labels, labelableId, remove = '') => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let labelIds = [
             labels.statusNew.id,
@@ -162,8 +162,8 @@ const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(vo
             labels.statusDuplicate.id,
             labels.statusInvalid.id,
         ];
-        if (except !== '') {
-            labelIds = labelIds.filter(labelID => labelID !== except);
+        if (remove !== '') {
+            labelIds = labelIds.filter((labelID) => labelID !== remove);
         }
         // eslint-disable-next-line no-console
         console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
@@ -206,15 +206,12 @@ const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void
             }
             return assignLabelsAfterCreated(labels, pullRequest.id);
         case 'CLOSED':
-            switch (pullRequest.reviewDecision) {
-                case 'APPROVED':
-                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
-                    return yield assignLabelsAfterMerge(labels, pullRequest.id);
-                case null:
-                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
-                    return yield assignLabelsAfterClose(labels, pullRequest.id);
+            if (pullRequest.reviewDecision === 'APPROVED') {
+                yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+                return yield assignLabelsAfterMerge(labels, pullRequest.id);
             }
-            break;
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
+            return yield assignLabelsAfterClose(labels, pullRequest.id);
         case 'MERGED':
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
             return yield assignLabelsAfterMerge(labels, pullRequest.id);

@@ -6667,178 +6667,178 @@ exports.repoLabels = {
     },
     cafe: {
         catUiUx: {
-            "name": "C: UI/UX 🚽",
-            "id": "LA_kwDOH9Ray88AAAABDP4WVA"
+            name: 'C: UI/UX 🚽',
+            id: 'LA_kwDOH9Ray88AAAABDP4WVA',
         },
         catAssets: {
-            "name": "C: assets 💎",
-            "id": "LA_kwDOH9Ray88AAAABDP38KA"
+            name: 'C: assets 💎',
+            id: 'LA_kwDOH9Ray88AAAABDP38KA',
         },
         catAutoDeploy: {
-            "name": "C: automation & deployment ⚙️",
-            "id": "LA_kwDOH9Ray88AAAABDP3_-w"
+            name: 'C: automation & deployment ⚙️',
+            id: 'LA_kwDOH9Ray88AAAABDP3_-w',
         },
         catDataSystems: {
-            "name": "C: data systems 🗑",
-            "id": "LA_kwDOH9Ray88AAAABDP4HGg"
+            name: 'C: data systems 🗑',
+            id: 'LA_kwDOH9Ray88AAAABDP4HGg',
         },
         catBuildProcess: {
             name: 'C: build process 🔨',
             id: 'MDU6TGFiWw4NzA2NjYyMTg=',
         },
         catDocs: {
-            "name": "C: documentation 📑",
-            "id": "LA_kwDOH9Ray88AAAABDP4KnA"
+            name: 'C: documentation 📑',
+            id: 'LA_kwDOH9Ray88AAAABDP4KnA',
         },
         catI18n: {
-            "name": "C: i18n🌍",
-            "id": "LA_kwDOH9Ray88AAAABDP32qg"
+            name: 'C: i18n🌍',
+            id: 'LA_kwDOH9Ray88AAAABDP32qg',
         },
         catServices: {
-            "name": "C: services 🤝",
-            "id": "LA_kwDOH9Ray88AAAABDQPW5A"
+            name: 'C: services 🤝',
+            id: 'LA_kwDOH9Ray88AAAABDQPW5A',
         },
         catTesting: {
-            "name": "C: tests 🧪",
-            "id": "LA_kwDOH9Ray88AAAABDP4R1g"
+            name: 'C: tests 🧪',
+            id: 'LA_kwDOH9Ray88AAAABDP4R1g',
         },
         domainApi: {
-            "name": "D: API📡",
-            "id": "LA_kwDOH9Ray88AAAABDQIsMw"
+            name: 'D: API📡',
+            id: 'LA_kwDOH9Ray88AAAABDQIsMw',
         },
         domainCalendar: {
-            "name": "D: Calendar 📆",
-            "id": "LA_kwDOH9Ray88AAAABDP-zJQ"
+            name: 'D: Calendar 📆',
+            id: 'LA_kwDOH9Ray88AAAABDP-zJQ',
         },
         domainCore: {
-            "name": "D: EE CORE ☕",
-            "id": "LA_kwDOH9Ray88AAAABDP4q-w"
+            name: 'D: EE CORE ☕',
+            id: 'LA_kwDOH9Ray88AAAABDP4q-w',
         },
         domainEventSmart: {
-            "name": "D: Event Smart 🛒",
-            "id": "LA_kwDOH9Ray88AAAABDP4xWQ"
+            name: 'D: Event Smart 🛒',
+            id: 'LA_kwDOH9Ray88AAAABDP4xWQ',
         },
         domainGateways: {
-            "name": "D: Gateways💲",
-            "id": "LA_kwDOH9Ray88AAAABDP6Fng"
+            name: 'D: Gateways💲',
+            id: 'LA_kwDOH9Ray88AAAABDP6Fng',
         },
         domainMessages: {
-            "name": "D: Messages 📩",
-            "id": "LA_kwDOH9Ray88AAAABDP728Q"
+            name: 'D: Messages 📩',
+            id: 'LA_kwDOH9Ray88AAAABDP728Q',
         },
         domainRemAddon: {
-            "name": "D: REM ♻️",
-            "id": "LA_kwDOH9Ray88AAAABDP485A"
+            name: 'D: REM ♻️',
+            id: 'LA_kwDOH9Ray88AAAABDP485A',
         },
         domainTemplates: {
-            "name": "D: Templates 📰",
-            "id": "LA_kwDOH9Ray88AAAABDQNrGw"
+            name: 'D: Templates 📰',
+            id: 'LA_kwDOH9Ray88AAAABDQNrGw',
         },
         domainThemes: {
-            "name": "D: Themes 🎨",
-            "id": "LA_kwDOH9Ray88AAAABDP8rrA"
+            name: 'D: Themes 🎨',
+            id: 'LA_kwDOH9Ray88AAAABDP8rrA',
         },
         domainWpUserAddon: {
-            "name": "D: WP User Add-on 🤷‍♀️",
-            "id": "LA_kwDOH9Ray88AAAABDP5LcA"
+            name: 'D: WP User Add-on 🤷‍♀️',
+            id: 'LA_kwDOH9Ray88AAAABDP5LcA',
         },
         priorityUrgent: {
-            "name": "P1: URGENT PRIORITY :scream:",
-            "id": "LA_kwDOH9Ray88AAAABDP9VMg"
+            name: 'P1: URGENT PRIORITY :scream:',
+            id: 'LA_kwDOH9Ray88AAAABDP9VMg',
         },
         priorityHigh: {
-            "name": "P2: HIGH priority 😮",
-            "id": "LA_kwDOH9Ray88AAAABDP9ZRA"
+            name: 'P2: HIGH priority 😮',
+            id: 'LA_kwDOH9Ray88AAAABDP9ZRA',
         },
         priorityMedium: {
-            "name": "P3: med priority 😐",
-            "id": "LA_kwDOH9Ray88AAAABDP9dew"
+            name: 'P3: med priority 😐',
+            id: 'LA_kwDOH9Ray88AAAABDP9dew',
         },
         priorityLow: {
-            "name": "P4: low priority 😎",
-            "id": "LA_kwDOH9Ray88AAAABDP9iPg"
+            name: 'P4: low priority 😎',
+            id: 'LA_kwDOH9Ray88AAAABDP9iPg',
         },
         statusNew: {
-            "name": "S1: new 👶🏻",
-            "id": "LA_kwDOH9Ray88AAAABDP_CWg"
+            name: 'S1: new 👶🏻',
+            id: 'LA_kwDOH9Ray88AAAABDP_CWg',
         },
         statusPlanning: {
-            "name": "S2: planning 📋",
-            "id": "LA_kwDOH9Ray88AAAABDP_G4w"
+            name: 'S2: planning 📋',
+            id: 'LA_kwDOH9Ray88AAAABDP_G4w',
         },
         statusNeedsFeedback: {
-            "name": "S3: needs feedback ❔",
-            "id": "LA_kwDOH9Ray88AAAABDP_KHg"
+            name: 'S3: needs feedback ❔',
+            id: 'LA_kwDOH9Ray88AAAABDP_KHg',
         },
         statusInProgress: {
-            "name": "S4: in progress 🚧",
-            "id": "LA_kwDOH9Ray88AAAABDP_NKg"
+            name: 'S4: in progress 🚧',
+            id: 'LA_kwDOH9Ray88AAAABDP_NKg',
         },
         statusCodeReview: {
-            "name": "S5: code review 🔎",
-            "id": "LA_kwDOH9Ray88AAAABDQBBDQ"
+            name: 'S5: code review 🔎',
+            id: 'LA_kwDOH9Ray88AAAABDQBBDQ',
         },
         statusPleaseFix: {
-            "name": "S6: please fix 💉",
-            "id": "LA_kwDOH9Ray88AAAABDQBERQ"
+            name: 'S6: please fix 💉',
+            id: 'LA_kwDOH9Ray88AAAABDQBERQ',
         },
         statusApproved: {
-            "name": "S7: APPROVED ✔️",
-            "id": "LA_kwDOH9Ray88AAAABDQBINw"
+            name: 'S7: APPROVED ✔️',
+            id: 'LA_kwDOH9Ray88AAAABDQBINw',
         },
         statusNeedsTesting: {
-            "name": "S8: needs testing 🧪",
-            "id": "LA_kwDOH9Ray88AAAABDQBKvw"
+            name: 'S8: needs testing 🧪',
+            id: 'LA_kwDOH9Ray88AAAABDQBKvw',
         },
         statusCompleted: {
-            "name": "S9: completed 🚀",
-            "id": "LA_kwDOH9Ray88AAAABDQBQKA"
+            name: 'S9: completed 🚀',
+            id: 'LA_kwDOH9Ray88AAAABDQBQKA',
         },
         statusBlocked: {
-            "name": "s10: BLOCKED ⚠️",
-            "id": "LA_kwDOH9Ray88AAAABDQBUYw"
+            name: 's10: BLOCKED ⚠️',
+            id: 'LA_kwDOH9Ray88AAAABDQBUYw',
         },
         statusDuplicate: {
-            "name": "S11: duplicate? ©️",
-            "id": "LA_kwDOH9Ray88AAAABDQBYiQ"
+            name: 'S11: duplicate? ©️',
+            id: 'LA_kwDOH9Ray88AAAABDQBYiQ',
         },
         statusInvalid: {
-            "name": "S12: invalid 👽",
-            "id": "LA_kwDOH9Ray88AAAABDQBcQg"
+            name: 'S12: invalid 👽',
+            id: 'LA_kwDOH9Ray88AAAABDQBcQg',
         },
         typeBug: {
-            "name": "T: bug 🪲",
-            "id": "LA_kwDOH9Ray88AAAABDQBr1Q"
+            name: 'T: bug 🪲',
+            id: 'LA_kwDOH9Ray88AAAABDQBr1Q',
         },
         typeCodeQuality: {
-            "name": "T: code quality 👾",
-            "id": "LA_kwDOH9Ray88AAAABDQBvig"
+            name: 'T: code quality 👾',
+            id: 'LA_kwDOH9Ray88AAAABDQBvig',
         },
         typeEnhancement: {
-            "name": "T: enhancement ✨",
-            "id": "LA_kwDOH9Ray88AAAABDQBztw"
+            name: 'T: enhancement ✨',
+            id: 'LA_kwDOH9Ray88AAAABDQBztw',
         },
         typeNewFeature: {
-            "name": "T: new feature 🎁",
-            "id": "LA_kwDOH9Ray88AAAABDQB2fw"
+            name: 'T: new feature 🎁',
+            id: 'LA_kwDOH9Ray88AAAABDQB2fw',
         },
         typeTask: {
-            "name": "T: task 🧹",
-            "id": "LA_kwDOH9Ray88AAAABDQB4wA"
+            name: 'T: task 🧹',
+            id: 'LA_kwDOH9Ray88AAAABDQB4wA',
         },
         xEval: {
-            "name": "X: EVALUATION-ISSUE 🎯",
-            "id": "LA_kwDOH9Ray88AAAABDQB6yA"
+            name: 'X: EVALUATION-ISSUE 🎯',
+            id: 'LA_kwDOH9Ray88AAAABDQB6yA',
         },
         xEzPz: {
-            "name": "X: EZ PZ 🍰",
-            "id": "LA_kwDOH9Ray88AAAABDQB96A"
+            name: 'X: EZ PZ 🍰',
+            id: 'LA_kwDOH9Ray88AAAABDQB96A',
         },
         xHard: {
-            "name": "X: HARD ☠️",
-            "id": "LA_kwDOH9Ray88AAAABDQCBDg"
+            name: 'X: HARD ☠️',
+            id: 'LA_kwDOH9Ray88AAAABDQCBDg',
         },
-    }
+    },
 };
 
 
@@ -6996,7 +6996,7 @@ const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter
         core.setFailed(error.message);
     }
 });
-const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labels, labelableId, remove = '') => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let labelIds = [
             labels.statusNew.id,
@@ -7012,8 +7012,8 @@ const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(vo
             labels.statusDuplicate.id,
             labels.statusInvalid.id,
         ];
-        if (except !== '') {
-            labelIds = labelIds.filter(labelID => labelID !== except);
+        if (remove !== '') {
+            labelIds = labelIds.filter((labelID) => labelID !== remove);
         }
         // eslint-disable-next-line no-console
         console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
@@ -7056,15 +7056,12 @@ const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void
             }
             return assignLabelsAfterCreated(labels, pullRequest.id);
         case 'CLOSED':
-            switch (pullRequest.reviewDecision) {
-                case 'APPROVED':
-                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
-                    return yield assignLabelsAfterMerge(labels, pullRequest.id);
-                case null:
-                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
-                    return yield assignLabelsAfterClose(labels, pullRequest.id);
+            if (pullRequest.reviewDecision === 'APPROVED') {
+                yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+                return yield assignLabelsAfterMerge(labels, pullRequest.id);
             }
-            break;
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
+            return yield assignLabelsAfterClose(labels, pullRequest.id);
         case 'MERGED':
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
             return yield assignLabelsAfterMerge(labels, pullRequest.id);
@@ -7180,7 +7177,7 @@ console.log('%c repository', 'color: Yellow;', exports.repo);
 console.log('%c pull request #', 'color: HotPink;', exports.pr);
 const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `bearer ${token}`,
+    Authorization: `bearer ${token}`,
 };
 exports.gqlVariables = { owner, repo: exports.repo, headers };
 
