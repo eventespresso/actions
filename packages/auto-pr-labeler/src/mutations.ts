@@ -144,7 +144,7 @@ const assignLabelsAfterReviewRequestRemoved = async (
 const removeAllStatusLabels = async (
 	labels: LabelList,
 	labelableId: ID,
-	except: ID = ''
+	remove: ID = ''
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		let labelIds: Array<ID> = [
@@ -161,8 +161,8 @@ const removeAllStatusLabels = async (
 			labels.statusDuplicate.id,
 			labels.statusInvalid.id,
 		];
-		if (except !== '') {
-			labelIds = labelIds.filter((labelID) => labelID !== except);
+		if (remove !== '') {
+			labelIds = labelIds.filter((labelID) => labelID !== remove);
 		}
 		// eslint-disable-next-line no-console
 		console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
@@ -207,15 +207,12 @@ export const assignStatusLabels = async (
 			}
 			return assignLabelsAfterCreated(labels, pullRequest.id);
 		case 'CLOSED':
-			switch (pullRequest.reviewDecision) {
-				case 'APPROVED':
-					await removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
-					return await assignLabelsAfterMerge(labels, pullRequest.id);
-				case null:
-					await removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
-					return await assignLabelsAfterClose(labels, pullRequest.id);
+			if (pullRequest.reviewDecision === 'APPROVED') {
+				await removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+				return await assignLabelsAfterMerge(labels, pullRequest.id);
 			}
-			break;
+			await removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
+			return await assignLabelsAfterClose(labels, pullRequest.id);
 		case 'MERGED':
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
 			return await assignLabelsAfterMerge(labels, pullRequest.id);
