@@ -19,20 +19,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gqlVariables = exports.pr = void 0;
+exports.gqlVariables = exports.pr = exports.repo = void 0;
 const core = __importStar(require("@actions/core"));
 const owner = core.getInput('owner', { required: true });
-const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
+exports.repo = core.getInput('repo', { required: true });
 exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console
-console.log('%c repository', 'color: Yellow;', repo);
+console.log('%c repository', 'color: Yellow;', exports.repo);
 // eslint-disable-next-line no-console
 console.log('%c pull request #', 'color: HotPink;', exports.pr);
 const headers = {
     'Content-Type': 'application/json',
-    authorization: `Bearer ${token}`,
+    'Authorization': `bearer ${token}`,
 };
-exports.gqlVariables = { owner, repo, headers };
+exports.gqlVariables = { owner, repo: exports.repo, headers };

@@ -6458,16 +6458,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(117));
+const utils_1 = __webpack_require__(560);
 const mutations_1 = __webpack_require__(89);
 const queries_1 = __webpack_require__(360);
-const utils_1 = __webpack_require__(560);
 const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const results = yield (0, queries_1.getPullRequest)(utils_1.pr);
     // eslint-disable-next-line no-console
     console.log('%c pull request query results', 'color: cyan;', results);
-    if ((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) {
-        (0, mutations_1.assignStatusLabels)(results.repository.pullRequest);
+    if (((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) && results.repository.pullRequest !== null) {
+        (0, mutations_1.assignStatusLabels)(utils_1.repo, results.repository.pullRequest);
+    }
+    else {
+        throw new Error(`Could not retrieve a valid Pull Request with ID: ${utils_1.pr}`);
     }
 });
 try {
@@ -6486,180 +6489,356 @@ catch (error) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.labels = void 0;
-exports.labels = {
-    catUiUx: {
-        name: 'C: UI/UX 🚽',
-        id: 'MDU6TGFiZWwyMjExNDkyNTUz',
+exports.repoLabels = void 0;
+exports.repoLabels = {
+    barista: {
+        catUiUx: {
+            name: 'C: UI/UX 🚽',
+            id: 'MDU6TGFiZWwyMjExNDkyNTUz',
+        },
+        catAccessibility: {
+            name: 'C: accessibility ♿',
+            id: 'MDU6TGFiZWwyMzcwMzc2Njkz',
+        },
+        catAssets: {
+            name: 'C: assets 💎',
+            id: 'MDU6TGFiZWwyMjExNTM1MjEx',
+        },
+        catAutoDeploy: {
+            name: 'C: automation & deployment ⚙️',
+            id: 'MDU6TGFiZWwyMjExNTc1ODQx',
+        },
+        catBuildProcess: {
+            name: 'C: build process 🔨',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTg=',
+        },
+        catDataSystems: {
+            name: 'C: data systems 🗑',
+            id: 'MDU6TGFiZWwyMjExNTIyNDgx',
+        },
+        catDocs: {
+            name: 'C: documentation 📑',
+            id: 'MDU6TGFiZWwyNDY3NzEwOTE1',
+        },
+        catServices: {
+            name: 'C: services 🤝',
+            id: 'MDU6TGFiZWwyMjExNjExNDgx',
+        },
+        catTesting: {
+            name: 'C: testing 🧪',
+            id: 'MDU6TGFiZWwyMzE2NTE1ODg4',
+        },
+        domainEdtr: {
+            name: 'D: EDTR ✏️',
+            id: 'MDU6TGFiZWwyMjIxMDY4OTI4',
+        },
+        domainCore: {
+            name: 'D: EE CORE ☕',
+            id: 'MDU6TGFiZWwyMTkzMTE4NTgx',
+        },
+        domainEventSmart: {
+            name: 'D: Event Smart 🛒',
+            id: 'MDU6TGFiZWwyNzE5MjI4ODkz',
+        },
+        domainBlocks: {
+            name: 'D: GB Blocks 🧱',
+            id: 'MDU6TGFiZWwyMzU5MDQ0MTkz',
+        },
+        domainPackages: {
+            name: 'D: Packages 📦',
+            id: 'MDU6TGFiZWwyMjUzODIzNjUy',
+        },
+        domainRemAddon: {
+            name: 'D: REM ♺',
+            id: 'MDU6TGFiZWwyMTY4NjQzMjQz',
+        },
+        domainRepo: {
+            name: 'D: REPO 💾',
+            id: 'LA_kwDOB32LW87Y7L-j',
+        },
+        domainWpUserAddon: {
+            name: 'D: WP User Add-on 👤',
+            id: 'MDU6TGFiZWwyNTY4MDE2MDkx',
+        },
+        domainWpAdmin: {
+            name: 'D: WP admin 🏠',
+            id: 'MDU6TGFiZWwyMjExNjI2NTEy',
+        },
+        priorityUrgent: {
+            name: 'P1: URGENT PRIORITY :scream:',
+            id: 'MDU6TGFiZWwyMjc0MDkzMDA0',
+        },
+        priorityHigh: {
+            name: 'P2: HIGH priority 😮',
+            id: 'MDU6TGFiZWwyMjc0MDkxMjE2',
+        },
+        priorityMedium: {
+            name: 'P3: med priority 😐',
+            id: 'MDU6TGFiZWwyMjc0MDgzMTE1',
+        },
+        priorityLow: {
+            name: 'P4: low priority 😎',
+            id: 'MDU6TGFiZWwyMjc0MDc0NjY5',
+        },
+        statusNew: {
+            name: 'S:1 new 👶🏻',
+            id: 'MDU6TGFiZWwyNDQ0NjI1MDU2',
+        },
+        statusPlanning: {
+            name: 'S2: planning 📋',
+            id: 'MDU6TGFiZWwyMjExNDYwNjA5',
+        },
+        statusNeedsFeedback: {
+            name: 'S3: needs feedback ❔',
+            id: 'MDU6TGFiZWwyMzY3Mjc0Nzkw',
+        },
+        statusInProgress: {
+            name: 'S4: in progress 🚧',
+            id: 'MDU6TGFiZWwyMjExODIxMTUx',
+        },
+        statusCodeReview: {
+            name: 'S5: code review 🔎',
+            id: 'MDU6TGFiZWwyMTYxMzQzNTg5',
+        },
+        statusPleaseFix: {
+            name: 'S6: please fix 💉',
+            id: 'MDU6TGFiZWwyMjExNTA0MTAx',
+        },
+        statusApproved: {
+            name: 'S:7 APPROVED ✔️',
+            id: 'MDU6TGFiZWwyNTQ4NjEyMDU3',
+        },
+        statusNeedsTesting: {
+            name: 'S8: needs testing 🧪',
+            id: 'MDU6TGFiZWw5MDYyNjIwMTI=',
+        },
+        statusCompleted: {
+            name: 'S9: completed 🚀',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTc=',
+        },
+        statusBlocked: {
+            name: 's10: BLOCKED ⚠️',
+            id: 'MDU6TGFiZWwyNDA1MzMwNjkw',
+        },
+        statusDuplicate: {
+            name: 'S11: duplicate? ©️',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTU=',
+        },
+        statusInvalid: {
+            name: 'S12: invalid 👽',
+            id: 'MDU6TGFiZWw4NzA2NjYyMjE=',
+        },
+        typeBug: {
+            name: 'T: bug 🐞',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTQ=',
+        },
+        typeCodeQuality: {
+            name: 'T: code quality 👾',
+            id: 'MDU6TGFiZWwyMzcyNTUxOTM1',
+        },
+        typeEnhancement: {
+            name: 'T: enhancement ✨',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
+        },
+        typeNewFeature: {
+            name: 'T: new feature 🎁',
+            id: 'MDU6TGFiZWwyMjExNTQ1NDg5',
+        },
+        typeTask: {
+            name: 'T: task 🧹',
+            id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
+        },
+        xEval: {
+            name: 'X: EVALUATION-ISSUE 🎯',
+            id: 'MDU6TGFiZWwzMDY3NTA0NDcy',
+        },
+        xEzPz: {
+            name: 'X: EZ PZ 🍰',
+            id: 'MDU6TGFiZWwzMjE1MjMzMDAy',
+        },
+        xHard: {
+            name: 'X: HARD ☠️',
+            id: 'MDU6TGFiZWwzMjE1MjA5Nzk3',
+        },
+        xDependencies: {
+            name: 'dependencies',
+            id: 'LA_kwDOB32LW87RudBy',
+        },
     },
-    catAccessibility: {
-        name: 'C: accessibility ♿',
-        id: 'MDU6TGFiZWwyMzcwMzc2Njkz',
-    },
-    catAssets: {
-        name: 'C: assets 💎',
-        id: 'MDU6TGFiZWwyMjExNTM1MjEx',
-    },
-    catAutoDeploy: {
-        name: 'C: automation & deployment ⚙️',
-        id: 'MDU6TGFiZWwyMjExNTc1ODQx',
-    },
-    catBuildProcess: {
-        name: 'C: build process 🔨',
-        id: 'MDU6TGFiZWw4NzA2NjYyMTg=',
-    },
-    catDataSystems: {
-        name: 'C: data systems 🗑',
-        id: 'MDU6TGFiZWwyMjExNTIyNDgx',
-    },
-    catDocs: {
-        name: 'C: documentation 📑',
-        id: 'MDU6TGFiZWwyNDY3NzEwOTE1',
-    },
-    catServices: {
-        name: 'C: services 🤝',
-        id: 'MDU6TGFiZWwyMjExNjExNDgx',
-    },
-    catTesting: {
-        name: 'C: testing 🧪',
-        id: 'MDU6TGFiZWwyMzE2NTE1ODg4',
-    },
-    domainEdtr: {
-        name: 'D: EDTR ✏️',
-        id: 'MDU6TGFiZWwyMjIxMDY4OTI4',
-    },
-    domainCore: {
-        name: 'D: EE CORE ☕',
-        id: 'MDU6TGFiZWwyMTkzMTE4NTgx',
-    },
-    domainEventSmart: {
-        name: 'D: Event Smart 🛒',
-        id: 'MDU6TGFiZWwyNzE5MjI4ODkz',
-    },
-    domainBlocks: {
-        name: 'D: GB Blocks 🧱',
-        id: 'MDU6TGFiZWwyMzU5MDQ0MTkz',
-    },
-    domainPackages: {
-        name: 'D: Packages 📦',
-        id: 'MDU6TGFiZWwyMjUzODIzNjUy',
-    },
-    domainRemAddon: {
-        name: 'D: REM ♺',
-        id: 'MDU6TGFiZWwyMTY4NjQzMjQz',
-    },
-    domainRepo: {
-        name: 'D: REPO 💾',
-        id: 'LA_kwDOB32LW87Y7L-j',
-    },
-    domainWpUserAddon: {
-        name: 'D: WP User Add-on 👤',
-        id: 'MDU6TGFiZWwyNTY4MDE2MDkx',
-    },
-    domainWpAdmin: {
-        name: 'D: WP admin 🏠',
-        id: 'MDU6TGFiZWwyMjExNjI2NTEy',
-    },
-    priorityUrgent: {
-        name: 'P1: URGENT PRIORITY :scream:',
-        id: 'MDU6TGFiZWwyMjc0MDkzMDA0',
-    },
-    priorityHigh: {
-        name: 'P2: HIGH priority 😮',
-        id: 'MDU6TGFiZWwyMjc0MDkxMjE2',
-    },
-    priorityMedium: {
-        name: 'P3: med priority 😐',
-        id: 'MDU6TGFiZWwyMjc0MDgzMTE1',
-    },
-    priorityLow: {
-        name: 'P4: low priority 😎',
-        id: 'MDU6TGFiZWwyMjc0MDc0NjY5',
-    },
-    statusNew: {
-        name: 'S:1 new 👶🏻',
-        id: 'MDU6TGFiZWwyNDQ0NjI1MDU2',
-    },
-    statusPlanning: {
-        name: 'S2: planning 📋',
-        id: 'MDU6TGFiZWwyMjExNDYwNjA5',
-    },
-    statusNeedsFeedback: {
-        name: 'S3: needs feedback ❔',
-        id: 'MDU6TGFiZWwyMzY3Mjc0Nzkw',
-    },
-    statusInProgress: {
-        name: 'S4: in progress 🚧',
-        id: 'MDU6TGFiZWwyMjExODIxMTUx',
-    },
-    statusCodeReview: {
-        name: 'S5: code review 🔎',
-        id: 'MDU6TGFiZWwyMTYxMzQzNTg5',
-    },
-    statusPleaseFix: {
-        name: 'S6: please fix 💉',
-        id: 'MDU6TGFiZWwyMjExNTA0MTAx',
-    },
-    statusApproved: {
-        name: 'S:7 APPROVED ✔️',
-        id: 'MDU6TGFiZWwyNTQ4NjEyMDU3',
-    },
-    statusNeedsTesting: {
-        name: 'S8: needs testing 🧪',
-        id: 'MDU6TGFiZWw5MDYyNjIwMTI=',
-    },
-    statusCompleted: {
-        name: 'S9: completed 🚀',
-        id: 'MDU6TGFiZWw4NzA2NjYyMTc=',
-    },
-    statusBlocked: {
-        name: 's10: BLOCKED ⚠️',
-        id: 'MDU6TGFiZWwyNDA1MzMwNjkw',
-    },
-    statusDuplicate: {
-        name: 'S11: duplicate? ©️',
-        id: 'MDU6TGFiZWw4NzA2NjYyMTU=',
-    },
-    statusInvalid: {
-        name: 'S12: invalid 👽',
-        id: 'MDU6TGFiZWw4NzA2NjYyMjE=',
-    },
-    typeBug: {
-        name: 'T: bug 🐞',
-        id: 'MDU6TGFiZWw4NzA2NjYyMTQ=',
-    },
-    typeCodeQuality: {
-        name: 'T: code quality 👾',
-        id: 'MDU6TGFiZWwyMzcyNTUxOTM1',
-    },
-    typeEnhancement: {
-        name: 'T: enhancement ✨',
-        id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
-    },
-    typeNewFeature: {
-        name: 'T: new feature 🎁',
-        id: 'MDU6TGFiZWwyMjExNTQ1NDg5',
-    },
-    typeTask: {
-        name: 'T: task 🧹',
-        id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
-    },
-    xEval: {
-        name: 'X: EVALUATION-ISSUE 🎯',
-        id: 'MDU6TGFiZWwzMDY3NTA0NDcy',
-    },
-    xEzPz: {
-        name: 'X: EZ PZ 🍰',
-        id: 'MDU6TGFiZWwzMjE1MjMzMDAy',
-    },
-    xHard: {
-        name: 'X: HARD ☠️',
-        id: 'MDU6TGFiZWwzMjE1MjA5Nzk3',
-    },
-    xDependencies: {
-        name: 'dependencies',
-        id: 'LA_kwDOB32LW87RudBy',
-    },
+    cafe: {
+        catUiUx: {
+            "name": "C: UI/UX 🚽",
+            "id": "LA_kwDOH9Ray88AAAABDP4WVA"
+        },
+        catAssets: {
+            "name": "C: assets 💎",
+            "id": "LA_kwDOH9Ray88AAAABDP38KA"
+        },
+        catAutoDeploy: {
+            "name": "C: automation & deployment ⚙️",
+            "id": "LA_kwDOH9Ray88AAAABDP3_-w"
+        },
+        catDataSystems: {
+            "name": "C: data systems 🗑",
+            "id": "LA_kwDOH9Ray88AAAABDP4HGg"
+        },
+        catBuildProcess: {
+            name: 'C: build process 🔨',
+            id: 'MDU6TGFiWw4NzA2NjYyMTg=',
+        },
+        catDocs: {
+            "name": "C: documentation 📑",
+            "id": "LA_kwDOH9Ray88AAAABDP4KnA"
+        },
+        catI18n: {
+            "name": "C: i18n🌍",
+            "id": "LA_kwDOH9Ray88AAAABDP32qg"
+        },
+        catServices: {
+            "name": "C: services 🤝",
+            "id": "LA_kwDOH9Ray88AAAABDQPW5A"
+        },
+        catTesting: {
+            "name": "C: tests 🧪",
+            "id": "LA_kwDOH9Ray88AAAABDP4R1g"
+        },
+        domainApi: {
+            "name": "D: API📡",
+            "id": "LA_kwDOH9Ray88AAAABDQIsMw"
+        },
+        domainCalendar: {
+            "name": "D: Calendar 📆",
+            "id": "LA_kwDOH9Ray88AAAABDP-zJQ"
+        },
+        domainCore: {
+            "name": "D: EE CORE ☕",
+            "id": "LA_kwDOH9Ray88AAAABDP4q-w"
+        },
+        domainEventSmart: {
+            "name": "D: Event Smart 🛒",
+            "id": "LA_kwDOH9Ray88AAAABDP4xWQ"
+        },
+        domainGateways: {
+            "name": "D: Gateways💲",
+            "id": "LA_kwDOH9Ray88AAAABDP6Fng"
+        },
+        domainMessages: {
+            "name": "D: Messages 📩",
+            "id": "LA_kwDOH9Ray88AAAABDP728Q"
+        },
+        domainRemAddon: {
+            "name": "D: REM ♻️",
+            "id": "LA_kwDOH9Ray88AAAABDP485A"
+        },
+        domainTemplates: {
+            "name": "D: Templates 📰",
+            "id": "LA_kwDOH9Ray88AAAABDQNrGw"
+        },
+        domainThemes: {
+            "name": "D: Themes 🎨",
+            "id": "LA_kwDOH9Ray88AAAABDP8rrA"
+        },
+        domainWpUserAddon: {
+            "name": "D: WP User Add-on 🤷‍♀️",
+            "id": "LA_kwDOH9Ray88AAAABDP5LcA"
+        },
+        priorityUrgent: {
+            "name": "P1: URGENT PRIORITY :scream:",
+            "id": "LA_kwDOH9Ray88AAAABDP9VMg"
+        },
+        priorityHigh: {
+            "name": "P2: HIGH priority 😮",
+            "id": "LA_kwDOH9Ray88AAAABDP9ZRA"
+        },
+        priorityMedium: {
+            "name": "P3: med priority 😐",
+            "id": "LA_kwDOH9Ray88AAAABDP9dew"
+        },
+        priorityLow: {
+            "name": "P4: low priority 😎",
+            "id": "LA_kwDOH9Ray88AAAABDP9iPg"
+        },
+        statusNew: {
+            "name": "S1: new 👶🏻",
+            "id": "LA_kwDOH9Ray88AAAABDP_CWg"
+        },
+        statusPlanning: {
+            "name": "S2: planning 📋",
+            "id": "LA_kwDOH9Ray88AAAABDP_G4w"
+        },
+        statusNeedsFeedback: {
+            "name": "S3: needs feedback ❔",
+            "id": "LA_kwDOH9Ray88AAAABDP_KHg"
+        },
+        statusInProgress: {
+            "name": "S4: in progress 🚧",
+            "id": "LA_kwDOH9Ray88AAAABDP_NKg"
+        },
+        statusCodeReview: {
+            "name": "S5: code review 🔎",
+            "id": "LA_kwDOH9Ray88AAAABDQBBDQ"
+        },
+        statusPleaseFix: {
+            "name": "S6: please fix 💉",
+            "id": "LA_kwDOH9Ray88AAAABDQBERQ"
+        },
+        statusApproved: {
+            "name": "S7: APPROVED ✔️",
+            "id": "LA_kwDOH9Ray88AAAABDQBINw"
+        },
+        statusNeedsTesting: {
+            "name": "S8: needs testing 🧪",
+            "id": "LA_kwDOH9Ray88AAAABDQBKvw"
+        },
+        statusCompleted: {
+            "name": "S9: completed 🚀",
+            "id": "LA_kwDOH9Ray88AAAABDQBQKA"
+        },
+        statusBlocked: {
+            "name": "s10: BLOCKED ⚠️",
+            "id": "LA_kwDOH9Ray88AAAABDQBUYw"
+        },
+        statusDuplicate: {
+            "name": "S11: duplicate? ©️",
+            "id": "LA_kwDOH9Ray88AAAABDQBYiQ"
+        },
+        statusInvalid: {
+            "name": "S12: invalid 👽",
+            "id": "LA_kwDOH9Ray88AAAABDQBcQg"
+        },
+        typeBug: {
+            "name": "T: bug 🪲",
+            "id": "LA_kwDOH9Ray88AAAABDQBr1Q"
+        },
+        typeCodeQuality: {
+            "name": "T: code quality 👾",
+            "id": "LA_kwDOH9Ray88AAAABDQBvig"
+        },
+        typeEnhancement: {
+            "name": "T: enhancement ✨",
+            "id": "LA_kwDOH9Ray88AAAABDQBztw"
+        },
+        typeNewFeature: {
+            "name": "T: new feature 🎁",
+            "id": "LA_kwDOH9Ray88AAAABDQB2fw"
+        },
+        typeTask: {
+            "name": "T: task 🧹",
+            "id": "LA_kwDOH9Ray88AAAABDQB4wA"
+        },
+        xEval: {
+            "name": "X: EVALUATION-ISSUE 🎯",
+            "id": "LA_kwDOH9Ray88AAAABDQB6yA"
+        },
+        xEzPz: {
+            "name": "X: EZ PZ 🍰",
+            "id": "LA_kwDOH9Ray88AAAABDQB96A"
+        },
+        xHard: {
+            "name": "X: HARD ☠️",
+            "id": "LA_kwDOH9Ray88AAAABDQCBDg"
+        },
+    }
 };
 
 
@@ -6740,9 +6919,9 @@ const removeLabelsMutation = `
 				}
 			}
 	`;
-const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusInvalid.id];
+        const labelIds = [labels.statusInvalid.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterClose', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6751,9 +6930,9 @@ const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterMerge = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusCompleted.id];
+        const labelIds = [labels.statusCompleted.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6762,9 +6941,9 @@ const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusNew.id];
+        const labelIds = [labels.statusNew.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterCreated', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6773,9 +6952,9 @@ const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusApproved.id];
+        const labelIds = [labels.statusApproved.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6784,9 +6963,9 @@ const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewChangesRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusPleaseFix.id];
+        const labelIds = [labels.statusPleaseFix.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6795,9 +6974,9 @@ const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusCodeReview.id];
+        const labelIds = [labels.statusCodeReview.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6806,9 +6985,9 @@ const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewRequestRemoved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusInProgress.id];
+        const labelIds = [labels.statusInProgress.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6817,22 +6996,25 @@ const assignLabelsAfterReviewRequestRemoved = (labelableId) => __awaiter(void 0,
         core.setFailed(error.message);
     }
 });
-const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [
-            labels_1.labels.statusNew.id,
-            labels_1.labels.statusPlanning.id,
-            labels_1.labels.statusNeedsFeedback.id,
-            labels_1.labels.statusInProgress.id,
-            labels_1.labels.statusCodeReview.id,
-            labels_1.labels.statusPleaseFix.id,
-            labels_1.labels.statusApproved.id,
-            labels_1.labels.statusNeedsTesting.id,
-            labels_1.labels.statusCompleted.id,
-            labels_1.labels.statusBlocked.id,
-            labels_1.labels.statusDuplicate.id,
-            labels_1.labels.statusInvalid.id,
+        let labelIds = [
+            labels.statusNew.id,
+            labels.statusPlanning.id,
+            labels.statusNeedsFeedback.id,
+            labels.statusInProgress.id,
+            labels.statusCodeReview.id,
+            labels.statusPleaseFix.id,
+            labels.statusApproved.id,
+            labels.statusNeedsTesting.id,
+            labels.statusCompleted.id,
+            labels.statusBlocked.id,
+            labels.statusDuplicate.id,
+            labels.statusInvalid.id,
         ];
+        if (except !== '') {
+            labelIds = labelIds.filter(labelID => labelID !== except);
+        }
         // eslint-disable-next-line no-console
         console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(removeLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -6841,48 +7023,51 @@ const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0,
         core.setFailed(error.message);
     }
 });
-const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
+const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line no-console
     console.log('%c pullRequest.state', 'color: HotPink;', pullRequest.state);
     // eslint-disable-next-line no-console
     console.log('%c pullRequest.reviewDecision', 'color: HotPink;', pullRequest.reviewDecision);
+    const labels = labels_1.repoLabels[repo];
+    // eslint-disable-next-line no-console
+    console.log('%c repoLabels', 'color: DeepPink;', labels);
     switch (pullRequest.state) {
         case 'OPEN':
             // for OPEN PRs, let's first look whether a code review has either been requested or received a response
             // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
             switch (pullRequest.reviewDecision) {
                 case 'APPROVED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterReviewApproved(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusApproved.id);
+                    return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
                 case 'CHANGES_REQUESTED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterReviewChangesRequested(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
+                    return yield assignLabelsAfterReviewChangesRequested(labels, pullRequest.id);
                 case 'REVIEW_REQUIRED':
                     if (pullRequest.reviewRequests.totalCount > 0) {
-                        yield removeAllStatusLabels(pullRequest.id);
-                        return yield assignLabelsAfterReviewRequested(pullRequest.id);
+                        yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCodeReview.id);
+                        return yield assignLabelsAfterReviewRequested(labels, pullRequest.id);
                     }
                     else {
-                        yield removeAllStatusLabels(pullRequest.id);
-                        return yield assignLabelsAfterReviewRequestRemoved(pullRequest.id);
+                        yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInProgress.id);
+                        return yield assignLabelsAfterReviewRequestRemoved(labels, pullRequest.id);
                     }
                 default:
                     break;
             }
-            return assignLabelsAfterCreated(pullRequest.id);
+            return assignLabelsAfterCreated(labels, pullRequest.id);
         case 'CLOSED':
             switch (pullRequest.reviewDecision) {
                 case 'APPROVED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterMerge(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+                    return yield assignLabelsAfterMerge(labels, pullRequest.id);
                 case null:
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterClose(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
+                    return yield assignLabelsAfterClose(labels, pullRequest.id);
             }
             break;
         case 'MERGED':
-            yield removeAllStatusLabels(pullRequest.id);
-            return yield assignLabelsAfterMerge(pullRequest.id);
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+            return yield assignLabelsAfterMerge(labels, pullRequest.id);
     }
 });
 exports.assignStatusLabels = assignStatusLabels;
@@ -6981,23 +7166,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.gqlVariables = exports.pr = void 0;
+exports.gqlVariables = exports.pr = exports.repo = void 0;
 const core = __importStar(__webpack_require__(117));
 const owner = core.getInput('owner', { required: true });
-const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
+exports.repo = core.getInput('repo', { required: true });
 exports.pr = Number(core.getInput('prNumber', { required: true }));
 // eslint-disable-next-line no-console
 console.log('%c organization', 'color: LimeGreen;', owner);
 // eslint-disable-next-line no-console
-console.log('%c repository', 'color: Yellow;', repo);
+console.log('%c repository', 'color: Yellow;', exports.repo);
 // eslint-disable-next-line no-console
 console.log('%c pull request #', 'color: HotPink;', exports.pr);
 const headers = {
     'Content-Type': 'application/json',
-    authorization: `Bearer ${token}`,
+    'Authorization': `bearer ${token}`,
 };
-exports.gqlVariables = { owner, repo, headers };
+exports.gqlVariables = { owner, repo: exports.repo, headers };
 
 
 /***/ }),

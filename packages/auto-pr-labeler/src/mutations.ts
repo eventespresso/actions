@@ -43,7 +43,10 @@ const removeLabelsMutation = `
 			}
 	`;
 
-const assignLabelsAfterClose = async (labels: LabelList, labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterClose = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusInvalid.id];
 		// eslint-disable-next-line no-console
@@ -54,7 +57,10 @@ const assignLabelsAfterClose = async (labels: LabelList, labelableId: ID): Promi
 	}
 };
 
-const assignLabelsAfterMerge = async (labels: LabelList, labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterMerge = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusCompleted.id];
 		// eslint-disable-next-line no-console
@@ -65,7 +71,10 @@ const assignLabelsAfterMerge = async (labels: LabelList, labelableId: ID): Promi
 	}
 };
 
-const assignLabelsAfterCreated = async (labels: LabelList, labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterCreated = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusNew.id];
 		// eslint-disable-next-line no-console
@@ -76,7 +85,10 @@ const assignLabelsAfterCreated = async (labels: LabelList, labelableId: ID): Pro
 	}
 };
 
-const assignLabelsAfterReviewApproved = async (labels: LabelList, labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewApproved = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusApproved.id];
 		// eslint-disable-next-line no-console
@@ -101,7 +113,10 @@ const assignLabelsAfterReviewChangesRequested = async (
 	}
 };
 
-const assignLabelsAfterReviewRequested = async ( labels: LabelList,  labelableId: ID ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewRequested = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusCodeReview.id];
 		// eslint-disable-next-line no-console
@@ -112,7 +127,10 @@ const assignLabelsAfterReviewRequested = async ( labels: LabelList,  labelableId
 	}
 };
 
-const assignLabelsAfterReviewRequestRemoved = async ( labels: LabelList,  labelableId: ID ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const assignLabelsAfterReviewRequestRemoved = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		const labelIds: Array<ID> = [labels.statusInProgress.id];
 		// eslint-disable-next-line no-console
@@ -123,7 +141,11 @@ const assignLabelsAfterReviewRequestRemoved = async ( labels: LabelList,  labela
 	}
 };
 
-const removeAllStatusLabels = async (labels: LabelList, labelableId: ID, except: ID = ''): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const removeAllStatusLabels = async (
+	labels: LabelList,
+	labelableId: ID,
+	except: ID = ''
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		let labelIds: Array<ID> = [
 			labels.statusNew.id,
@@ -140,7 +162,7 @@ const removeAllStatusLabels = async (labels: LabelList, labelableId: ID, except:
 			labels.statusInvalid.id,
 		];
 		if (except !== '') {
-			labelIds = labelIds.filter(labelID => labelID !== except)
+			labelIds = labelIds.filter((labelID) => labelID !== except);
 		}
 		// eslint-disable-next-line no-console
 		console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });

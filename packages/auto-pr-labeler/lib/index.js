@@ -29,16 +29,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
+const utils_1 = require("./utils");
 const mutations_1 = require("./mutations");
 const queries_1 = require("./queries");
-const utils_1 = require("./utils");
 const assignStatusLabelsToPullRequest = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const results = yield (0, queries_1.getPullRequest)(utils_1.pr);
     // eslint-disable-next-line no-console
     console.log('%c pull request query results', 'color: cyan;', results);
-    if ((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) {
-        (0, mutations_1.assignStatusLabels)(results.repository.pullRequest);
+    if (((_a = results === null || results === void 0 ? void 0 : results.repository) === null || _a === void 0 ? void 0 : _a.pullRequest) && results.repository.pullRequest !== null) {
+        (0, mutations_1.assignStatusLabels)(utils_1.repo, results.repository.pullRequest);
+    }
+    else {
+        throw new Error(`Could not retrieve a valid Pull Request with ID: ${utils_1.pr}`);
     }
 });
 try {

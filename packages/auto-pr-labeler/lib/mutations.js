@@ -69,9 +69,9 @@ const removeLabelsMutation = `
 				}
 			}
 	`;
-const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusInvalid.id];
+        const labelIds = [labels.statusInvalid.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterClose', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -80,9 +80,9 @@ const assignLabelsAfterClose = (labelableId) => __awaiter(void 0, void 0, void 0
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterMerge = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusCompleted.id];
+        const labelIds = [labels.statusCompleted.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -91,9 +91,9 @@ const assignLabelsAfterMerge = (labelableId) => __awaiter(void 0, void 0, void 0
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusNew.id];
+        const labelIds = [labels.statusNew.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterCreated', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -102,9 +102,9 @@ const assignLabelsAfterCreated = (labelableId) => __awaiter(void 0, void 0, void
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusApproved.id];
+        const labelIds = [labels.statusApproved.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewApproved', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -113,9 +113,9 @@ const assignLabelsAfterReviewApproved = (labelableId) => __awaiter(void 0, void 
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewChangesRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusPleaseFix.id];
+        const labelIds = [labels.statusPleaseFix.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewChangesRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -124,9 +124,9 @@ const assignLabelsAfterReviewChangesRequested = (labelableId) => __awaiter(void 
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusCodeReview.id];
+        const labelIds = [labels.statusCodeReview.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -135,9 +135,9 @@ const assignLabelsAfterReviewRequested = (labelableId) => __awaiter(void 0, void
         core.setFailed(error.message);
     }
 });
-const assignLabelsAfterReviewRequestRemoved = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels_1.labels.statusInProgress.id];
+        const labelIds = [labels.statusInProgress.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterReviewRequested', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -146,22 +146,25 @@ const assignLabelsAfterReviewRequestRemoved = (labelableId) => __awaiter(void 0,
         core.setFailed(error.message);
     }
 });
-const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [
-            labels_1.labels.statusNew.id,
-            labels_1.labels.statusPlanning.id,
-            labels_1.labels.statusNeedsFeedback.id,
-            labels_1.labels.statusInProgress.id,
-            labels_1.labels.statusCodeReview.id,
-            labels_1.labels.statusPleaseFix.id,
-            labels_1.labels.statusApproved.id,
-            labels_1.labels.statusNeedsTesting.id,
-            labels_1.labels.statusCompleted.id,
-            labels_1.labels.statusBlocked.id,
-            labels_1.labels.statusDuplicate.id,
-            labels_1.labels.statusInvalid.id,
+        let labelIds = [
+            labels.statusNew.id,
+            labels.statusPlanning.id,
+            labels.statusNeedsFeedback.id,
+            labels.statusInProgress.id,
+            labels.statusCodeReview.id,
+            labels.statusPleaseFix.id,
+            labels.statusApproved.id,
+            labels.statusNeedsTesting.id,
+            labels.statusCompleted.id,
+            labels.statusBlocked.id,
+            labels.statusDuplicate.id,
+            labels.statusInvalid.id,
         ];
+        if (except !== '') {
+            labelIds = labelIds.filter(labelID => labelID !== except);
+        }
         // eslint-disable-next-line no-console
         console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(removeLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
@@ -170,48 +173,51 @@ const removeAllStatusLabels = (labelableId) => __awaiter(void 0, void 0, void 0,
         core.setFailed(error.message);
     }
 });
-const assignStatusLabels = (pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
+const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line no-console
     console.log('%c pullRequest.state', 'color: HotPink;', pullRequest.state);
     // eslint-disable-next-line no-console
     console.log('%c pullRequest.reviewDecision', 'color: HotPink;', pullRequest.reviewDecision);
+    const labels = labels_1.repoLabels[repo];
+    // eslint-disable-next-line no-console
+    console.log('%c repoLabels', 'color: DeepPink;', labels);
     switch (pullRequest.state) {
         case 'OPEN':
             // for OPEN PRs, let's first look whether a code review has either been requested or received a response
             // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
             switch (pullRequest.reviewDecision) {
                 case 'APPROVED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterReviewApproved(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusApproved.id);
+                    return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
                 case 'CHANGES_REQUESTED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterReviewChangesRequested(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
+                    return yield assignLabelsAfterReviewChangesRequested(labels, pullRequest.id);
                 case 'REVIEW_REQUIRED':
                     if (pullRequest.reviewRequests.totalCount > 0) {
-                        yield removeAllStatusLabels(pullRequest.id);
-                        return yield assignLabelsAfterReviewRequested(pullRequest.id);
+                        yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCodeReview.id);
+                        return yield assignLabelsAfterReviewRequested(labels, pullRequest.id);
                     }
                     else {
-                        yield removeAllStatusLabels(pullRequest.id);
-                        return yield assignLabelsAfterReviewRequestRemoved(pullRequest.id);
+                        yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInProgress.id);
+                        return yield assignLabelsAfterReviewRequestRemoved(labels, pullRequest.id);
                     }
                 default:
                     break;
             }
-            return assignLabelsAfterCreated(pullRequest.id);
+            return assignLabelsAfterCreated(labels, pullRequest.id);
         case 'CLOSED':
             switch (pullRequest.reviewDecision) {
                 case 'APPROVED':
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterMerge(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+                    return yield assignLabelsAfterMerge(labels, pullRequest.id);
                 case null:
-                    yield removeAllStatusLabels(pullRequest.id);
-                    return yield assignLabelsAfterClose(pullRequest.id);
+                    yield removeAllStatusLabels(labels, pullRequest.id, labels.statusInvalid.id);
+                    return yield assignLabelsAfterClose(labels, pullRequest.id);
             }
             break;
         case 'MERGED':
-            yield removeAllStatusLabels(pullRequest.id);
-            return yield assignLabelsAfterMerge(pullRequest.id);
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
+            return yield assignLabelsAfterMerge(labels, pullRequest.id);
     }
 });
 exports.assignStatusLabels = assignStatusLabels;
