@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
+import { pr, repo } from './utils';
 import { assignStatusLabels } from './mutations';
 import { getPullRequest } from './queries';
-import { pr, repo } from './utils';
 
 const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	const results = await getPullRequest(pr);
@@ -11,7 +11,7 @@ const assignStatusLabelsToPullRequest = async (): Promise<void> => {
 	if (results?.repository?.pullRequest && results.repository.pullRequest !== null) {
 		assignStatusLabels(repo, results.repository.pullRequest);
 	} else {
-		 throw 'Could not retrieve a valid Pull Request with ID: ' + pr;
+		throw new Error(`Could not retrieve a valid Pull Request with ID: ${pr}`);
 	}
 };
 
