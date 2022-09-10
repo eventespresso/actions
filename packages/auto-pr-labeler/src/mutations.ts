@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import type { ID, LabelList, LabelsQueryResponse, PullRequest } from './types';
+import type { ID, LabelList, LabelsQueryResponse, PullRequest, RepoName } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 import { gqlVariables } from './utils';
 import { graphql } from '@octokit/graphql';
@@ -151,7 +151,7 @@ const removeAllStatusLabels = async (labels: LabelList, labelableId: ID, except:
 };
 
 export const assignStatusLabels = async (
-	repo: string,
+	repo: RepoName,
 	pullRequest: PullRequest
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	// eslint-disable-next-line no-console
