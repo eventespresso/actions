@@ -159,6 +159,7 @@ export const assignStatusLabels = async (
 	// eslint-disable-next-line no-console
 	console.log('%c pullRequest.reviewDecision', 'color: HotPink;', pullRequest.reviewDecision);
 	const labels = repoLabels[repo];
+	// eslint-disable-next-line no-console
 	console.log('%c repoLabels', 'color: DeepPink;', labels);
 	switch (pullRequest.state) {
 		case 'OPEN':
