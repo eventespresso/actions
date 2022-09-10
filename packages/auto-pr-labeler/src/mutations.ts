@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import type { ID, Label, LabelList, LabelsQueryResponse, PullRequest } from './types';
+import type { ID, LabelList, LabelsQueryResponse, PullRequest } from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 import { gqlVariables } from './utils';
 import { graphql } from '@octokit/graphql';
@@ -159,6 +159,7 @@ export const assignStatusLabels = async (
 	// eslint-disable-next-line no-console
 	console.log('%c pullRequest.reviewDecision', 'color: HotPink;', pullRequest.reviewDecision);
 	const labels = repoLabels[repo];
+	console.log('%c repoLabels', 'color: DeepPink;', labels);
 	switch (pullRequest.state) {
 		case 'OPEN':
 			// for OPEN PRs, let's first look whether a code review has either been requested or received a response
