@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 
 const owner = core.getInput('owner', { required: true });
-const repo = core.getInput('repo', { required: true });
 const token = core.getInput('token', { required: true });
+export const repo = core.getInput('repo', { required: true });
 export const pr = Number(core.getInput('prNumber', { required: true }));
 
 // eslint-disable-next-line no-console
