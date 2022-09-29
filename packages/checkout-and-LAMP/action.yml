@@ -21,6 +21,10 @@ inputs:
         required: false
         description: 'Composer command options. Default: "--optimize-autoloader --ignore-platform-reqs".'
         default: '--optimize-autoloader --ignore-platform-reqs'
+    composer-path:
+        required: false
+        description: 'Path to composer.json file. Default: "/".'
+        default: '/'
     fetch-depth:
         required: false
         description: 'Number of commits to fetch during checkout. 0 indicates all history for all branches and tags.'
@@ -68,5 +72,6 @@ runs:
           uses: 'ramsey/composer-install@v2'
           with:
               composer-options: ${{ inputs.composer-options }}  --ansi
-              dependency-versions: ${{ inputs.composer-dependencies }}
               custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}
+              dependency-versions: ${{ inputs.composer-dependencies }}
+              working-directory: ${{ inputs.composer-path }}
