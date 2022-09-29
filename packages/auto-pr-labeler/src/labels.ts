@@ -204,13 +204,13 @@ export const repoLabels: RepoLabels = {
 			name: 'C: i18n🌍',
 			id: 'LA_kwDOH9Ray88AAAABDP32qg',
 		},
+		catSecurity: {
+			name: 'C: security🔒',
+			id: 'LA_kwDOH9Ray88AAAABEdFSng',
+		},
 		catServices: {
 			name: 'C: services 🤝',
 			id: 'LA_kwDOH9Ray88AAAABDQPW5A',
-		},
-		catTesting: {
-			name: 'C: tests 🧪',
-			id: 'LA_kwDOH9Ray88AAAABDP4R1g',
 		},
 		domainApi: {
 			name: 'D: API📡',
@@ -243,6 +243,10 @@ export const repoLabels: RepoLabels = {
 		domainTemplates: {
 			name: 'D: Templates 📰',
 			id: 'LA_kwDOH9Ray88AAAABDQNrGw',
+		},
+		domainTesting: {
+			name: 'D: Tests 🧪',
+			id: 'LA_kwDOH9Ray88AAAABDP4R1g',
 		},
 		domainThemes: {
 			name: 'D: Themes 🎨',
