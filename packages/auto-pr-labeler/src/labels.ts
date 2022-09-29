@@ -192,10 +192,6 @@ export const repoLabels: RepoLabels = {
 			name: 'C: data systems 🗑',
 			id: 'LA_kwDOH9Ray88AAAABDP4HGg',
 		},
-		catBuildProcess: {
-			name: 'C: build process 🔨',
-			id: 'MDU6TGFiWw4NzA2NjYyMTg=',
-		},
 		catDocs: {
 			name: 'C: documentation 📑',
 			id: 'LA_kwDOH9Ray88AAAABDP4KnA',
@@ -203,6 +199,10 @@ export const repoLabels: RepoLabels = {
 		catI18n: {
 			name: 'C: i18n🌍',
 			id: 'LA_kwDOH9Ray88AAAABDP32qg',
+		},
+		catQualityAssurance: {
+			name: 'C: quality assurance 🏅',
+			id: 'LA_kwDOH9Ray88AAAABD5CtkA',
 		},
 		catSecurity: {
 			name: 'C: security🔒',
