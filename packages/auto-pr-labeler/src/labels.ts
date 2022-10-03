@@ -142,21 +142,17 @@ export const repoLabels: RepoLabels = {
 			name: 'T: bug 🐞',
 			id: 'MDU6TGFiZWw4NzA2NjYyMTQ=',
 		},
-		typeCodeQuality: {
-			name: 'T: code quality 👾',
-			id: 'MDU6TGFiZWwyMzcyNTUxOTM1',
-		},
-		typeEnhancement: {
-			name: 'T: enhancement ✨',
-			id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
+		typeChore: {
+			name: 'T: chore 🧹',
+			id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
 		},
 		typeNewFeature: {
-			name: 'T: new feature 🎁',
+			name: 'T: new feature ✨',
 			id: 'MDU6TGFiZWwyMjExNTQ1NDg5',
 		},
-		typeTask: {
-			name: 'T: task 🧹',
-			id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
+		typeRefactor: {
+			name: 'T: refactor 🔄',
+			id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
 		},
 		xEval: {
 			name: 'X: EVALUATION-ISSUE 🎯',
@@ -324,21 +320,17 @@ export const repoLabels: RepoLabels = {
 			name: 'T: bug 🪲',
 			id: 'LA_kwDOH9Ray88AAAABDQBr1Q',
 		},
-		typeCodeQuality: {
-			name: 'T: code quality 👾',
-			id: 'LA_kwDOH9Ray88AAAABDQBvig',
-		},
-		typeEnhancement: {
-			name: 'T: enhancement ✨',
-			id: 'LA_kwDOH9Ray88AAAABDQBztw',
+		typeChore: {
+			name: 'T: chore 🧹',
+			id: 'LA_kwDOH9Ray88AAAABDQB4wA',
 		},
 		typeNewFeature: {
-			name: 'T: new feature 🎁',
+			name: 'T: new feature ✨',
 			id: 'LA_kwDOH9Ray88AAAABDQB2fw',
 		},
-		typeTask: {
-			name: 'T: task 🧹',
-			id: 'LA_kwDOH9Ray88AAAABDQB4wA',
+		typeRefactor: {
+			name: 'T: refactor 🔄',
+			id: 'LA_kwDOH9Ray88AAAABDQBztw',
 		},
 		xEval: {
 			name: 'X: EVALUATION-ISSUE 🎯',
