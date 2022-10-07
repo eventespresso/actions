@@ -1,8 +1,10 @@
 {
+	"author": "Event Espresso",
+	"license": "GPL-3.0",
+	"main": "src/index.ts",
 	"name": "@eventespresso-actions/auto-pr-labeler",
-	"version": "0.0.1",
 	"private": true,
-	"main": "src/index.js",
+	"version": "0.0.1",
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",
@@ -10,7 +12,5 @@
 		"lint": "eslint src/**/*.ts",
 		"package": "ncc build --source-map --license licenses.txt",
 		"all": "npm run build && npm run format && npm run lint && npm run package"
-	},
-	"author": "Event Espresso",
-	"license": "GPL-3.0"
+	}
 }
