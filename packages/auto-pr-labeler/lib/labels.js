@@ -143,21 +143,17 @@ exports.repoLabels = {
             name: 'T: bug 🐞',
             id: 'MDU6TGFiZWw4NzA2NjYyMTQ=',
         },
-        typeCodeQuality: {
-            name: 'T: code quality 👾',
-            id: 'MDU6TGFiZWwyMzcyNTUxOTM1',
-        },
-        typeEnhancement: {
-            name: 'T: enhancement ✨',
-            id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
+        typeChore: {
+            name: 'T: chore 🧹',
+            id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
         },
         typeNewFeature: {
-            name: 'T: new feature 🎁',
+            name: 'T: new feature ✨',
             id: 'MDU6TGFiZWwyMjExNTQ1NDg5',
         },
-        typeTask: {
-            name: 'T: task 🧹',
-            id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
+        typeRefactor: {
+            name: 'T: refactor 🔄',
+            id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
         },
         xEval: {
             name: 'X: EVALUATION-ISSUE 🎯',
@@ -193,10 +189,6 @@ exports.repoLabels = {
             name: 'C: data systems 🗑',
             id: 'LA_kwDOH9Ray88AAAABDP4HGg',
         },
-        catBuildProcess: {
-            name: 'C: build process 🔨',
-            id: 'MDU6TGFiWw4NzA2NjYyMTg=',
-        },
         catDocs: {
             name: 'C: documentation 📑',
             id: 'LA_kwDOH9Ray88AAAABDP4KnA',
@@ -205,13 +197,17 @@ exports.repoLabels = {
             name: 'C: i18n🌍',
             id: 'LA_kwDOH9Ray88AAAABDP32qg',
         },
+        catQualityAssurance: {
+            name: 'C: quality assurance 🏅',
+            id: 'LA_kwDOH9Ray88AAAABD5CtkA',
+        },
+        catSecurity: {
+            name: 'C: security🔒',
+            id: 'LA_kwDOH9Ray88AAAABEdFSng',
+        },
         catServices: {
             name: 'C: services 🤝',
             id: 'LA_kwDOH9Ray88AAAABDQPW5A',
-        },
-        catTesting: {
-            name: 'C: tests 🧪',
-            id: 'LA_kwDOH9Ray88AAAABDP4R1g',
         },
         domainApi: {
             name: 'D: API📡',
@@ -244,6 +240,10 @@ exports.repoLabels = {
         domainTemplates: {
             name: 'D: Templates 📰',
             id: 'LA_kwDOH9Ray88AAAABDQNrGw',
+        },
+        domainTesting: {
+            name: 'D: Tests 🧪',
+            id: 'LA_kwDOH9Ray88AAAABDP4R1g',
         },
         domainThemes: {
             name: 'D: Themes 🎨',
@@ -321,21 +321,17 @@ exports.repoLabels = {
             name: 'T: bug 🪲',
             id: 'LA_kwDOH9Ray88AAAABDQBr1Q',
         },
-        typeCodeQuality: {
-            name: 'T: code quality 👾',
-            id: 'LA_kwDOH9Ray88AAAABDQBvig',
-        },
-        typeEnhancement: {
-            name: 'T: enhancement ✨',
-            id: 'LA_kwDOH9Ray88AAAABDQBztw',
+        typeChore: {
+            name: 'T: chore 🧹',
+            id: 'LA_kwDOH9Ray88AAAABDQB4wA',
         },
         typeNewFeature: {
-            name: 'T: new feature 🎁',
+            name: 'T: new feature ✨',
             id: 'LA_kwDOH9Ray88AAAABDQB2fw',
         },
-        typeTask: {
-            name: 'T: task 🧹',
-            id: 'LA_kwDOH9Ray88AAAABDQB4wA',
+        typeRefactor: {
+            name: 'T: refactor 🔄',
+            id: 'LA_kwDOH9Ray88AAAABDQBztw',
         },
         xEval: {
             name: 'X: EVALUATION-ISSUE 🎯',
