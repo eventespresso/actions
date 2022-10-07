@@ -27,8 +27,8 @@ inputs:
         default: '--optimize-autoloader --ignore-platform-reqs'
     composer-path:
         required: false
-        description: 'Path to composer.json file. Default: "/".'
-        default: '/'
+        description: 'Path to composer.json file. Default: "/home/runner/.cache".'
+        default: '/home/runner/.cache'
     fetch-depth:
         required: false
         description: 'Number of commits to fetch during checkout. 0 indicates all history for all branches and tags.'
