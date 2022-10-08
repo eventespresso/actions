@@ -1,18 +1,17 @@
+import * as github from '@actions/github';
 import { getInput, info, setFailed } from '@actions/core';
-import { context, getOctokit } from '@actions/github';
-
 import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/io';
 
 (async () => {
 	try {
 
-		const PAYLOAD = context?.payload;
+		const PAYLOAD = github.context?.payload;
 		// if (PAYLOAD.action !== 'closed' && PAYLOAD.pull_request.merged !== true) {
 		// 	return;
 		// }
 
-		const repo = context?.repo?.repo;
-		const owner = context?.repo?.owner;
+		const repo = github.context?.repo?.repo;
+		const owner = github.context?.repo?.owner;
 		if (!repo || !owner) {
 			setFailed(`WUT?!?! The repo and/or owner data is missing from the payload?!?!? `)
 		}
@@ -25,7 +24,7 @@ import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/
 		}
 
 		const GITHUB_TOKEN = getInput('token', {required: true});
-		const octokit = getOctokit(GITHUB_TOKEN);
+		const octokit = github.getOctokit(GITHUB_TOKEN);
 
 		// https://developer.github.com/v3/repos/commits/#compare-two-commits
 		const comparison = await octokit.repos.compareCommits({ base, head, owner, repo });
