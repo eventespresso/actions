@@ -1,0 +1,10 @@
+name: 'Multi Changelog'
+description: 'Pull request action for adding entries to multiple changelogs in multiple directories'
+inputs:
+    token:
+        required: true
+        description: 'Personal access token (PAT) used to fetch the repository.'
+        default: ${{ github.token }}
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
