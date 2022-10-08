@@ -1,5 +1,5 @@
-import { context, getOctokit } from '@actions/github'
 import { getInput, info, setFailed } from '@actions/core';
+import { context, getOctokit } from '@actions/github'
 import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/io';
 
 
