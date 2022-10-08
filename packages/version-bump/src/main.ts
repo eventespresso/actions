@@ -9,7 +9,7 @@ import {
 	README_FILE_STABLE_TAG_REGEX,
 	getInput,
 } from './utils';
-import { filter, map } from 'ramda';
+import { filter } from 'ramda';
 
 export async function run(): Promise<void> {
 	const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = getInput();
@@ -45,12 +45,14 @@ export async function run(): Promise<void> {
 		let releaseType = releaseTypeInput || versionParts.releaseType;
 
 		// make sure the numeric parts of the version are numbers
-		let { major, minor, patch, build } = map(Number, versionParts);
+		let { major, minor, patch, build } = versionParts;
+
+		const valueBump = parseInt(value, 10);
 
 		switch (type) {
 			case 'major':
 				// either the value passed explicitly to reset build number or an incremented value
-				major = value || ++major;
+				major = valueBump || ++major;
 				// both minor, patch and build numbers reset to zero
 				minor = 0;
 				patch = 0;
@@ -60,7 +62,7 @@ export async function run(): Promise<void> {
 				break;
 
 			case 'minor':
-				minor = value || ++minor;
+				minor = valueBump || ++minor;
 				// patch and build reset to zero
 				patch = 0;
 				build = 0;
@@ -69,14 +71,14 @@ export async function run(): Promise<void> {
 				break;
 
 			case 'patch':
-				patch = value || ++patch;
+				patch = valueBump || ++patch;
 				build = 0;
 
 				updateInfoJson = true;
 				break;
 
 			case 'build':
-				build = value || ++build;
+				build = valueBump || ++build;
 				// to use build number there must be a release type.
 				// if none is present or supplied, use `rc` by default
 				releaseType = releaseType || 'rc';
