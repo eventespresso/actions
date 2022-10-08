@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -60,11 +64,12 @@ function run() {
             // extract `releaseType` from the parts as it's the only non-numeric part
             let releaseType = releaseTypeInput || versionParts.releaseType;
             // make sure the numeric parts of the version are numbers
-            let { major, minor, patch, build } = (0, ramda_1.map)(Number, versionParts);
+            let { major, minor, patch, build } = versionParts;
+            const valueBump = parseInt(value, 10);
             switch (type) {
                 case 'major':
                     // either the value passed explicitly to reset build number or an incremented value
-                    major = value || ++major;
+                    major = valueBump || ++major;
                     // both minor, patch and build numbers reset to zero
                     minor = 0;
                     patch = 0;
@@ -72,19 +77,19 @@ function run() {
                     updateInfoJson = true;
                     break;
                 case 'minor':
-                    minor = value || ++minor;
+                    minor = valueBump || ++minor;
                     // patch and build reset to zero
                     patch = 0;
                     build = 0;
                     updateInfoJson = true;
                     break;
                 case 'patch':
-                    patch = value || ++patch;
+                    patch = valueBump || ++patch;
                     build = 0;
                     updateInfoJson = true;
                     break;
                 case 'build':
-                    build = value || ++build;
+                    build = valueBump || ++build;
                     // to use build number there must be a release type.
                     // if none is present or supplied, use `rc` by default
                     releaseType = releaseType || 'rc';
