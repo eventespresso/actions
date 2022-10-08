@@ -1,4 +1,4 @@
-import { context, GitHub } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 import { getInput, info, setFailed } from '@actions/core';
 import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/io';
 
@@ -25,10 +25,10 @@ import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/
 		}
 
 		const GITHUB_TOKEN = getInput('token', {required: true});
-		const restClient = new GitHub(GITHUB_TOKEN);
+		const octokit = getOctokit(GITHUB_TOKEN);
 
 		// https://developer.github.com/v3/repos/commits/#compare-two-commits
-		const comparison = await restClient.repos.compareCommits({ base, head, owner, repo });
+		const comparison = await octokit.repos.compareCommits({ base, head, owner, repo });
 
 		if (comparison?.status !== 200) {
 			setFailed(`GitHub.repos.compareCommits() failed for commits base: ${base} and head: ${head}`)
