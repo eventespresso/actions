@@ -26,7 +26,7 @@ runs:
         - name: Set up Node
           uses: actions/setup-node@v2
           with:
-              node-version: lts/*
+              node-version: 16
 
         - name: Cache dependencies
           id: cache-deps
