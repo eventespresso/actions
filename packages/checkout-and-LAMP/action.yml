@@ -57,7 +57,7 @@ runs:
         - name: Set Timestamp
           id: timestamp
           shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-          run: echo "::set-output name=hour::$(date +'%Y-%m-%d-%H')"
+          run: echo "hour=$(date +'%Y-%m-%d-%H')" >> $GITHUB_OUTPUT
 
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
