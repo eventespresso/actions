@@ -18,7 +18,7 @@ runs:
     using: 'composite'
     steps:
         - name: Checkout the commit
-          uses: actions/checkout@v2
+          uses: actions/checkout@v3
           with:
               fetch-depth: ${{ inputs.fetch-depth }}
               token: ${{ inputs.token }}

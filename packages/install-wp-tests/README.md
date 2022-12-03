@@ -26,7 +26,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the commit
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Install WP Tests
               uses: eventespresso/actions/packages/install-wp-tests@main

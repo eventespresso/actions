@@ -34,7 +34,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the commit
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Bump the version
               id: bump-version
               uses: eventespresso/actions/packages/version-bump@main
