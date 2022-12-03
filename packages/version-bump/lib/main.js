@@ -108,7 +108,7 @@ function run() {
                 newVersion += `.${build.toString().padStart(3, '0')}`;
             }
             // replace versions in main file with newVersion.
-            mainFileContents = mainFileContents.replace(currentVersion, newVersion);
+            mainFileContents = mainFileContents.replace(`${currentVersion}/g`, newVersion);
             // update info.json, so decaf release get built off of this tag.
             if (updateInfoJson && infoJson) {
                 infoJson.wpOrgRelease = newVersion;
