@@ -23,5 +23,5 @@ inputs:
     headers-json-file:
         description: 'Path of the JSON file to read the POT headers from. Must be relative to root directory. Preferred over headers'
 runs:
-    using: 'node12'
+    using: 'node16'
     main: 'dist/index.js'

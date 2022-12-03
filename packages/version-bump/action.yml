@@ -19,5 +19,5 @@ inputs:
         required: true
         description: 'Path of the info.json file.'
 runs:
-    using: 'node12'
+    using: 'node16'
     main: 'dist/index.js'
