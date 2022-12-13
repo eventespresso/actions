@@ -18,7 +18,7 @@ export async function run(): Promise<void> {
 
 	try {
 		// read main file contents
-		let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' });
+		let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' }).toString().trim();
 		// read info.json file contents
 		const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
 		// get the current version using regex
@@ -39,6 +39,8 @@ export async function run(): Promise<void> {
 
 		// build version parts by setting defaults
 		const versionParts = { ...DEFAULT_VERSION_PARTS, ...nonEmptyVersionParts };
+
+		console.log({versionParts});
 
 		// prefer releaseType from inputs or
 		// extract `releaseType` from the parts as it's the only non-numeric part
@@ -143,6 +145,7 @@ export async function run(): Promise<void> {
 
 		// set the output
 		core.setOutput('new-version', newVersion);
+        core.info(`new version: ${newVersion}`);
 	} catch (error) {
 		core.setFailed(error.message);
 	}
