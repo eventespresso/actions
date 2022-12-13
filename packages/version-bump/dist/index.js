@@ -19217,7 +19217,7 @@ function run() {
         let updateInfoJson = false;
         try {
             // read main file contents
-            let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' });
+            let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' }).toString().trim();
             // read info.json file contents
             const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
             // get the current version using regex
@@ -19233,6 +19233,7 @@ function run() {
             const nonEmptyVersionParts = (0, ramda_1.filter)(Boolean, versionPartsMatch === null || versionPartsMatch === void 0 ? void 0 : versionPartsMatch.groups);
             // build version parts by setting defaults
             const versionParts = Object.assign(Object.assign({}, utils_1.DEFAULT_VERSION_PARTS), nonEmptyVersionParts);
+            console.log({ versionParts });
             // prefer releaseType from inputs or
             // extract `releaseType` from the parts as it's the only non-numeric part
             let releaseType = releaseTypeInput || versionParts.releaseType;
@@ -19314,6 +19315,7 @@ function run() {
             io.writeFileSync(mainFile, mainFileContents, { encoding: 'utf8' });
             // set the output
             core.setOutput('new-version', newVersion);
+            core.info(`new version: ${newVersion}`);
         }
         catch (error) {
             core.setFailed(error.message);

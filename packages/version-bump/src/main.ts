@@ -40,7 +40,7 @@ export async function run(): Promise<void> {
 		// build version parts by setting defaults
 		const versionParts = { ...DEFAULT_VERSION_PARTS, ...nonEmptyVersionParts };
 
-		console.log({versionParts});
+		console.log({ versionParts });
 
 		// prefer releaseType from inputs or
 		// extract `releaseType` from the parts as it's the only non-numeric part
@@ -145,7 +145,7 @@ export async function run(): Promise<void> {
 
 		// set the output
 		core.setOutput('new-version', newVersion);
-        core.info(`new version: ${newVersion}`);
+		core.info(`new version: ${newVersion}`);
 	} catch (error) {
 		core.setFailed(error.message);
 	}
