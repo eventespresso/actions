@@ -1,4 +1,3 @@
-
 import { filter } from 'ramda';
 import { DEFAULT_VERSION_PARTS, EE_VERSION_REGEX } from './utils';
 

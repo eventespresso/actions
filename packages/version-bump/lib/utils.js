@@ -84,6 +84,6 @@ exports.DEFAULT_VERSION_PARTS = {
     major: 0,
     minor: 0,
     patch: 0,
-    releaseType: '',
+    releaseType: 'rc',
     build: 0,
 };
