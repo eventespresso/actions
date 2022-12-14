@@ -26,17 +26,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DEFAULT_VERSION_PARTS = exports.EE_VERSION_REGEX = exports.README_FILE_STABLE_TAG_REGEX = exports.MAIN_FILE_PLUGIN_NAME_REGEX = exports.MAIN_FILE_PLUGIN_URI_REGEX = exports.MAIN_FILE_VERSION_REGEX = exports.getInput = exports.releaseTypes = exports.bumpTypes = void 0;
 const core = __importStar(require("@actions/core"));
 const io = __importStar(require("@eventespresso-actions/io"));
-exports.bumpTypes = ['major', 'minor', 'patch', 'release_type', 'build'];
+exports.bumpTypes = ['major', 'minor', 'patch', 'build', 'custom'];
 exports.releaseTypes = ['alpha', 'beta', 'decaf', 'rc', 'p'];
 /**
  * Retrieve the action inputs.
  */
 function getInput() {
+    const bumpType = core.getInput('bump-type', { required: true });
+    const customValue = core.getInput('custom-value');
     const infoJsonFile = core.getInput('info-json-file', { required: true });
     const mainFile = core.getInput('main-file', { required: true });
     const readmeFile = core.getInput('readme-file', { required: true });
-    const type = core.getInput('type', { required: true });
-    const value = core.getInput('value');
     const releaseType = core.getInput('release-type');
     if (!io.existsSync(mainFile)) {
         throw new Error('Main file does not exist.');
@@ -47,8 +47,8 @@ function getInput() {
     if (!io.existsSync(readmeFile)) {
         throw new Error('readme.txt file does not exist.');
     }
-    if (!exports.bumpTypes.includes(type)) {
-        throw new Error(`Unknown bump type - ${type}`);
+    if (!exports.bumpTypes.includes(bumpType)) {
+        throw new Error(`Unknown bump type - ${bumpType}`);
     }
     if (releaseType && !exports.releaseTypes.includes(releaseType)) {
         throw new Error(`Unknown release type - ${releaseType}`);
@@ -58,8 +58,8 @@ function getInput() {
         mainFile,
         readmeFile,
         releaseType,
-        type,
-        value,
+        bumpType,
+        customValue,
     };
 }
 exports.getInput = getInput;
@@ -84,6 +84,6 @@ exports.DEFAULT_VERSION_PARTS = {
     major: 0,
     minor: 0,
     patch: 0,
-    releaseType: 'rc',
     build: 0,
+    releaseType: 'rc',
 };
