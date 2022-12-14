@@ -48,7 +48,7 @@ function run(mainFile, releaseTypeInput, type, value) {
             // get the current version using regex
             const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
             if (!currentVersion) {
-                throw new Error('Could not parse version string from main file.');
+                throw new Error(`Could not parse version string from main file. currentVersion: ${currentVersion}`);
             }
             const { releaseType, newVersion, updateInfoJson } = yield (0, getVersionInfo_1.getVersionInfo)(currentVersion, releaseTypeInput, type, value);
             // replace versions in main file with newVersion.
