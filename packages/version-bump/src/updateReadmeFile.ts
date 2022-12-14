@@ -1,4 +1,4 @@
-import { readFile, writeFile } from '@actions/io';
+import { readFile, writeFile } from '@eventespresso-actions/io';
 import { README_FILE_STABLE_TAG_REGEX, getInput } from './utils';
 
 export async function updateReadmeFile(newVersion: string): Promise<void> {

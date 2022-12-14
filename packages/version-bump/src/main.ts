@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { readFile, writeFile } from '@actions/io';
+import { readFile, writeFile } from '@eventespresso-actions/io';
 import { getVersionInfo } from './getVersionInfo';
 import { handleDecafRelease } from './handleDecafRelease';
 import { BumpType, BumpValue, ReleaseType } from './types';

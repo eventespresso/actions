@@ -1,4 +1,4 @@
-import { readFile, writeFile } from '@actions/io';
+import { readFile, writeFile } from '@eventespresso-actions/io';
 import { getInput } from './utils';
 
 import type { InfoJson } from './types';
