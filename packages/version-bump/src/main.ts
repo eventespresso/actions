@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
-import * as io from '@eventespresso-actions/io';
 import { filter } from 'ramda';
-import { promises as fs } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import {
 	DEFAULT_VERSION_PARTS,
 	EE_VERSION_REGEX,
@@ -14,16 +13,15 @@ import {
 
 
 export async function run(): Promise<void> {
-	const { readFileSync, writeFileSync } = fs;
 	const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = getInput();
 
 	let updateInfoJson = false;
 
 	try {
 		// read main file contents
-		let mainFileContents = await readFileSync(mainFile, { encoding: 'utf8' }).toString().trim();
+		let mainFileContents = readFileSync(mainFile, { encoding: 'utf8' }).toString().trim();
 		// read info.json file contents
-		const infoJson = JSON.parse(await readFileSync(infoJsonFile, { encoding: 'utf8' }));
+		const infoJson = JSON.parse(readFileSync(infoJsonFile, { encoding: 'utf8' }));
 		// get the current version using regex
 		const currentVersion = mainFileContents.match(MAIN_FILE_VERSION_REGEX)?.groups?.version;
 
@@ -118,7 +116,7 @@ export async function run(): Promise<void> {
 			infoJson.wpOrgRelease = newVersion;
 			const infoJsonContents = JSON.stringify(infoJson, null, 2);
 			// now save back to info.json
-			await writeFileSync(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
+			writeFileSync(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
 		}
 
 		// if version type is decaf then let's update extra values in main file and the readme.txt as well.
@@ -135,7 +133,7 @@ export async function run(): Promise<void> {
 			}
 
 			// get readme.txt file contents.
-			let readmeContents = await readFileSync(readmeFile, { encoding: 'utf8' });
+			let readmeContents = readFileSync(readmeFile, { encoding: 'utf8' });
 			// replace stable tag in readme.txt
 			readmeContents = readmeContents.replace(
 				README_FILE_STABLE_TAG_REGEX,
@@ -144,11 +142,11 @@ export async function run(): Promise<void> {
 				(match, p1) => match.replace(p1, newVersion)
 			);
 			// now save back to readme.txt
-			await writeFileSync(readmeFile, readmeContents, { encoding: 'utf8' });
+			writeFileSync(readmeFile, readmeContents, { encoding: 'utf8' });
 		}
 
 		// now finally save the main file contents with newline added at end
-		await writeFileSync(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
+		writeFileSync(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
 
 		// set the output
 		core.setOutput('new-version', newVersion);
