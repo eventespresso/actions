@@ -2,22 +2,24 @@ name: 'Version bumb action'
 description: 'This action helps in bumping the versions in WordPress plugin files.'
 author: 'eventespresso'
 inputs:
-    type:
+    info-json-file:
         required: true
-        description: 'The version bump type i.e. `major` | `minor` | `patch` | `release_type` | `build`'
-    value:
-        description: 'The value to use for bumping. Usually used to set release type or reset build.'
-    release-type:
-        description: 'Explicit value for setting the release type while bumping the version.'
+        description: 'Path of the info.json file.'
     main-file:
         required: true
         description: 'Path of the plugin main file'
     readme-file:
         required: true
         description: 'Path of the plugin readme.txt file'
-    info-json-file:
+    bump-type:
         required: true
-        description: 'Path of the info.json file.'
+        description: 'The version bump type i.e. `major` | `minor` | `patch` | `build` | `custom`'
+    release-type:
+        description: 'Explicit value for setting the release type while bumping the version.'
+        default: 'rc'
+    custom-value:
+        description: 'Custom value for setting the release type or bump type (reset).'
+        default: ''
 runs:
     using: 'node16'
     main: 'dist/index.js'
