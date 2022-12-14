@@ -19,7 +19,7 @@ export async function run(
 		const currentVersion = mainFileContents.match(MAIN_FILE_VERSION_REGEX)?.groups?.version;
 
 		if (!currentVersion) {
-			throw new Error('Could not parse version string from main file.');
+			throw new Error(`Could not parse version string from main file. currentVersion: ${currentVersion}`);
 		}
 
 		const { releaseType, newVersion, updateInfoJson } = await getVersionInfo(
