@@ -15,6 +15,7 @@ export async function run(
 	try {
 		// read main file contents
 		let mainFileContents = await readFile(mainFile, { encoding: 'utf8' }).toString().trim();
+		console.log({ MAIN_FILE_VERSION_REGEX, mainFileContents });
 		// get the current version using regex
 		const currentVersion = mainFileContents.match(MAIN_FILE_VERSION_REGEX)?.groups?.version;
 
