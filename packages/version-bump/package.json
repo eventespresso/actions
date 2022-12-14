@@ -1,16 +1,17 @@
 {
-	"name": "@eventespresso-actions/version-bump",
-	"version": "0.0.2",
-	"private": true,
+	"author": "Event Espresso",
+	"license": "GPL-3.0",
 	"main": "lib/index.js",
+	"name": "@eventespresso-actions/version-bump",
+	"private": true,
+	"version": "0.0.2",
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",
 		"format-check": "prettier --check **/*.ts",
 		"lint": "eslint src/**/*.ts",
 		"package": "ncc build --source-map --license licenses.txt",
-		"all": "npm run build && npm run format && npm run lint && npm run package"
-	},
-	"author": "Event Espresso",
-	"license": "GPL-3.0"
+		"all": "npm run build && npm run format && npm run lint && npm run package",
+		"test": "jest --watchAll"
+	}
 }

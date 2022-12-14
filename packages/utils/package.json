@@ -1,15 +1,16 @@
 {
 	"author": "Event Espresso",
+	"license": "GPL-3.0",
+	"main": "lib/index.js",
 	"name": "@eventespresso-actions/utils",
 	"private": true,
 	"version": "1.0.0",
-	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",
 		"format-check": "prettier --check **/*.ts",
 		"lint": "eslint src/**/*.ts",
-		"all": "npm run build && npm run format && npm run lint"
-	},
-	"license": "GPL-3.0"
+		"package": "ncc build --source-map --license licenses.txt",
+		"all": "npm run build && npm run format && npm run lint && npm run package"
+	}
 }
