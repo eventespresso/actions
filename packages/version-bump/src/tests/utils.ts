@@ -56,12 +56,12 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'major',
 		inputVer: '4.10.9.rc.011',
 		// major is incremented and minor and patch are set to 0
-		outputVer: '5.0.0.rc',
+		outputVer: '5.0.0.rc.001',
 	},
 	{
 		bumpType: 'major',
 		inputVer: '4.10.9.rc',
-		outputVer: '5.0.0.rc',
+		outputVer: '5.0.0.rc.001',
 	},
 	{
 		bumpType: 'major',
@@ -89,12 +89,13 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'major',
 		inputVer: '0.0.0',
-		outputVer: '1.0.0',
+		outputVer: '1.0.0.rc.001',
 	},
 	{
 		bumpType: 'major',
 		inputVer: '0.0.0',
-		outputVer: '5.0.0',
+		outputVer: '5.0.0.p',
+		releaseType: 'p',
 		// explicitly set the version
 		customValue: '5',
 	},
@@ -108,7 +109,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'major',
 		inputVer: '4.0.0.beta',
-		outputVer: '5.0.0.rc',
+		outputVer: '5.0.0.rc.001',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
@@ -116,12 +117,12 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'minor',
 		inputVer: '4.10.9.rc.011',
 		// minor is incremented and patch is set to 0
-		outputVer: '4.11.0.rc',
+		outputVer: '4.11.0.rc.001',
 	},
 	{
 		bumpType: 'minor',
 		inputVer: '4.10.9.rc',
-		outputVer: '4.11.0.rc',
+		outputVer: '4.11.0.rc.001',
 	},
 	{
 		bumpType: 'minor',
@@ -137,12 +138,12 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'minor',
 		inputVer: '0.0.0',
-		outputVer: '0.1.0',
+		outputVer: '0.1.0.rc.001',
 	},
 	{
 		bumpType: 'minor',
 		inputVer: '5.3.1',
-		outputVer: '5.5.0',
+		outputVer: '5.5.0.rc.001',
 		// explicitly set the version
 		customValue: '5',
 	},
@@ -156,7 +157,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'minor',
 		inputVer: '4.4.0.beta',
-		outputVer: '4.5.0.rc',
+		outputVer: '4.5.0.rc.001',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
@@ -164,13 +165,13 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'patch',
 		inputVer: '4.10.9.rc.011',
 		// only patch shoud be incremented and build stripped
-		outputVer: '4.10.10.rc',
+		outputVer: '4.10.10.rc.001',
 	},
 	{
 		bumpType: 'patch',
 		inputVer: '4.10.9.rc',
 		// only patch shoud be incremented
-		outputVer: '4.10.10.rc',
+		outputVer: '4.10.10.rc.001',
 	},
 	{
 		bumpType: 'patch',
@@ -182,7 +183,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'patch',
 		inputVer: '0.0.0',
 		// patch shoud be incremented
-		outputVer: '0.0.1',
+		outputVer: '0.0.1.rc.001',
 	},
 	{
 		bumpType: 'patch',
@@ -193,7 +194,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'patch',
 		inputVer: '1.0.6',
-		outputVer: '1.0.5',
+		outputVer: '1.0.5.rc.001',
 		// explicitly set the version
 		customValue: '5',
 	},
@@ -207,15 +208,14 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'patch',
 		inputVer: '4.0.3.beta',
-		outputVer: '4.0.4.rc',
+		outputVer: '4.0.4.rc.001',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
 	{
 		bumpType: 'custom',
 		inputVer: '3.10.9.rc.011',
-		// no change
-		outputVer: '3.10.9.rc.011',
+		outputVer: '3.10.9.rc.012',
 	},
 	{
 		bumpType: 'custom',
@@ -226,7 +226,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'custom',
 		inputVer: '4.10.9.rc',
-		outputVer: '4.10.9.rc',
+		outputVer: '4.10.9.rc.001',
 		customValue: 'rc',
 	},
 	{
@@ -238,7 +238,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 	{
 		bumpType: 'custom',
 		inputVer: '0.0.0',
-		outputVer: '0.0.0.rc',
+		outputVer: '0.0.0.rc.001',
 	},
 	{
 		bumpType: 'custom',
@@ -268,7 +268,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'build',
 		inputVer: '4.10.2.beta',
 		// build should be set to first
-		outputVer: '4.10.2.beta.001',
+		outputVer: '4.10.2.beta',
 	},
 	{
 		bumpType: 'build',
@@ -280,7 +280,7 @@ export const mainNormalTestCases: Array<MainTestCase> = [
 		bumpType: 'build',
 		inputVer: '4.11.9.beta.011',
 		// build shoud be incremented and build should be stripped
-		outputVer: '4.11.9.beta.012',
+		outputVer: '4.11.9.beta',
 	},
 	{
 		bumpType: 'build',

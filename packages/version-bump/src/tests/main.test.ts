@@ -35,7 +35,7 @@ describe('version bump main tests', () => {
 			return ['info.json', 'main-file.php', 'readme.txt'].includes(name as string);
 		});
 
-		jest.spyOn(io, 'writeFileSync').mockImplementation(() => {
+		jest.spyOn(io, 'writeFile').mockImplementation(() => {
 			// do something here
 		});
 	});
@@ -58,7 +58,7 @@ describe('version bump main tests', () => {
 			input['custom-value'] = customValue;
 			input['release-type'] = releaseType;
 			// set mock to dynamically generate input file
-			const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
+			const contentMock = jest.spyOn(io, 'readFile').mockImplementation((path) => {
 				return getMockedFileContents(path as string, inputVer);
 			});
 
@@ -84,7 +84,7 @@ describe('version bump main tests', () => {
 				// set bump type
 				input['bump-type'] = bumpType;
 				// set mock to dynamically generate input file
-				const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
+				const contentMock = jest.spyOn(io, 'readFile').mockImplementation((path) => {
 					return getMockedFileContents(path as string, edgeCase);
 				});
 
