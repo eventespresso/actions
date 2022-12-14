@@ -5,6 +5,7 @@ export async function updateReadmeFile(newVersion: string): Promise<void> {
 	const { readmeFile } = getInput();
 	// get readme.txt file contents.
 	let readmeContents = await readFile(readmeFile, { encoding: 'utf8' });
+	readmeContents = readmeContents.toString().trim();
 	// replace stable tag in readme.txt
 	readmeContents = readmeContents.replace(
 		README_FILE_STABLE_TAG_REGEX,
