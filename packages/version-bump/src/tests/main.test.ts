@@ -60,7 +60,7 @@ describe('version bump main tests', () => {
 				return getMockedFileContents(path as string, inputVer);
 			});
 
-			await expect(run()).resolves.not.toThrowError();
+			await expect(run()).resolves.not.toThrow();
 
 			expect(output['new-version']).toBe(outputVer);
 			contentMock.mockRestore();
@@ -78,7 +78,7 @@ describe('version bump main tests', () => {
 				});
 
 				// fire it
-				await expect(run()).rejects.toThrowError();
+				await expect(run()).rejects.toThrow();
 				contentMock.mockRestore();
 			}
 		}

@@ -27,7 +27,7 @@ describe('version bump getInput tests', () => {
 	});
 
 	it('throws error if input not provided', () => {
-		expect(() => getInput()).toThrowError();
+		expect(() => getInput()).toThrow();
 	});
 
 	it('throws does not throw error if input IS provided', () => {
@@ -37,7 +37,7 @@ describe('version bump getInput tests', () => {
 			'readme-file': 'readme.txt',
 			type: 'minor',
 		};
-		expect(() => getInput()).not.toThrowError();
+		expect(() => getInput()).not.toThrow();
 	});
 
 	it('returns the given input', () => {
