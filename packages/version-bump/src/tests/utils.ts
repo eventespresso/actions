@@ -1,14 +1,25 @@
-import { BumpType, ReleaseType } from '../types';
+import type { MainTestCase } from './types';
 
-export const getMockedFileContents = (path: string, version?: string): string => {
+export const getMockedFileContents = (path: string, version?: string | null): string => {
 	switch (path) {
 		case 'main-file.php':
 			return `/*
             Plugin Name:Event Espresso
             Plugin URI: some-uri
-            Version: ${version /*  || '4.10.9.rc.011' */}
+            Version: ${version}
             Author: Event Espresso
             Text Domain: event_espresso
+
+			/**
+			 * espresso_version
+			 * Returns the plugin version
+			 *
+			 * @return string
+			 */
+			function espresso_version()
+			{
+				return apply_filters('FHEE__espresso__espresso_version', '${version}');
+			}
             */`;
 		case 'info.json':
 			return `{
@@ -28,14 +39,6 @@ export const getMockedFileContents = (path: string, version?: string): string =>
 	return '';
 };
 
-type MainTestCase = {
-	type: BumpType;
-	inputVer: string;
-	outputVer: string;
-	releaseType?: ReleaseType;
-	value?: string;
-};
-
 export const checkForDuplicateCases = (testCases: Array<Record<string, unknown>>): void => {
 	const bucket: string[] = [];
 	for (const testCase of testCases) {
@@ -50,240 +53,240 @@ export const checkForDuplicateCases = (testCases: Array<Record<string, unknown>>
 
 export const mainNormalTestCases: Array<MainTestCase> = [
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.10.9.rc.011',
 		// major is incremented and minor and patch are set to 0
 		outputVer: '5.0.0.rc',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.10.9.rc',
 		outputVer: '5.0.0.rc',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.10.9.beta',
 		outputVer: '5.0.0.beta',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.8.0.beta',
 		// no change to patch when it's already 0
 		outputVer: '5.0.0.beta',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.0.8.beta',
 		// no change to minor when it's already 0
 		outputVer: '5.0.0.beta',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.0.0.beta',
 		// no change to minor and patch when already 0
 		outputVer: '5.0.0.beta',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '0.0.0',
 		outputVer: '1.0.0',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '0.0.0',
 		outputVer: '5.0.0',
 		// explicitly set the version
-		value: '5',
+		customValue: '5',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '0.0.0',
 		outputVer: '1.0.0.beta',
-		// explicitly set the release type, when there is none
+		// explicitly set the release bumpType, when there is none
 		releaseType: 'beta',
 	},
 	{
-		type: 'major',
+		bumpType: 'major',
 		inputVer: '4.0.0.beta',
 		outputVer: '5.0.0.rc',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '4.10.9.rc.011',
 		// minor is incremented and patch is set to 0
 		outputVer: '4.11.0.rc',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '4.10.9.rc',
 		outputVer: '4.11.0.rc',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '4.3.9.beta',
 		outputVer: '4.4.0.beta',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '4.8.0.beta',
 		// no change to patch when it's already 0
 		outputVer: '4.9.0.beta',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '0.0.0',
 		outputVer: '0.1.0',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '5.3.1',
 		outputVer: '5.5.0',
 		// explicitly set the version
-		value: '5',
+		customValue: '5',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '0.0.0',
 		outputVer: '0.1.0.beta',
 		// explicitly set the release type, when there is none
 		releaseType: 'beta',
 	},
 	{
-		type: 'minor',
+		bumpType: 'minor',
 		inputVer: '4.4.0.beta',
 		outputVer: '4.5.0.rc',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '4.10.9.rc.011',
 		// only patch shoud be incremented and build stripped
 		outputVer: '4.10.10.rc',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '4.10.9.rc',
 		// only patch shoud be incremented
 		outputVer: '4.10.10.rc',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '2.10.9.beta',
 		// patch shoud be incremented
 		outputVer: '2.10.10.beta',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '0.0.0',
 		// patch shoud be incremented
 		outputVer: '0.0.1',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '5.10.9.beta.011',
 		// patch shoud be incremented and build should be stripped
 		outputVer: '5.10.10.beta',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '1.0.6',
 		outputVer: '1.0.5',
 		// explicitly set the version
-		value: '5',
+		customValue: '5',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '0.0.0',
 		outputVer: '0.0.1.beta',
 		// explicitly set the release type, when there is none
 		releaseType: 'beta',
 	},
 	{
-		type: 'patch',
+		bumpType: 'patch',
 		inputVer: '4.0.3.beta',
 		outputVer: '4.0.4.rc',
 		// explicitly set the release type, when there is already one
 		releaseType: 'rc',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '3.10.9.rc.011',
 		// no change
 		outputVer: '3.10.9.rc.011',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '7.10.9.rc',
 		outputVer: '7.10.9.beta',
-		value: 'beta',
+		customValue: 'beta',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '4.10.9.rc',
 		outputVer: '4.10.9.rc',
-		value: 'rc',
+		customValue: 'rc',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '8.10.9.p',
 		outputVer: '8.10.9.beta',
-		value: 'beta',
+		customValue: 'beta',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '0.0.0',
 		outputVer: '0.0.0.rc',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '4.10.9.p',
 		outputVer: '4.10.9.alpha',
-		value: 'alpha',
+		customValue: 'alpha',
 	},
 	{
-		type: 'release_type',
+		bumpType: 'custom',
 		inputVer: '4.10.8.rc.011',
 		outputVer: '4.10.8.p',
-		value: 'p',
+		customValue: 'p',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '4.10.9.rc.011',
 		// only build shoud be incremented
 		outputVer: '4.10.9.rc.012',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '4.10.9.rc',
 		// build should be set to first
 		outputVer: '4.10.9.rc.001',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '4.10.2.beta',
 		// build should be set to first
 		outputVer: '4.10.2.beta.001',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '0.0.0',
 		// build should be set to first and release type should be rc by default
 		outputVer: '0.0.0.rc.001',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '4.11.9.beta.011',
 		// build shoud be incremented and build should be stripped
 		outputVer: '4.11.9.beta.012',
 	},
 	{
-		type: 'build',
+		bumpType: 'build',
 		inputVer: '2.4.0',
 		outputVer: '2.4.0.rc.005',
 		// explicitly set the version
-		value: '005',
+		customValue: '005',
 	},
 ];

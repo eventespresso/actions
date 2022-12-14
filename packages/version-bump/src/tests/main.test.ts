@@ -4,15 +4,17 @@ import { checkForDuplicateCases, getMockedFileContents, mainNormalTestCases } fr
 import { bumpTypes } from '../utils';
 import run from '../main';
 
-const input = {
+import { InputReturn, InputValues } from './types';
+
+const input: InputValues = {
 	'info-json-file': 'info.json',
 	'main-file': 'main-file.php',
 	'readme-file': 'readme.txt',
-	type: 'minor',
-	value: null,
-	'release-type': null,
+	'bump-type': 'minor',
+	'custom-value': undefined,
+	'release-type': 'rc',
 };
-let output: Record<string, string> = {};
+let output: InputReturn = {};
 
 describe('version bump main tests', () => {
 	beforeAll(() => {
@@ -50,17 +52,26 @@ describe('version bump main tests', () => {
 	it('returns the expected output for a given input', async () => {
 		checkForDuplicateCases(mainNormalTestCases);
 
-		for (const { type, inputVer, outputVer, releaseType, value } of mainNormalTestCases) {
+		for (const { bumpType, inputVer, outputVer, releaseType, customValue } of mainNormalTestCases) {
 			// set bump type
-			input.type = type;
-			input.value = value;
+			input['bump-type'] = bumpType;
+			input['custom-value'] = customValue;
 			input['release-type'] = releaseType;
 			// set mock to dynamically generate input file
 			const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
 				return getMockedFileContents(path as string, inputVer);
 			});
 
-			await expect(run()).resolves.not.toThrow();
+			await expect(
+				run(
+					input['main-file'],
+					input['info-json-file'],
+					input['ireadme-file'],
+					bumpType,
+					releaseType,
+					customValue
+				)
+			).resolves.not.toThrow();
 
 			expect(output['new-version']).toBe(outputVer);
 			contentMock.mockRestore();
@@ -69,16 +80,18 @@ describe('version bump main tests', () => {
 
 	it('errs for an invalid input', async () => {
 		for (const edgeCase of [null, undefined, '', '0', '0.0', '1', '1.0']) {
-			for (const type of bumpTypes) {
+			for (const bumpType of bumpTypes) {
 				// set bump type
-				input.type = type;
+				input['bump-type'] = bumpType;
 				// set mock to dynamically generate input file
 				const contentMock = jest.spyOn(io, 'readFileSync').mockImplementation((path) => {
 					return getMockedFileContents(path as string, edgeCase);
 				});
 
 				// fire it
-				await expect(run()).rejects.toThrow();
+				await expect(
+					run(input['main-file'], input['info-json-file'], input['ireadme-file'], bumpType, 'rc')
+				).rejects.toThrow();
 				contentMock.mockRestore();
 			}
 		}

@@ -2,8 +2,10 @@ import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
 import { getInput } from '../utils';
 
+import { InputReturn } from './types';
+
 // Input for mock @actions/core
-let input: Record<string, string> = {};
+let input: InputReturn = {};
 
 describe('version bump getInput tests', () => {
 	beforeAll(() => {
@@ -35,7 +37,7 @@ describe('version bump getInput tests', () => {
 			'info-json-file': 'info.json',
 			'main-file': 'main-file.php',
 			'readme-file': 'readme.txt',
-			type: 'minor',
+			'bump-type': 'minor',
 		};
 		expect(() => getInput()).not.toThrow();
 	});
@@ -45,12 +47,12 @@ describe('version bump getInput tests', () => {
 			'info-json-file': 'info.json',
 			'main-file': 'main-file.php',
 			'readme-file': 'readme.txt',
-			type: 'patch',
+			'bump-type': 'patch',
 		};
 		const _input = getInput();
 		expect(_input.infoJsonFile).toBe(input['info-json-file']);
 		expect(_input.mainFile).toBe(input['main-file']);
 		expect(_input.readmeFile).toBe(input['readme-file']);
-		expect(_input.type).toBe(input['type']);
+		expect(_input.bumpType).toBe(input['bump-type']);
 	});
 });
