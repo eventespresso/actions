@@ -56,7 +56,12 @@ const io_1 = require("@eventespresso-actions/io");
         const GITHUB_TOKEN = core.getInput('token', { required: true });
         const octokit = github.getOctokit(GITHUB_TOKEN);
         // https://developer.github.com/v3/repos/commits/#compare-two-commits
-        const comparison = yield octokit.repos.compareCommits({ base, head, owner, repo });
+        const comparison = yield octokit.rest.repos.compareCommits({
+            owner,
+            repo,
+            base,
+            head,
+        });
         if ((comparison === null || comparison === void 0 ? void 0 : comparison.status) !== 200) {
             core.setFailed(`GitHub.repos.compareCommits() failed for commits base: ${base} and head: ${head}`);
         }

@@ -46,7 +46,6 @@ function run(mainFile, releaseTypeInput, type, value) {
             // read main file contents
             let mainFileContents = yield (0, io_1.readFile)(mainFile, { encoding: 'utf8' });
             mainFileContents = mainFileContents.toString().trim();
-            console.log({ MAIN_FILE_VERSION_REGEX: utils_1.MAIN_FILE_VERSION_REGEX, mainFileContents });
             // get the current version using regex
             const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
             if (!currentVersion) {
