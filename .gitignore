@@ -60,4 +60,3 @@ typings/
 .next
 
 .DS_Store
-packages/auto-pr-labeler/dist/index.js
