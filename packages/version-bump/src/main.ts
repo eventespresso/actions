@@ -11,7 +11,6 @@ import {
 	getInput,
 } from './utils';
 
-
 export async function run(): Promise<void> {
 	const { infoJsonFile, mainFile, readmeFile, releaseType: releaseTypeInput, type, value } = getInput();
 

@@ -34,9 +34,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core = __importStar(require("@actions/core"));
-const io = __importStar(require("@eventespresso-actions/io"));
-const utils_1 = require("./utils");
 const ramda_1 = require("ramda");
+const fs_1 = require("fs");
+const utils_1 = require("./utils");
 function run() {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
@@ -44,9 +44,9 @@ function run() {
         let updateInfoJson = false;
         try {
             // read main file contents
-            let mainFileContents = io.readFileSync(mainFile, { encoding: 'utf8' }).toString().trim();
+            let mainFileContents = (0, fs_1.readFileSync)(mainFile, { encoding: 'utf8' }).toString().trim();
             // read info.json file contents
-            const infoJson = JSON.parse(io.readFileSync(infoJsonFile, { encoding: 'utf8' }));
+            const infoJson = JSON.parse((0, fs_1.readFileSync)(infoJsonFile, { encoding: 'utf8' }));
             // get the current version using regex
             const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
             if (!currentVersion) {
@@ -108,14 +108,17 @@ function run() {
             if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
                 newVersion += `.${build.toString().padStart(3, '0')}`;
             }
+            console.log({ newVersion });
+            const regex = new RegExp(`\\b${newVersion}\\b`, 'gi');
             // replace versions in main file with newVersion.
-            mainFileContents = mainFileContents.replace(`${currentVersion}/g`, newVersion);
+            mainFileContents = mainFileContents.replace(regex, newVersion);
+            console.log({ mainFileContents });
             // update info.json, so decaf release get built off of this tag.
             if (updateInfoJson && infoJson) {
                 infoJson.wpOrgRelease = newVersion;
                 const infoJsonContents = JSON.stringify(infoJson, null, 2);
                 // now save back to info.json
-                io.writeFileSync(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
+                (0, fs_1.writeFileSync)(infoJsonFile, infoJsonContents, { encoding: 'utf8' });
             }
             // if version type is decaf then let's update extra values in main file and the readme.txt as well.
             if (releaseType === 'decaf') {
@@ -129,17 +132,17 @@ function run() {
                     mainFileContents = mainFileContents.replace(pluginName, infoJson.wpOrgPluginName);
                 }
                 // get readme.txt file contents.
-                let readmeContents = io.readFileSync(readmeFile, { encoding: 'utf8' });
+                let readmeContents = (0, fs_1.readFileSync)(readmeFile, { encoding: 'utf8' });
                 // replace stable tag in readme.txt
                 readmeContents = readmeContents.replace(utils_1.README_FILE_STABLE_TAG_REGEX, 
                 // `match` is like "Stable tag: 4.10.4.decaf"
                 // `p1` is the first and only capturing group like "4.10.4.decaf"
                 (match, p1) => match.replace(p1, newVersion));
                 // now save back to readme.txt
-                io.writeFileSync(readmeFile, readmeContents, { encoding: 'utf8' });
+                (0, fs_1.writeFileSync)(readmeFile, readmeContents, { encoding: 'utf8' });
             }
-            // now finally save the main file contents
-            io.writeFileSync(mainFile, mainFileContents, { encoding: 'utf8' });
+            // now finally save the main file contents with newline added at end
+            (0, fs_1.writeFileSync)(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
             // set the output
             core.setOutput('new-version', newVersion);
             core.info(`new version: ${newVersion}`);
