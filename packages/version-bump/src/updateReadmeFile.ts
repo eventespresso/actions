@@ -1,8 +1,7 @@
 import { readFile, writeFile } from '@eventespresso-actions/io';
-import { README_FILE_STABLE_TAG_REGEX, getInput } from './utils';
+import { README_FILE_STABLE_TAG_REGEX } from './utils';
 
-export async function updateReadmeFile(newVersion: string): Promise<void> {
-	const { readmeFile } = getInput();
+export async function updateReadmeFile(newVersion: string, readmeFile: string): Promise<void> {
 	// get readme.txt file contents.
 	let readmeContents = await readFile(readmeFile, { encoding: 'utf8' });
 	readmeContents = readmeContents.toString().trim();

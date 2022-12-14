@@ -1,10 +1,12 @@
 import { readFile, writeFile } from '@eventespresso-actions/io';
-import { getInput } from './utils';
 
 import type { InfoJson } from './types';
 
-export async function updateInfoJsonFile(newVersion: string, updateInfoJson: boolean): Promise<InfoJson> {
-	const { infoJsonFile } = getInput();
+export async function updateInfoJsonFile(
+	newVersion: string,
+	infoJsonFile: string,
+	updateInfoJson: boolean
+): Promise<InfoJson> {
 	// read info.json file contents
 	let infoJsonContent = await readFile(infoJsonFile, { encoding: 'utf8' });
 	infoJsonContent = infoJsonContent.toString().trim();

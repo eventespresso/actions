@@ -1,5 +1,6 @@
-export type BumpType = 'major' | 'minor' | 'patch' | 'release_type' | 'build';
-export type BumpValue = string | number;
+export type BumpType = 'major' | 'minor' | 'patch' | 'build' | 'custom';
+export type CustomValue = string | number;
+export type FilePath = string;
 
 export interface InfoJson {
 	wpOrgPluginName: string;
@@ -8,12 +9,12 @@ export interface InfoJson {
 }
 
 export interface Input {
-	infoJsonFile: string;
-	mainFile: string;
-	readmeFile: string;
+	infoJsonFile: FilePath;
+	mainFile: FilePath;
+	readmeFile: FilePath;
+	bumpType: BumpType;
+	customValue?: CustomValue | ReleaseType;
 	releaseType?: ReleaseType;
-	value?: BumpValue | ReleaseType;
-	type: BumpType;
 }
 
 export type ReleaseType = 'alpha' | 'beta' | 'decaf' | 'rc' | 'p';
@@ -28,6 +29,6 @@ export interface VersionParts {
 	major: number;
 	minor: number;
 	patch: number;
-	releaseType: ReleaseType;
 	build: number;
+	releaseType: ReleaseType;
 }

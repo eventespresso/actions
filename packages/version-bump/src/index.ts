@@ -1,5 +1,5 @@
 import run from './main';
 import { getInput } from './utils';
 
-const { mainFile, releaseType: releaseTypeInput, type, value } = getInput();
-run(mainFile, releaseTypeInput, type, value);
+const { mainFile, infoJsonFile, readmeFile, releaseType, bumpType, customValue } = getInput();
+run(mainFile, infoJsonFile, readmeFile, bumpType, releaseType, customValue);

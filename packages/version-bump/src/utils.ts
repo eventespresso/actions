@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
-import type { BumpType, BumpValue, Input, ReleaseType, VersionParts } from './types';
+import type { BumpType, CustomValue, Input, ReleaseType, VersionParts } from './types';
 
-export const bumpTypes: Array<BumpType> = ['major', 'minor', 'patch', 'release_type', 'build'];
+export const bumpTypes: Array<BumpType> = ['major', 'minor', 'patch', 'build', 'custom'];
 
 export const releaseTypes: Array<ReleaseType> = ['alpha', 'beta', 'decaf', 'rc', 'p'];
 
@@ -10,11 +10,11 @@ export const releaseTypes: Array<ReleaseType> = ['alpha', 'beta', 'decaf', 'rc',
  * Retrieve the action inputs.
  */
 export function getInput(): Input {
+	const bumpType = core.getInput('bump-type', { required: true }) as BumpType;
+	const customValue = core.getInput('custom-value') as CustomValue;
 	const infoJsonFile = core.getInput('info-json-file', { required: true });
 	const mainFile = core.getInput('main-file', { required: true });
 	const readmeFile = core.getInput('readme-file', { required: true });
-	const type = core.getInput('type', { required: true }) as BumpType;
-	const value = core.getInput('value') as BumpValue;
 	const releaseType = core.getInput('release-type') as ReleaseType;
 
 	if (!io.existsSync(mainFile)) {
@@ -26,8 +26,8 @@ export function getInput(): Input {
 	if (!io.existsSync(readmeFile)) {
 		throw new Error('readme.txt file does not exist.');
 	}
-	if (!bumpTypes.includes(type)) {
-		throw new Error(`Unknown bump type - ${type}`);
+	if (!bumpTypes.includes(bumpType)) {
+		throw new Error(`Unknown bump type - ${bumpType}`);
 	}
 	if (releaseType && !releaseTypes.includes(releaseType)) {
 		throw new Error(`Unknown release type - ${releaseType}`);
@@ -38,8 +38,8 @@ export function getInput(): Input {
 		mainFile,
 		readmeFile,
 		releaseType,
-		type,
-		value,
+		bumpType,
+		customValue,
 	};
 }
 
@@ -70,6 +70,6 @@ export const DEFAULT_VERSION_PARTS: VersionParts = {
 	major: 0,
 	minor: 0,
 	patch: 0,
-	releaseType: 'rc',
 	build: 0,
+	releaseType: 'rc',
 };

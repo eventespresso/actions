@@ -1,12 +1,12 @@
 import { getVersionParts } from './getVersionParts';
 
-import type { BumpType, BumpValue, ReleaseType, VersionInfo } from './types';
+import type { BumpType, CustomValue, ReleaseType, VersionInfo } from './types';
 
 export async function getVersionInfo(
 	currentVersion: string,
 	releaseTypeInput: ReleaseType,
 	bumpType: BumpType,
-	bumpValue: BumpValue | ReleaseType
+	customValue: CustomValue | ReleaseType
 ): Promise<VersionInfo> {
 	const versionParts = getVersionParts(currentVersion);
 
@@ -18,7 +18,7 @@ export async function getVersionInfo(
 	let { major, minor, patch, build } = versionParts;
 
 	let updateInfoJson = false;
-	const valueBump = parseInt(bumpValue as string, 10);
+	const valueBump = parseInt(customValue as string, 10);
 
 	switch (bumpType) {
 		case 'major':
@@ -55,8 +55,8 @@ export async function getVersionInfo(
 			releaseType = releaseType || 'rc';
 			break;
 
-		case 'release_type':
-			releaseType = (bumpValue as ReleaseType) || releaseType || 'rc';
+		case 'custom':
+			releaseType = (customValue as ReleaseType) || releaseType || 'rc';
 			break;
 	}
 

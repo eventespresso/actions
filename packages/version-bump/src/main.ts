@@ -1,16 +1,19 @@
 import * as core from '@actions/core';
-import { readFile, writeFile } from '@eventespresso-actions/io';
+import { readFile, writeFile } from 'fs/promises';
 import { getVersionInfo } from './getVersionInfo';
 import { handleDecafRelease } from './handleDecafRelease';
-import { BumpType, BumpValue, ReleaseType } from './types';
 import { updateReadmeFile } from './updateReadmeFile';
 import { MAIN_FILE_VERSION_REGEX } from './utils';
 
+import type { BumpType, CustomValue, ReleaseType } from './types';
+
 export async function run(
 	mainFile: string,
+	infoJsonFile: string,
+	readmeFile: string,
+	bumpType: BumpType,
 	releaseTypeInput?: ReleaseType,
-	type?: BumpType,
-	value?: BumpValue
+	customValue?: CustomValue
 ): Promise<void> {
 	try {
 		// read main file contents
@@ -26,8 +29,8 @@ export async function run(
 		const { releaseType, newVersion, updateInfoJson } = await getVersionInfo(
 			currentVersion,
 			releaseTypeInput,
-			type,
-			value
+			bumpType,
+			customValue
 		);
 
 		// replace versions in main file with newVersion.
@@ -36,8 +39,8 @@ export async function run(
 
 		// if version type is decaf then let's update extra values in main file and the readme.txt as well.
 		if (releaseType === 'decaf') {
-			mainFileContents = await handleDecafRelease(mainFileContents, newVersion, updateInfoJson);
-			await updateReadmeFile(newVersion);
+			mainFileContents = await handleDecafRelease(mainFileContents, newVersion, infoJsonFile, updateInfoJson);
+			await updateReadmeFile(newVersion, readmeFile);
 		}
 		// now finally save the main file contents with newline added at end
 		await writeFile(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
