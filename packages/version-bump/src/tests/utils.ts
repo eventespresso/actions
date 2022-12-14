@@ -1,4 +1,4 @@
-import { BumpType, ReleaseType } from '../utils';
+import { BumpType, ReleaseType } from '../types';
 
 export const getMockedFileContents = (path: string, version?: string): string => {
 	switch (path) {
@@ -37,7 +37,7 @@ type MainTestCase = {
 };
 
 export const checkForDuplicateCases = (testCases: Array<Record<string, unknown>>): void => {
-	const bucket = [];
+	const bucket: string[] = [];
 	for (const testCase of testCases) {
 		const key = Object.values(testCase).join(':');
 		if (bucket.includes(key)) {
