@@ -1,18 +1,6 @@
 import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
-
-export type BumpType = 'major' | 'minor' | 'patch' | 'release_type' | 'build';
-
-export type ReleaseType = 'alpha' | 'beta' | 'decaf' | 'rc' | 'p';
-
-export interface Input {
-	infoJsonFile: string;
-	mainFile: string;
-	readmeFile: string;
-	releaseType?: ReleaseType;
-	value?: string;
-	type: BumpType;
-}
+import type { BumpType, BumpValue, Input, ReleaseType, VersionParts } from './types';
 
 export const bumpTypes: Array<BumpType> = ['major', 'minor', 'patch', 'release_type', 'build'];
 
@@ -26,7 +14,7 @@ export function getInput(): Input {
 	const mainFile = core.getInput('main-file', { required: true });
 	const readmeFile = core.getInput('readme-file', { required: true });
 	const type = core.getInput('type', { required: true }) as BumpType;
-	const value = core.getInput('value');
+	const value = core.getInput('value') as BumpValue;
 	const releaseType = core.getInput('release-type') as ReleaseType;
 
 	if (!io.existsSync(mainFile)) {
@@ -78,10 +66,10 @@ export const README_FILE_STABLE_TAG_REGEX = /[\s\t/*#@]*Stable tag:\s*(?<stable_
 export const EE_VERSION_REGEX =
 	/^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(?:\.(?<releaseType>alpha|beta|rc|p|decaf))?(?:\.(?<build>[0-9]*))?$/;
 
-export const DEFAULT_VERSION_PARTS = {
+export const DEFAULT_VERSION_PARTS: VersionParts = {
 	major: 0,
 	minor: 0,
 	patch: 0,
-	releaseType: '',
+	releaseType: 'rc',
 	build: 0,
 };
