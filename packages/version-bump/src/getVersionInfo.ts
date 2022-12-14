@@ -57,7 +57,7 @@ export async function getVersionInfo(
 
 		case 'custom':
 			releaseType = (customValue as ReleaseType) || releaseType || 'rc';
-			if ((releaseType === 'rc')) {
+			if (releaseType === 'rc') {
 				++build;
 			}
 			break;
