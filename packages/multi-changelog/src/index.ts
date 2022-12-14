@@ -26,7 +26,12 @@ import { existsSync, readFileSync, writeFileSync } from '@eventespresso-actions/
 		const octokit = github.getOctokit(GITHUB_TOKEN);
 
 		// https://developer.github.com/v3/repos/commits/#compare-two-commits
-		const comparison = await octokit.repos.compareCommits({ base, head, owner, repo });
+		const comparison = await octokit.rest.repos.compareCommits({
+			owner,
+			repo,
+			base,
+			head,
+		});
 
 		if (comparison?.status !== 200) {
 			core.setFailed(`GitHub.repos.compareCommits() failed for commits base: ${base} and head: ${head}`);
