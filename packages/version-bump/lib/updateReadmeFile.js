@@ -17,6 +17,7 @@ function updateReadmeFile(newVersion) {
         const { readmeFile } = (0, utils_1.getInput)();
         // get readme.txt file contents.
         let readmeContents = yield (0, io_1.readFile)(readmeFile, { encoding: 'utf8' });
+        readmeContents = readmeContents.toString().trim();
         // replace stable tag in readme.txt
         readmeContents = readmeContents.replace(utils_1.README_FILE_STABLE_TAG_REGEX, 
         // `match` is like "Stable tag: 4.10.4.decaf"

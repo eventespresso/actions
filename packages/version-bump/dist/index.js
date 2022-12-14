@@ -19362,7 +19362,8 @@ function run(mainFile, releaseTypeInput, type, value) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // read main file contents
-            let mainFileContents = yield (0, io_1.readFile)(mainFile, { encoding: 'utf8' }).toString().trim();
+            let mainFileContents = yield (0, io_1.readFile)(mainFile, { encoding: 'utf8' });
+            mainFileContents = mainFileContents.toString().trim();
             console.log({ MAIN_FILE_VERSION_REGEX: utils_1.MAIN_FILE_VERSION_REGEX, mainFileContents });
             // get the current version using regex
             const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
@@ -19416,7 +19417,8 @@ function updateInfoJsonFile(newVersion, updateInfoJson) {
     return __awaiter(this, void 0, void 0, function* () {
         const { infoJsonFile } = (0, utils_1.getInput)();
         // read info.json file contents
-        const infoJsonContent = yield (0, io_1.readFile)(infoJsonFile, { encoding: 'utf8' });
+        let infoJsonContent = yield (0, io_1.readFile)(infoJsonFile, { encoding: 'utf8' });
+        infoJsonContent = infoJsonContent.toString().trim();
         const infoJson = JSON.parse(infoJsonContent);
         // update info.json, so decaf release get built off of this tag.
         if (updateInfoJson && infoJson) {
@@ -19456,6 +19458,7 @@ function updateReadmeFile(newVersion) {
         const { readmeFile } = (0, utils_1.getInput)();
         // get readme.txt file contents.
         let readmeContents = yield (0, io_1.readFile)(readmeFile, { encoding: 'utf8' });
+        readmeContents = readmeContents.toString().trim();
         // replace stable tag in readme.txt
         readmeContents = readmeContents.replace(utils_1.README_FILE_STABLE_TAG_REGEX, 
         // `match` is like "Stable tag: 4.10.4.decaf"

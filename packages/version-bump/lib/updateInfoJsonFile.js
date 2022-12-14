@@ -16,7 +16,8 @@ function updateInfoJsonFile(newVersion, updateInfoJson) {
     return __awaiter(this, void 0, void 0, function* () {
         const { infoJsonFile } = (0, utils_1.getInput)();
         // read info.json file contents
-        const infoJsonContent = yield (0, io_1.readFile)(infoJsonFile, { encoding: 'utf8' });
+        let infoJsonContent = yield (0, io_1.readFile)(infoJsonFile, { encoding: 'utf8' });
+        infoJsonContent = infoJsonContent.toString().trim();
         const infoJson = JSON.parse(infoJsonContent);
         // update info.json, so decaf release get built off of this tag.
         if (updateInfoJson && infoJson) {
