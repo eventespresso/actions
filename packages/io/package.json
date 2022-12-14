@@ -4,7 +4,7 @@
 	"main": "src/index.ts",
 	"name": "@eventespresso-actions/io",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",
