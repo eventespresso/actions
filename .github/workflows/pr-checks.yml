@@ -12,4 +12,4 @@ jobs:
               uses: ./packages/checkout-and-yarn
 
             - name: Run all scripts
-              run: yarn run:all
+              run: yarn build

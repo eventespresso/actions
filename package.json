@@ -6,7 +6,7 @@
 	"license": "GPL-3.0",
 	"private": true,
 	"scripts": {
-		"run:all": "yarn workspaces run all",
+		"build": "yarn workspaces run all",
 		"test": "jest --watchAll",
 		"test:ci": "jest"
 	},

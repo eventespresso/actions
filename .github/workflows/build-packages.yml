@@ -18,7 +18,7 @@ jobs:
 
             # Build the packages
             - name: Build all packages
-              run: yarn run:all
+              run: yarn build
 
             # Commit the built assets back to the branch
             - uses: stefanzweifel/git-auto-commit-action@v4
