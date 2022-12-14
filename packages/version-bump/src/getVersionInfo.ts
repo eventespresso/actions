@@ -27,7 +27,7 @@ export async function getVersionInfo(
 			// both minor, patch and build numbers reset to zero
 			minor = 0;
 			patch = 0;
-			build = 0;
+			build = 1;
 
 			updateInfoJson = true;
 			break;
@@ -36,14 +36,14 @@ export async function getVersionInfo(
 			minor = valueBump || ++minor;
 			// patch and build reset to zero
 			patch = 0;
-			build = 0;
+			build = 1;
 
 			updateInfoJson = true;
 			break;
 
 		case 'patch':
 			patch = valueBump || ++patch;
-			build = 0;
+			build = 1;
 
 			updateInfoJson = true;
 			break;
@@ -57,6 +57,9 @@ export async function getVersionInfo(
 
 		case 'custom':
 			releaseType = (customValue as ReleaseType) || releaseType || 'rc';
+			if ((releaseType === 'rc')) {
+				++build;
+			}
 			break;
 	}
 
@@ -67,8 +70,8 @@ export async function getVersionInfo(
 		newVersion += `.${releaseType}`;
 	}
 
-	// add valid build number for alpha, beta, or release candidate versions
-	if (build > 0 && ['alpha', 'beta', 'rc'].includes(releaseType)) {
+	// add valid build number for release candidate versions
+	if (releaseType === 'rc') {
 		newVersion += `.${build.toString().padStart(3, '0')}`;
 	}
 	console.log({ newVersion });
