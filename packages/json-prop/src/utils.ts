@@ -25,7 +25,6 @@ export function getInput(): Input {
 	};
 }
 
-
 export const toPath = (key: string): string[] => {
 	if (key === null || key === undefined || !key.length) {
 		return [];
