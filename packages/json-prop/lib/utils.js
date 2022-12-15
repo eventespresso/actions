@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toPath = exports.getInput = void 0;
+exports.getInput = void 0;
 const core = __importStar(require("@actions/core"));
 const io = __importStar(require("@eventespresso-actions/io"));
 /**
@@ -43,13 +43,3 @@ function getInput() {
     };
 }
 exports.getInput = getInput;
-const toPath = (key) => {
-    if (key === null || key === undefined || !key.length) {
-        return [];
-    }
-    if (typeof key !== 'string') {
-        throw new Error('toPath() expects a string');
-    }
-    return key.split(/[.[\]]+/).filter(Boolean);
-};
-exports.toPath = toPath;

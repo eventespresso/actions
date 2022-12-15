@@ -7231,7 +7231,7 @@ module.exports.valuesIn = __nccwpck_require__(448);
 module.exports.view = __nccwpck_require__(7424);
 module.exports.when = __nccwpck_require__(8542);
 module.exports.where = __nccwpck_require__(4343);
-module.exports.whereAny = __nccwpck_require__(2954);
+module.exports.whereAny = __nccwpck_require__(2560);
 module.exports.whereEq = __nccwpck_require__(7967);
 module.exports.without = __nccwpck_require__(4204);
 module.exports.xor = __nccwpck_require__(8841);
@@ -18797,7 +18797,7 @@ module.exports = where;
 
 /***/ }),
 
-/***/ 2954:
+/***/ 2560:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var _curry2 =
@@ -20222,14 +20222,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
+const ramda_1 = __nccwpck_require__(8014);
 const core = __importStar(__nccwpck_require__(7117));
 const io = __importStar(__nccwpck_require__(7561));
-const utils_1 = __nccwpck_require__(2560);
-const ramda_1 = __nccwpck_require__(8014);
-// import { toPath } from '@eventespresso-actions/utils';
+const utils_1 = __nccwpck_require__(6977);
+const utils_2 = __nccwpck_require__(569);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { filePath, outputAsJson, propPath } = (0, utils_1.getInput)();
+        const { filePath, outputAsJson, propPath } = (0, utils_2.getInput)();
         try {
             // read the JSOn file
             const obj = JSON.parse(io.readFileSync(filePath, { encoding: 'utf8' }));
@@ -20254,7 +20254,7 @@ exports["default"] = run;
 
 /***/ }),
 
-/***/ 2560:
+/***/ 569:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -20283,7 +20283,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.toPath = exports.getInput = void 0;
+exports.getInput = void 0;
 const core = __importStar(__nccwpck_require__(7117));
 const io = __importStar(__nccwpck_require__(7561));
 /**
@@ -20303,6 +20303,105 @@ function getInput() {
     };
 }
 exports.getInput = getInput;
+
+
+/***/ }),
+
+/***/ 2314:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.downloadUrl = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(7147));
+const https_1 = __importDefault(__nccwpck_require__(5687));
+/**
+ * Download the given URL to the given destination.
+ */
+const downloadUrl = (url, dest) => {
+    return new Promise((resolve, reject) => {
+        const file = fs_1.default.createWriteStream(dest, { flags: 'wx' });
+        const request = https_1.default.get(url, (response) => {
+            // make sure we have a valid status code
+            if (response.statusCode === 200) {
+                response.pipe(file);
+            }
+            else {
+                file.close();
+                fs_1.default.unlink(dest, () => null);
+                reject(`Download failed! Server responded with ${response.statusCode}: ${response.statusMessage}`);
+            }
+        });
+        request.on('error', (err) => {
+            file.close();
+            fs_1.default.unlink(dest, () => null);
+            reject(err.message);
+        });
+        file.on('finish', () => {
+            resolve('Success');
+        });
+        file.on('error', (err) => {
+            file.close();
+            if (err.name === 'EEXIST') {
+                reject('File already exists');
+            }
+            else {
+                fs_1.default.unlink(dest, () => null);
+                reject(err.message);
+            }
+        });
+    });
+};
+exports.downloadUrl = downloadUrl;
+
+
+/***/ }),
+
+/***/ 6977:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(2314), exports);
+__exportStar(__nccwpck_require__(6392), exports);
+
+
+/***/ }),
+
+/***/ 6392:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.toPath = void 0;
+/**
+ * Converts a string path to array path
+ * that can be used in ramda path functions
+ *
+ * 'foo[1].bar' to ['foo', '1', 'bar']
+ *
+ * Source https://github.com/final-form/final-form
+ */
 const toPath = (key) => {
     if (key === null || key === undefined || !key.length) {
         return [];

@@ -33,14 +33,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
+const ramda_1 = require("ramda");
 const core = __importStar(require("@actions/core"));
 const io = __importStar(require("@eventespresso-actions/io"));
-const utils_1 = require("./utils");
-const ramda_1 = require("ramda");
-// import { toPath } from '@eventespresso-actions/utils';
+const utils_1 = require("@eventespresso-actions/utils");
+const utils_2 = require("./utils");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { filePath, outputAsJson, propPath } = (0, utils_1.getInput)();
+        const { filePath, outputAsJson, propPath } = (0, utils_2.getInput)();
         try {
             // read the JSOn file
             const obj = JSON.parse(io.readFileSync(filePath, { encoding: 'utf8' }));

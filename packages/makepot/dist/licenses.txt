@@ -62,6 +62,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 @eventespresso-actions/io
 GPL-3.0
 
+@eventespresso-actions/utils
+GPL-3.0
+
 tunnel
 MIT
 The MIT License (MIT)
