@@ -14,6 +14,6 @@
 		"strict": false,
 		"target": "es6"
 	},
-	"include": ["packages"],
-	"exclude": ["node_modules", "packages/**/lib/**", "packages/**/tests/*"]
+	// "include": ["packages"],
+	"exclude": ["node_modules", "packages/**/tests/*"]
 }
