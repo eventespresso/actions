@@ -1,8 +1,7 @@
 import * as core from '@actions/core';
 import * as io from '@eventespresso-actions/io';
-// import { downloadUrl } from '@eventespresso-actions/utils';
+import { downloadUrl } from '@eventespresso-actions/utils';
 import { exec } from '@actions/exec';
-import { downloadUrl } from './downloadUrl';
 import { getInput } from './utils';
 
 export async function run(): Promise<void> {

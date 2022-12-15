@@ -6,6 +6,7 @@ export interface Input {
 	outputAsJson?: boolean;
 	propPath: string;
 }
+
 /**
  * Retrieve the action inputs.
  */
@@ -24,14 +25,3 @@ export function getInput(): Input {
 		propPath,
 	};
 }
-
-export const toPath = (key: string): string[] => {
-	if (key === null || key === undefined || !key.length) {
-		return [];
-	}
-	if (typeof key !== 'string') {
-		throw new Error('toPath() expects a string');
-	}
-
-	return key.split(/[.[\]]+/).filter(Boolean);
-};
