@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { readFile, writeFile } from '@eventespresso-actions/io';
+import { readFileSync, writeFileSync } from '@eventespresso-actions/io';
 import { getVersionInfo } from './getVersionInfo';
 import { handleDecafRelease } from './handleDecafRelease';
 import { updateReadmeFile } from './updateReadmeFile';
@@ -17,7 +17,7 @@ export async function run(
 ): Promise<void> {
 	try {
 		// read main file contents
-		let mainFileContents = await readFile(mainFile, { encoding: 'utf8' });
+		let mainFileContents = readFileSync(mainFile, { encoding: 'utf8' });
 		mainFileContents = mainFileContents.toString().trim();
 		// get the current version using regex
 		const currentVersion = mainFileContents.match(MAIN_FILE_VERSION_REGEX)?.groups?.version;
@@ -34,7 +34,7 @@ export async function run(
 		);
 
 		// replace versions in main file with newVersion.
-		mainFileContents = mainFileContents.replace(new RegExp(`${newVersion}`, 'gi'), newVersion);
+		mainFileContents = mainFileContents.replace(new RegExp(`${currentVersion}`, 'gi'), newVersion);
 		console.log({ mainFileContents });
 
 		// if version type is decaf then let's update extra values in main file and the readme.txt as well.
@@ -43,7 +43,7 @@ export async function run(
 			await updateReadmeFile(newVersion, readmeFile);
 		}
 		// now finally save the main file contents with newline added at end
-		await writeFile(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
+		writeFileSync(mainFile, `${mainFileContents}\n`);
 		// set the output
 		core.setOutput('new-version', newVersion);
 	} catch (error) {
