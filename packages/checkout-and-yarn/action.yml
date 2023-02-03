@@ -24,13 +24,13 @@ runs:
               token: ${{ inputs.token }}
 
         - name: Set up Node
-          uses: actions/setup-node@v2
+          uses: actions/setup-node@v3
           with:
               node-version: 16
 
         - name: Cache dependencies
           id: cache-deps
-          uses: actions/cache@v2
+          uses: actions/cache@v3
           with:
               path: '**/node_modules'
               key: ${{ runner.os }}-modules-${{ inputs.cache-version }}-${{ hashFiles('**/yarn.lock') }}
