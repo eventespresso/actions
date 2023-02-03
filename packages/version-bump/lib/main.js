@@ -44,7 +44,7 @@ function run(mainFile, infoJsonFile, readmeFile, bumpType, releaseTypeInput, cus
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // read main file contents
-            let mainFileContents = yield (0, io_1.readFile)(mainFile, { encoding: 'utf8' });
+            let mainFileContents = (0, io_1.readFileSync)(mainFile, { encoding: 'utf8' });
             mainFileContents = mainFileContents.toString().trim();
             // get the current version using regex
             const currentVersion = (_b = (_a = mainFileContents.match(utils_1.MAIN_FILE_VERSION_REGEX)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version;
@@ -53,7 +53,7 @@ function run(mainFile, infoJsonFile, readmeFile, bumpType, releaseTypeInput, cus
             }
             const { releaseType, newVersion, updateInfoJson } = yield (0, getVersionInfo_1.getVersionInfo)(currentVersion, releaseTypeInput, bumpType, customValue);
             // replace versions in main file with newVersion.
-            mainFileContents = mainFileContents.replace(new RegExp(`${newVersion}`, 'gi'), newVersion);
+            mainFileContents = mainFileContents.replace(new RegExp(`${currentVersion}`, 'gi'), newVersion);
             console.log({ mainFileContents });
             // if version type is decaf then let's update extra values in main file and the readme.txt as well.
             if (releaseType === 'decaf') {
@@ -61,7 +61,7 @@ function run(mainFile, infoJsonFile, readmeFile, bumpType, releaseTypeInput, cus
                 yield (0, updateReadmeFile_1.updateReadmeFile)(newVersion, readmeFile);
             }
             // now finally save the main file contents with newline added at end
-            yield (0, io_1.writeFile)(mainFile, `${mainFileContents}\n`, { encoding: 'utf8' });
+            (0, io_1.writeFileSync)(mainFile, `${mainFileContents}\n`);
             // set the output
             core.setOutput('new-version', newVersion);
         }
