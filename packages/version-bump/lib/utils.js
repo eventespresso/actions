@@ -39,19 +39,19 @@ function getInput() {
     const readmeFile = core.getInput('readme-file', { required: true });
     const releaseType = core.getInput('release-type');
     if (!io.existsSync(mainFile)) {
-        throw new Error('Main file does not exist.');
+        throw new Error(`The following main file does not exist: ${mainFile}`);
     }
-    if (!io.existsSync(infoJsonFile)) {
-        throw new Error('info.json file does not exist.');
+    if (mainFile.includes('espresso.php') && !io.existsSync(infoJsonFile)) {
+        throw new Error(`The following info.json file does not exist: ${infoJsonFile}`);
     }
-    if (!io.existsSync(readmeFile)) {
-        throw new Error('readme.txt file does not exist.');
+    if (mainFile.includes('espresso.php') && !io.existsSync(readmeFile)) {
+        throw new Error(`The following readme.txt file does not exist: ${readmeFile}`);
     }
     if (!exports.bumpTypes.includes(bumpType)) {
-        throw new Error(`Unknown bump type - ${bumpType}`);
+        throw new Error(`Unknown bump type: ${bumpType}`);
     }
     if (releaseType && !exports.releaseTypes.includes(releaseType)) {
-        throw new Error(`Unknown release type - ${releaseType}`);
+        throw new Error(`Unknown release type: ${releaseType}`);
     }
     return {
         infoJsonFile,
