@@ -29,6 +29,7 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 						id
 						labels(first: 10) {
 							nodes {
+								id
 								name
 							}
 						}
@@ -43,6 +44,19 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 						}
 						reviewRequests(first: 10) {
 							totalCount
+						}
+						assignees(first: 10) {
+							nodes {
+								login
+								id
+							}
+						}
+						closingIssuesReferences(first: 10) {
+							nodes {
+								id
+								number
+								title
+							}
 						}
 					}
 				}
