@@ -86,7 +86,7 @@ const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0
 });
 const assignLabelsAfterMerge = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const labelIds = [labels.statusCompleted.id, labels.xNeedsTesting.id];
+        const labelIds = [labels.statusCompleted.id, labels.statusNeedsTesting.id];
         // eslint-disable-next-line no-console
         console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
         return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
