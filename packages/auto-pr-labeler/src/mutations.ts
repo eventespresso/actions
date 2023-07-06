@@ -62,7 +62,7 @@ const assignLabelsAfterMerge = async (
 	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
-		const labelIds: Array<ID> = [labels.statusCompleted.id, labels.statusNeedsTesting.id];
+		const labelIds: Array<ID> = [labels.statusNeedsTesting.id];
 		// eslint-disable-next-line no-console
 		console.log('%c assignLabelsAfterMerge', 'color: HotPink;', { labelableId, labelIds });
 		return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
