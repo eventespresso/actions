@@ -1,9 +1,15 @@
 export type ID = string | number;
 export type RepoName = string;
 
-interface ClosingIssuesReference {
+interface Assignee {
 	id: ID;
-	name: number;
+	login: string;
+}
+
+export interface ClosingIssuesReference {
+	id: ID;
+	number: number;
+	title: string;
 }
 
 export interface Label {
@@ -28,8 +34,10 @@ interface ReviewRequests {
 }
 
 export interface PullRequest {
-	closingIssuesReferences: ClosingIssuesReference[];
+	assignees: { nodes: Assignee[] };
+	closingIssuesReferences: { nodes: ClosingIssuesReference[] };
 	id: ID;
+	labels: { nodes: Label[] };
 	number: number;
 	reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | null;
 	reviewRequests: ReviewRequests;
