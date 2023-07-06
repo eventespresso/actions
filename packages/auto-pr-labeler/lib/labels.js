@@ -177,6 +177,10 @@ exports.repoLabels = {
             name: 'C: UI/UX 🚽',
             id: 'LA_kwDOH9Ray88AAAABDP4WVA',
         },
+        catActivation: {
+            name: 'C: activation 🔆',
+            id: 'LA_kwDOH9Ray88AAAABG6i9FA',
+        },
         catAssets: {
             name: 'C: assets 💎',
             id: 'LA_kwDOH9Ray88AAAABDP38KA',
@@ -213,6 +217,10 @@ exports.repoLabels = {
             name: 'D: API📡',
             id: 'LA_kwDOH9Ray88AAAABDQIsMw',
         },
+        domainAttendees: {
+            name: 'D: Attendees & Staff 👨‍👩‍👧‍👦',
+            id: 'LA_kwDOH9Ray88AAAABEsvHGw',
+        },
         domainCalendar: {
             name: 'D: Calendar 📆',
             id: 'LA_kwDOH9Ray88AAAABDP-zJQ',
@@ -233,9 +241,21 @@ exports.repoLabels = {
             name: 'D: Messages 📩',
             id: 'LA_kwDOH9Ray88AAAABDP728Q',
         },
+        domainPromos: {
+            name: 'D: Promos & Modifiers 🛍️',
+            id: 'LA_kwDOH9Ray88AAAABQU3dsQ',
+        },
         domainRemAddon: {
             name: 'D: REM ♻️',
             id: 'LA_kwDOH9Ray88AAAABDP485A',
+        },
+        domainRepo: {
+            name: 'D: REPO 🌿',
+            id: 'LA_kwDOH9Ray88AAAABIeoiHg',
+        },
+        domainSpco: {
+            name: 'D: SPCO & Registration 📋',
+            id: 'LA_kwDOH9Ray88AAAABEswKbQ',
         },
         domainTemplates: {
             name: 'D: Templates 📰',
@@ -252,6 +272,10 @@ exports.repoLabels = {
         domainWpUserAddon: {
             name: 'D: WP User Add-on 🤷‍♀️',
             id: 'LA_kwDOH9Ray88AAAABDP5LcA',
+        },
+        domainMobileApp: {
+            name: 'D: mobile app 📱',
+            id: 'LA_kwDOH9Ray88AAAABS1LA_Q',
         },
         priorityUrgent: {
             name: 'P1: URGENT PRIORITY :scream:',
@@ -289,40 +313,48 @@ exports.repoLabels = {
             name: 'S5: code review 🔎',
             id: 'LA_kwDOH9Ray88AAAABDQBBDQ',
         },
+        statusHasFix: {
+            name: 'S6: has fix 💉',
+            id: 'LA_kwDOH9Ray88AAAABIemxdA',
+        },
         statusPleaseFix: {
-            name: 'S6: please fix 💉',
+            name: 'S7: please fix 💉',
             id: 'LA_kwDOH9Ray88AAAABDQBERQ',
         },
         statusApproved: {
-            name: 'S7: APPROVED ✔️',
+            name: 'S8: APPROVED ✔️',
             id: 'LA_kwDOH9Ray88AAAABDQBINw',
         },
         statusNeedsTesting: {
-            name: 'S8: needs testing 🧪',
+            name: 'S9: needs testing 🧪',
             id: 'LA_kwDOH9Ray88AAAABDQBKvw',
         },
         statusCompleted: {
-            name: 'S9: completed 🚀',
+            name: 'S10: completed 🚀',
             id: 'LA_kwDOH9Ray88AAAABDQBQKA',
         },
         statusBlocked: {
-            name: 's10: BLOCKED ⚠️',
+            name: 'S11: BLOCKED ⚠️',
             id: 'LA_kwDOH9Ray88AAAABDQBUYw',
         },
         statusDuplicate: {
-            name: 'S11: duplicate? ©️',
+            name: 'S12: duplicate? ©️',
             id: 'LA_kwDOH9Ray88AAAABDQBYiQ',
         },
         statusInvalid: {
-            name: 'S12: invalid 👽',
+            name: 'S13: invalid 👽',
             id: 'LA_kwDOH9Ray88AAAABDQBcQg',
+        },
+        statusWontFix: {
+            name: 'S14: wont fix ⛔️',
+            id: 'LA_kwDOH9Ray88AAAABGGOPCg',
         },
         typeBug: {
             name: 'T: bug 🪲',
             id: 'LA_kwDOH9Ray88AAAABDQBr1Q',
         },
         typeChore: {
-            name: 'T: chore 🧹',
+            name: 'T: chore🧹',
             id: 'LA_kwDOH9Ray88AAAABDQB4wA',
         },
         typeNewFeature: {

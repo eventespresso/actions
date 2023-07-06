@@ -35,6 +35,7 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 						id
 						labels(first: 10) {
 							nodes {
+								id
 								name
 							}
 						}
@@ -45,10 +46,17 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 							nodes {
 								id
 								number
+								title
 							}
 						}
 						reviewRequests(first: 10) {
 							totalCount
+						}
+						assignees(first: 10) {
+							nodes {
+								login
+								id
+							}
 						}
 					}
 				}

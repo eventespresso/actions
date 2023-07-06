@@ -73,6 +73,19 @@ const removeLabelsMutation = `
 				}
 			}
 	`;
+const labelMutation = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // eslint-disable-next-line no-console
+        console.log('%c labelMutation', 'color: HotPink;', { labelableId, labelIds });
+        return yield (0, graphql_1.graphql)(addLabelsMutation, Object.assign({ labelIds, labelableId }, utils_1.gqlVariables));
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+});
+const assignHasFixLabel = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield labelMutation([labels.statusHasFix.id], labelableId);
+});
 const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const labelIds = [labels.statusInvalid.id];
@@ -207,6 +220,12 @@ const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void
                     }
                 default:
                     break;
+            }
+            if (pullRequest.closingIssuesReferences.nodes.length > 0) {
+                const issues = pullRequest.closingIssuesReferences.nodes;
+                for (const issue of issues) {
+                    yield assignHasFixLabel(labels, issue.id);
+                }
             }
             return assignLabelsAfterCreated(labels, pullRequest.id);
         case 'CLOSED':
