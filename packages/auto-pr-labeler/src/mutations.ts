@@ -43,6 +43,26 @@ const removeLabelsMutation = `
 			}
 	`;
 
+const labelMutation = async (
+	labelIds: Array<ID>,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	try {
+		// eslint-disable-next-line no-console
+		console.log('%c labelMutation', 'color: HotPink;', { labelableId, labelIds });
+		return await graphql(addLabelsMutation, { labelIds, labelableId, ...gqlVariables });
+	} catch (error) {
+		core.setFailed(error.message);
+	}
+};
+
+const assignHasFixLabel = async (
+	labels: LabelList,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	return await labelMutation([labels.statusHasFix.id], labelableId);
+};
+
 const assignLabelsAfterClose = async (
 	labels: LabelList,
 	labelableId: ID
@@ -205,6 +225,14 @@ export const assignStatusLabels = async (
 				default:
 					break;
 			}
+
+			if (pullRequest.closingIssuesReferences.nodes.length > 0) {
+				const issues = pullRequest.closingIssuesReferences.nodes;
+				for (const issue of issues) {
+					await assignHasFixLabel(labels, issue.id);
+				}
+			}
+
 			return assignLabelsAfterCreated(labels, pullRequest.id);
 		case 'CLOSED':
 			if (pullRequest.reviewDecision === 'APPROVED') {
