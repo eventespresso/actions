@@ -345,5 +345,9 @@ exports.repoLabels = {
             name: 'X: HARD ☠️',
             id: 'LA_kwDOH9Ray88AAAABDQCBDg',
         },
+        xNeedsTesting: {
+            name: 'X: NEEDS TESTING 🧪',
+            id: 'LA_kwDOH9Ray88AAAABVBaF4Q',
+        },
     },
 };
