@@ -1,8 +1,10 @@
-import type { LabelsQueryResponse, PullRequestQueryResponse } from './types';
-import { gqlVariables } from './utils';
 import { graphql } from '@octokit/graphql';
+import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 
-export const getLabels = async (): Promise<LabelsQueryResponse> => {
+import { gqlVariables } from './utils';
+import type { LabelsQueryResponse, PullRequestQueryResponse } from './types';
+
+export const getLabels = async (): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	return await graphql(
 		`
 			query ($owner: String!, $repo: String!) {
@@ -20,7 +22,7 @@ export const getLabels = async (): Promise<LabelsQueryResponse> => {
 	);
 };
 
-export const getPullRequest = async (pr: number): Promise<PullRequestQueryResponse> => {
+export const getPullRequest = async (pr: number): Promise<GraphQlQueryResponse<PullRequestQueryResponse>> => {
 	return await graphql(
 		`
 			query ($pr: Int!, $owner: String!, $repo: String!) {
