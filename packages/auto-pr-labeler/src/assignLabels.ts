@@ -141,12 +141,13 @@ const assignLabelsAfterReviewRequestRemoved = async (
  *
  * @param labels LabelList
  * @param labelableId ID
+ * @param except ID 		ID of a label to exclude from removal
  * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
  */
 const removeAllStatusLabels = async (
 	labels: LabelList,
 	labelableId: ID,
-	remove: ID = ''
+	except: ID = ''
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
 	try {
 		let labelIds: Array<ID> = [
@@ -163,8 +164,8 @@ const removeAllStatusLabels = async (
 			labels.statusDuplicate.id,
 			labels.statusInvalid.id,
 		];
-		if (remove !== '') {
-			labelIds = labelIds.filter((labelID) => labelID !== remove);
+		if (except !== '') {
+			labelIds = labelIds.filter((labelID) => labelID !== except);
 		}
 		// eslint-disable-next-line no-console
 		console.log('%c removeAllStatusLabels', 'color: HotPink;', { labelableId, labelIds });
