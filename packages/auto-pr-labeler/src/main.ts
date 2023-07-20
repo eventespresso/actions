@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import { pr, repo } from './utils';
-import { assignStatusLabels } from './mutations';
+import { assignStatusLabels } from './assignLabels';
 import { getPullRequest } from './queries';
 
 const assignStatusLabelsToPullRequest = async (): Promise<void> => {

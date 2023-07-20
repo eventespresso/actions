@@ -1,20 +1,29 @@
+import { PR_REVIEW_DECISION, PR_STATE } from './constants';
+
 export type ID = string | number;
 export type RepoName = string;
 
-interface Assignee {
+export interface Issue {
+	assignees: UserConnection;
 	id: ID;
-	login: string;
-}
-
-export interface ClosingIssuesReference {
-	id: ID;
+	labels: LabelConnection;
 	number: number;
 	title: string;
+}
+
+export interface IssueConnection {
+	nodes: Issue[];
+	totalCount: number;
 }
 
 export interface Label {
 	id: ID;
 	name: string;
+}
+
+export interface LabelConnection {
+	nodes: Label[];
+	totalCount: number;
 }
 
 export interface RepoLabels {
@@ -34,18 +43,34 @@ interface ReviewRequests {
 }
 
 export interface PullRequest {
-	assignees: { nodes: Assignee[] };
-	closingIssuesReferences: { nodes: ClosingIssuesReference[] };
+	assignees: UserConnection;
+	closingIssuesReferences: IssueConnection;
 	id: ID;
-	labels: { nodes: Label[] };
+	labels: LabelConnection;
 	number: number;
-	reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | null;
+	reviewDecision: PullRequestReviewDecision;
 	reviewRequests: ReviewRequests;
-	state: 'CLOSED' | 'MERGED' | 'OPEN';
+	state: PullRequestState;
 }
+
+type PrReviewDecisionValues<T> = T[keyof T];
+type PullRequestReviewDecision = PrReviewDecisionValues<typeof PR_REVIEW_DECISION>;
+
+type PrStateValues<T> = T[keyof T];
+type PullRequestState = PrStateValues<typeof PR_STATE>;
 
 export interface PullRequestQueryResponse {
 	repository: {
 		pullRequest: PullRequest;
 	};
+}
+
+interface User {
+	id: ID;
+	login: string;
+}
+
+export interface UserConnection {
+	nodes: User[];
+	totalCount: number;
 }
