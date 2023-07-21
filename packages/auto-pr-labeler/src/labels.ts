@@ -328,24 +328,28 @@ export const repoLabels: RepoLabels = {
 			name: 'S9: needs testing 🧪',
 			id: 'LA_kwDOH9Ray88AAAABDQBKvw',
 		},
+		statusMerge: {
+			name: 'S:10 merge 🖇',
+			id: 'LA_kwDOH9Ray88AAAABV2nWOg',
+		},
 		statusCompleted: {
-			name: 'S10: completed 🚀',
+			name: 'S11: completed 🚀',
 			id: 'LA_kwDOH9Ray88AAAABDQBQKA',
 		},
 		statusBlocked: {
-			name: 'S11: BLOCKED ⚠️',
+			name: 'S12: BLOCKED ⚠️',
 			id: 'LA_kwDOH9Ray88AAAABDQBUYw',
 		},
 		statusDuplicate: {
-			name: 'S12: duplicate? ©️',
+			name: 'S13: duplicate? ©️',
 			id: 'LA_kwDOH9Ray88AAAABDQBYiQ',
 		},
 		statusInvalid: {
-			name: 'S13: invalid 👽',
+			name: 'S14: invalid 👽',
 			id: 'LA_kwDOH9Ray88AAAABDQBcQg',
 		},
 		statusWontFix: {
-			name: 'S14: wont fix ⛔️',
+			name: 'S15: wont fix ⛔️',
 			id: 'LA_kwDOH9Ray88AAAABGGOPCg',
 		},
 		typeBug: {
