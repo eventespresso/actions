@@ -182,6 +182,8 @@ const removeAllStatusLabels = async (
  * @param labels LabelList
  */
 export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection, labels: LabelList) => {
+	// eslint-disable-next-line no-console
+	console.log('%c assignLabelsToClosingIssues', 'color: HotPink;', closingIssues);
 	if (closingIssues.totalCount > 0) {
 		const issues = closingIssues.nodes;
 		for (const issue of issues) {
