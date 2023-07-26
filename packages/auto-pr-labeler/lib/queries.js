@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPullRequest = exports.getLabels = void 0;
-const utils_1 = require("./utils");
 const graphql_1 = require("@octokit/graphql");
+const utils_1 = require("./utils");
 const getLabels = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, graphql_1.graphql)(`
 			query ($owner: String!, $repo: String!) {
