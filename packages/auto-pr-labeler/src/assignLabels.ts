@@ -53,7 +53,7 @@ const assignLabelsAfterClose = async (
 };
 
 /**
- * adds the `needs testing` label to the specified Pull Request
+ * adds the `completed` label to the specified Pull Request
  *
  * @param labels LabelList
  * @param labelableId ID
@@ -63,7 +63,7 @@ const assignLabelsAfterMerge = async (
 	labels: LabelList,
 	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	return await addLabels([labels.statusNeedsTesting.id], labelableId);
+	return await addLabels([labels.statusCompleted.id], labelableId);
 };
 
 /**
