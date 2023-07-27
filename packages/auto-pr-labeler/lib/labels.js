@@ -92,7 +92,7 @@ exports.repoLabels = {
             id: 'MDU6TGFiZWwyMjc0MDc0NjY5',
         },
         statusNew: {
-            name: 'S:1 new 👶🏻',
+            name: 'S1: new 👶🏻',
             id: 'MDU6TGFiZWwyNDQ0NjI1MDU2',
         },
         statusPlanning: {
@@ -111,49 +111,77 @@ exports.repoLabels = {
             name: 'S5: code review 🔎',
             id: 'MDU6TGFiZWwyMTYxMzQzNTg5',
         },
+        statusHasFix: {
+            name: 'S6: has fix 💉',
+            id: 'LA_kwDOB32LW88AAAABWKfcaA',
+        },
         statusPleaseFix: {
-            name: 'S6: please fix 💉',
+            name: 'S7: please fix 💉',
             id: 'MDU6TGFiZWwyMjExNTA0MTAx',
         },
         statusApproved: {
-            name: 'S:7 APPROVED ✔️',
+            name: 'S8: approved ✔️',
             id: 'MDU6TGFiZWwyNTQ4NjEyMDU3',
         },
         statusNeedsTesting: {
-            name: 'S8: needs testing 🧪',
+            name: 'S9: needs testing 🧪',
             id: 'MDU6TGFiZWw5MDYyNjIwMTI=',
         },
+        statusMerge: {
+            name: 'S:10 merge 🖇',
+            id: 'LA_kwDOB32LW88AAAABWKfuQA',
+        },
         statusCompleted: {
-            name: 'S9: completed 🚀',
+            name: 'S11: completed 🚀',
             id: 'MDU6TGFiZWw4NzA2NjYyMTc=',
         },
         statusBlocked: {
-            name: 's10: BLOCKED ⚠️',
+            name: 'S12: BLOCKED ⚠️',
             id: 'MDU6TGFiZWwyNDA1MzMwNjkw',
         },
         statusDuplicate: {
-            name: 'S11: duplicate? ©️',
+            name: 'S13: duplicate? ©️',
             id: 'MDU6TGFiZWw4NzA2NjYyMTU=',
         },
         statusInvalid: {
-            name: 'S12: invalid 👽',
+            name: 'S14: invalid 👽',
             id: 'MDU6TGFiZWw4NzA2NjYyMjE=',
         },
+        statusWontFix: {
+            name: 'S15: wont fix ⛔️',
+            id: 'LA_kwDOB32LW88AAAABWKgB8w',
+        },
+        statusBackburner: {
+            name: 'S16: backburner 🍲',
+            id: 'LA_kwDOB32LW88AAAABKxL_1Q',
+        },
         typeBug: {
-            name: 'T: bug 🐞',
+            name: 'T: bug 🐛',
             id: 'MDU6TGFiZWw4NzA2NjYyMTQ=',
         },
         typeChore: {
             name: 'T: chore 🧹',
             id: 'MDU6TGFiZWw4NzA2NjYyMjA=',
         },
+        typeDeprecated: {
+            name: 'T: deprecated ⚠️',
+            id: 'MDU6TGFiZWwyMzcyNTUxOTM1',
+        },
         typeNewFeature: {
             name: 'T: new feature ✨',
             id: 'MDU6TGFiZWwyMjExNTQ1NDg5',
         },
         typeRefactor: {
-            name: 'T: refactor 🔄',
+            name: 'T: refactor 🛠',
             id: 'MDU6TGFiZWw4NzA2NjYyMTY=',
+        },
+        typeRemoved: {
+            name: 'T: removed ❌',
+            id: 'LA_kwDOB32LW88AAAABWKmxog',
+        },
+        typeSecurity: {
+            name: 'T: security 🛡',
+            id: 'LA_kwDOB32LW88AAAABWKm2Jg',
         },
         xEval: {
             name: 'X: EVALUATION-ISSUE 🎯',
@@ -322,7 +350,7 @@ exports.repoLabels = {
             id: 'LA_kwDOH9Ray88AAAABDQBERQ',
         },
         statusApproved: {
-            name: 'S8: APPROVED ✔️',
+            name: 'S8: approved ✔️',
             id: 'LA_kwDOH9Ray88AAAABDQBINw',
         },
         statusNeedsTesting: {
@@ -353,21 +381,37 @@ exports.repoLabels = {
             name: 'S15: wont fix ⛔️',
             id: 'LA_kwDOH9Ray88AAAABGGOPCg',
         },
+        statusBackburner: {
+            name: 'S16: backburner 🍲',
+            id: 'LA_kwDOH9Ray88AAAABWKgJnQ',
+        },
         typeBug: {
-            name: 'T: bug 🪲',
+            name: 'T: bug 🐛',
             id: 'LA_kwDOH9Ray88AAAABDQBr1Q',
         },
         typeChore: {
-            name: 'T: chore🧹',
+            name: 'T: chore 🧹',
             id: 'LA_kwDOH9Ray88AAAABDQB4wA',
+        },
+        typeDeprecated: {
+            name: 'T: deprecated ⚠️',
+            id: 'LA_kwDOH9Ray88AAAABWKjs3w',
         },
         typeNewFeature: {
             name: 'T: new feature ✨',
             id: 'LA_kwDOH9Ray88AAAABDQB2fw',
         },
         typeRefactor: {
-            name: 'T: refactor 🔄',
+            name: 'T: refactor 🛠',
             id: 'LA_kwDOH9Ray88AAAABDQBztw',
+        },
+        typeRemoved: {
+            name: 'T: removed ❌',
+            id: 'LA_kwDOH9Ray88AAAABWKjZWA',
+        },
+        typeSecurity: {
+            name: 'T: security 🛡',
+            id: 'LA_kwDOH9Ray88AAAABWKk3OA',
         },
         xEval: {
             name: 'X: EVALUATION-ISSUE 🎯',
