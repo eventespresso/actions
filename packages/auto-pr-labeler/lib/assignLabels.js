@@ -181,7 +181,9 @@ const assignLabelsToClosingIssues = (closingIssues, labels) => __awaiter(void 0,
     if (closingIssues.totalCount > 0) {
         const issues = closingIssues.nodes;
         for (const issue of issues) {
-            yield assignHasFixLabel(labels, issue.id);
+            // eslint-disable-next-line no-console
+            console.log('%c  closing Issue', 'color: DeepPink;', issue);
+            yield assignHasFixLabel(labels, issue === null || issue === void 0 ? void 0 : issue.id);
         }
     }
 });

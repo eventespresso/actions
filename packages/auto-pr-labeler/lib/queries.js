@@ -48,6 +48,7 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 								number
 								title
 							}
+							totalCount
 						}
 						reviewRequests(first: 10) {
 							totalCount
