@@ -62,7 +62,7 @@ const addLabels = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, f
  * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
  */
 const assignHasFixLabel = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    yield removeAllStatusLabels(labels, labelableId, labels.statusHasFix.id);
+    yield removeAllStatusLabels(labels, labelableId, labels.statusNeedsTesting.id);
     return yield addLabels([labels.statusHasFix.id], labelableId);
 });
 /**
