@@ -187,7 +187,7 @@ export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection
 	if (closingIssues.totalCount > 0) {
 		const issues = closingIssues.nodes;
 		for (const issue of issues) {
-			await assignHasFixLabel(labels, issue.number);
+			await assignHasFixLabel(labels, issue.id);
 		}
 	}
 };
@@ -208,7 +208,7 @@ export const assignLabelsToOpenPullRequests = async (
 	// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 	switch (pullRequest.reviewDecision) {
 		case PR_REVIEW_DECISION.APPROVED:
-			await removeAllStatusLabels(labels, pullRequest.id, labels.statusApproved.id);
+			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting5.id);
 			return await assignLabelsAfterReviewApproved(labels, pullRequest.id);
 		case PR_REVIEW_DECISION.CHANGES_REQUESTED:
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
