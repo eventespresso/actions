@@ -210,7 +210,7 @@ export const assignLabelsToOpenPullRequests = async (
 	// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 	switch (pullRequest.reviewDecision) {
 		case PR_REVIEW_DECISION.APPROVED:
-			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting5.id);
+			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
 			return await assignLabelsAfterReviewApproved(labels, pullRequest.id);
 		case PR_REVIEW_DECISION.CHANGES_REQUESTED:
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
