@@ -7708,7 +7708,7 @@ const assignLabelsToClosingIssues = (closingIssues, labels) => __awaiter(void 0,
     if (closingIssues.totalCount > 0) {
         const issues = closingIssues.nodes;
         for (const issue of issues) {
-            yield assignHasFixLabel(labels, issue.number);
+            yield assignHasFixLabel(labels, issue.id);
         }
     }
 });
@@ -7726,7 +7726,7 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0
     // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
-            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusApproved.id);
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting5.id);
             return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
         case constants_1.PR_REVIEW_DECISION.CHANGES_REQUESTED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
