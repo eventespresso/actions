@@ -187,7 +187,9 @@ export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection
 	if (closingIssues.totalCount > 0) {
 		const issues = closingIssues.nodes;
 		for (const issue of issues) {
-			await assignHasFixLabel(labels, issue.id);
+			// eslint-disable-next-line no-console
+			console.log('%c  closing Issue', 'color: DeepPink;', issue);
+			await assignHasFixLabel(labels, issue?.id);
 		}
 	}
 };
