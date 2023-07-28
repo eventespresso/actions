@@ -35,6 +35,7 @@ const assignHasFixLabel = async (
 	labels: LabelList,
 	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+	await removeAllStatusLabels(labels, labelableId, labels.statusHasFix.id);
 	return await addLabels([labels.statusHasFix.id], labelableId);
 };
 
