@@ -201,7 +201,7 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0
     // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
-            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting5.id);
+            yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
             return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
         case constants_1.PR_REVIEW_DECISION.CHANGES_REQUESTED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
