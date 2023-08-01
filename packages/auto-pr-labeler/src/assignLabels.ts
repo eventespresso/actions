@@ -40,7 +40,6 @@ const addAssignees = async (
  * assigns Q/A staff to the specified Pull Request
  *
  * @param assignableId ID
- * @param assigneeIds [ID]
  * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
  */
 const addAssigneesAfterReviewApproved = async (
