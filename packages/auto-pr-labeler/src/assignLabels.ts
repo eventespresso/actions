@@ -1,11 +1,54 @@
 import * as core from '@actions/core';
 
+import { espressoStaff } from './espressoStaff';
 import { PR_REVIEW_DECISION, PR_STATE } from './constants';
 import { repoLabels } from './labels';
-import { addLabelsMutation, removeLabelsMutation } from './mutations';
+import { addAssigneesMutation, addLabelsMutation, removeLabelsMutation } from './mutations';
 
-import type { ID, IssueConnection, LabelList, LabelsQueryResponse, PullRequest, RepoName } from './types';
+import type {
+	AssigneesQueryResponse,
+	ID,
+	IssueConnection,
+	LabelList,
+	LabelsQueryResponse,
+	PullRequest,
+	RepoName,
+} from './types';
 import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
+
+/**
+ * adds the supplied assignees to the specified Issue or Pull Request
+ *
+ * @param assignableId ID
+ * @param assigneeIds [ID]
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ */
+const addAssignees = async (
+	assignableId: ID,
+	assigneeIds: Array<ID>
+): Promise<GraphQlQueryResponse<AssigneesQueryResponse>> => {
+	try {
+		// eslint-disable-next-line no-console
+		console.log('%c addAssignees', 'color: HotPink;', { assignableId, assigneeIds });
+		return await addAssigneesMutation(assignableId, assigneeIds);
+	} catch (error) {
+		core.setFailed(error.message);
+	}
+};
+
+/**
+ * assigns Q/A staff to the specified Pull Request
+ *
+ * @param assignableId ID
+ * @param assigneeIds [ID]
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ */
+const addAssigneesAfterReviewApproved = async (
+	assignableId: ID
+): Promise<GraphQlQueryResponse<AssigneesQueryResponse>> => {
+	const supportStaff = espressoStaff.filter((staff) => staff.support).map((support) => support.id);
+	return await addAssignees(assignableId, supportStaff);
+};
 
 /**
  * adds the supplied labels to the specified Issue or Pull Request
@@ -92,7 +135,7 @@ const assignLabelsAfterReviewApproved = async (
 	labels: LabelList,
 	labelableId: ID
 ): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
-	return await addLabels([labels.statusApproved.id], labelableId);
+	return await addLabels([labels.statusApproved.id, labels.statusNeedsTesting.id], labelableId);
 };
 
 /**
@@ -215,6 +258,7 @@ export const assignLabelsToOpenPullRequests = async (
 	switch (pullRequest.reviewDecision) {
 		case PR_REVIEW_DECISION.APPROVED:
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
+			await addAssigneesAfterReviewApproved(pullRequest.id);
 			return await assignLabelsAfterReviewApproved(labels, pullRequest.id);
 		case PR_REVIEW_DECISION.CHANGES_REQUESTED:
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
