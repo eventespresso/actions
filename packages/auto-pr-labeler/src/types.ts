@@ -3,6 +3,10 @@ import { PR_REVIEW_DECISION, PR_STATE } from './constants';
 export type ID = string | number;
 export type RepoName = string;
 
+export interface AssigneesQueryResponse {
+	assignees: User[];
+}
+
 export interface Issue {
 	assignees: UserConnection;
 	id: ID;
@@ -65,7 +69,14 @@ export interface PullRequestQueryResponse {
 	};
 }
 
-interface User {
+export interface Staff {
+	id: ID;
+	login: string;
+	dev: boolean;
+	support: boolean;
+}
+
+export interface User {
 	id: ID;
 	login: string;
 }
