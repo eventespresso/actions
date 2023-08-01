@@ -3,7 +3,29 @@ import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
 
 import { gqlVariables } from './utils';
 
-import type { ID, LabelsQueryResponse } from './types';
+import type { AssigneesQueryResponse, ID, LabelsQueryResponse } from './types';
+
+export const addAssigneesMutation = async (
+	assignableId: ID,
+	assigneeIds: Array<ID>
+): Promise<GraphQlQueryResponse<AssigneesQueryResponse>> => {
+	return await graphql(
+		`
+			mutation ($assignableId: ID!, $assigneeIds: [ID!]!) {
+				addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+					assignable {
+						assignees(first: 10) {
+							nodes {
+								login
+							}
+						}
+					}
+				}
+			}
+		`,
+		{ assigneeIds, assignableId, ...gqlVariables }
+	);
+};
 
 export const addLabelsMutation = async (
 	labelIds: Array<ID>,
@@ -38,6 +60,7 @@ export const removeLabelsMutation = async (
 					labelable {
 						labels(first: 10) {
 							nodes {
+								id
 								name
 							}
 						}
