@@ -21,7 +21,7 @@ import type { GraphQlQueryResponse } from '@octokit/graphql/dist-types/types';
  *
  * @param assignableId ID
  * @param assigneeIds [ID]
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
  */
 const addAssignees = async (
 	assignableId: ID,
@@ -41,11 +41,12 @@ const addAssignees = async (
  *
  * @param assignableId ID
  * @param assigneeIds [ID]
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
  */
 const addAssigneesAfterReviewApproved = async (
 	assignableId: ID
 ): Promise<GraphQlQueryResponse<AssigneesQueryResponse>> => {
+	// filter out any staff who are not Q/A then return array of IDs
 	const supportStaff = espressoStaff.filter((staff) => staff.support).map((support) => support.id);
 	return await addAssignees(assignableId, supportStaff);
 };
