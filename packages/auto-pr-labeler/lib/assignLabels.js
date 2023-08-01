@@ -34,9 +34,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assignStatusLabels = exports.assignLabelsToMergedPullRequests = exports.assignLabelsToClosedPullRequests = exports.assignLabelsToOpenPullRequests = exports.assignLabelsToClosingIssues = void 0;
 const core = __importStar(require("@actions/core"));
+const espressoStaff_1 = require("./espressoStaff");
 const constants_1 = require("./constants");
 const labels_1 = require("./labels");
 const mutations_1 = require("./mutations");
+/**
+ * adds the supplied assignees to the specified Issue or Pull Request
+ *
+ * @param assignableId ID
+ * @param assigneeIds [ID]
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
+ */
+const addAssignees = (assignableId, assigneeIds) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // eslint-disable-next-line no-console
+        console.log('%c addAssignees', 'color: HotPink;', { assignableId, assigneeIds });
+        return yield (0, mutations_1.addAssigneesMutation)(assignableId, assigneeIds);
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+});
+/**
+ * assigns Q/A staff to the specified Pull Request
+ *
+ * @param assignableId ID
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
+ */
+const addAssigneesAfterReviewApproved = (assignableId) => __awaiter(void 0, void 0, void 0, function* () {
+    // filter out any staff who are not Q/A then return array of IDs
+    const supportStaff = espressoStaff_1.espressoStaff.filter((staff) => staff.support).map((support) => support.id);
+    return yield addAssignees(assignableId, supportStaff);
+});
 /**
  * adds the supplied labels to the specified Issue or Pull Request
  *
@@ -103,7 +132,7 @@ const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void
  * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
  */
 const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield addLabels([labels.statusApproved.id], labelableId);
+    return yield addLabels([labels.statusApproved.id, labels.statusNeedsTesting.id], labelableId);
 });
 /**
  * adds the `please fix` label to the specified Pull Request
@@ -206,6 +235,7 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
+            yield addAssigneesAfterReviewApproved(pullRequest.id);
             return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
         case constants_1.PR_REVIEW_DECISION.CHANGES_REQUESTED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);

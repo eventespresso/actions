@@ -7561,9 +7561,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignStatusLabels = exports.assignLabelsToMergedPullRequests = exports.assignLabelsToClosedPullRequests = exports.assignLabelsToOpenPullRequests = exports.assignLabelsToClosingIssues = void 0;
 const core = __importStar(__nccwpck_require__(7117));
+const espressoStaff_1 = __nccwpck_require__(7499);
 const constants_1 = __nccwpck_require__(8131);
 const labels_1 = __nccwpck_require__(2921);
 const mutations_1 = __nccwpck_require__(4089);
+/**
+ * adds the supplied assignees to the specified Issue or Pull Request
+ *
+ * @param assignableId ID
+ * @param assigneeIds [ID]
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
+ */
+const addAssignees = (assignableId, assigneeIds) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // eslint-disable-next-line no-console
+        console.log('%c addAssignees', 'color: HotPink;', { assignableId, assigneeIds });
+        return yield (0, mutations_1.addAssigneesMutation)(assignableId, assigneeIds);
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+});
+/**
+ * assigns Q/A staff to the specified Pull Request
+ *
+ * @param assignableId ID
+ * @returns Promise<GraphQlQueryResponse<AssigneesQueryResponse>>
+ */
+const addAssigneesAfterReviewApproved = (assignableId) => __awaiter(void 0, void 0, void 0, function* () {
+    // filter out any staff who are not Q/A then return array of IDs
+    const supportStaff = espressoStaff_1.espressoStaff.filter((staff) => staff.support).map((support) => support.id);
+    return yield addAssignees(assignableId, supportStaff);
+});
 /**
  * adds the supplied labels to the specified Issue or Pull Request
  *
@@ -7630,7 +7659,7 @@ const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void
  * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
  */
 const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield addLabels([labels.statusApproved.id], labelableId);
+    return yield addLabels([labels.statusApproved.id, labels.statusNeedsTesting.id], labelableId);
 });
 /**
  * adds the `please fix` label to the specified Pull Request
@@ -7733,6 +7762,7 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
+            yield addAssigneesAfterReviewApproved(pullRequest.id);
             return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);
         case constants_1.PR_REVIEW_DECISION.CHANGES_REQUESTED:
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusPleaseFix.id);
@@ -7831,6 +7861,73 @@ exports.PR_STATE = {
     MERGED: 'MERGED',
     OPEN: 'OPEN',
 };
+
+
+/***/ }),
+
+/***/ 7499:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.espressoStaff = void 0;
+exports.espressoStaff = [
+    {
+        login: 'knazart',
+        id: 'MDQ6VXNlcjEwNDg1NjE=',
+        dev: true,
+        support: false,
+    },
+    {
+        login: 'tn3rb',
+        id: 'MDQ6VXNlcjE3NTEwMzA=',
+        dev: true,
+        support: false,
+    },
+    {
+        login: 'garthkoyle',
+        id: 'MDQ6VXNlcjMwOTQ1NDc=',
+        dev: false,
+        support: true,
+    },
+    {
+        login: 'eeteamcodebase',
+        id: 'MDQ6VXNlcjMwOTg1OTE=',
+        dev: false,
+        support: false,
+    },
+    {
+        login: 'alexkuc',
+        id: 'MDQ6VXNlcjMzMzE5NDY=',
+        dev: true,
+        support: false,
+    },
+    {
+        login: 'Pebblo',
+        id: 'MDQ6VXNlcjQzNDU0MTc=',
+        dev: false,
+        support: true,
+    },
+    {
+        login: 'hoseinrafiei',
+        id: 'MDQ6VXNlcjI5MTQ0NTQy',
+        dev: true,
+        support: false,
+    },
+    {
+        login: 'kingrio13',
+        id: 'MDQ6VXNlcjMxNDY0MTI5',
+        dev: false,
+        support: true,
+    },
+    {
+        login: 'Saam01',
+        id: 'U_kgDOBfWk5g',
+        dev: false,
+        support: true,
+    },
+];
 
 
 /***/ }),
@@ -8366,9 +8463,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.removeLabelsMutation = exports.addLabelsMutation = void 0;
+exports.removeLabelsMutation = exports.addLabelsMutation = exports.addAssigneesMutation = void 0;
 const graphql_1 = __nccwpck_require__(8559);
 const utils_1 = __nccwpck_require__(2560);
+const addAssigneesMutation = (assignableId, assigneeIds) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, graphql_1.graphql)(`
+			mutation ($assignableId: ID!, $assigneeIds: [ID!]!) {
+				addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+					assignable {
+						assignees(first: 10) {
+							nodes {
+								login
+							}
+						}
+					}
+				}
+			}
+		`, Object.assign({ assigneeIds, assignableId }, utils_1.gqlVariables));
+});
+exports.addAssigneesMutation = addAssigneesMutation;
 const addLabelsMutation = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, graphql_1.graphql)(`
 			mutation ($labelIds: [ID!]!, $labelableId: ID!) {
@@ -8392,6 +8505,7 @@ const removeLabelsMutation = (labelIds, labelableId) => __awaiter(void 0, void 0
 					labelable {
 						labels(first: 10) {
 							nodes {
+								id
 								name
 							}
 						}

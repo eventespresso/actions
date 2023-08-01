@@ -9,9 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeLabelsMutation = exports.addLabelsMutation = void 0;
+exports.removeLabelsMutation = exports.addLabelsMutation = exports.addAssigneesMutation = void 0;
 const graphql_1 = require("@octokit/graphql");
 const utils_1 = require("./utils");
+const addAssigneesMutation = (assignableId, assigneeIds) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, graphql_1.graphql)(`
+			mutation ($assignableId: ID!, $assigneeIds: [ID!]!) {
+				addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+					assignable {
+						assignees(first: 10) {
+							nodes {
+								login
+							}
+						}
+					}
+				}
+			}
+		`, Object.assign({ assigneeIds, assignableId }, utils_1.gqlVariables));
+});
+exports.addAssigneesMutation = addAssigneesMutation;
 const addLabelsMutation = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, graphql_1.graphql)(`
 			mutation ($labelIds: [ID!]!, $labelableId: ID!) {
@@ -35,6 +51,7 @@ const removeLabelsMutation = (labelIds, labelableId) => __awaiter(void 0, void 0
 					labelable {
 						labels(first: 10) {
 							nodes {
+								id
 								name
 							}
 						}
