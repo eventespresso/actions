@@ -160,10 +160,13 @@ const removeAllStatusLabels = async (
 			labels.statusPleaseFix.id,
 			labels.statusApproved.id,
 			labels.statusNeedsTesting.id,
+			labels.statusMerge.id,
 			labels.statusCompleted.id,
-			labels.statusBlocked.id,
-			labels.statusDuplicate.id,
-			labels.statusInvalid.id,
+			// labels.statusBlocked.id,
+			// labels.statusDuplicate.id,
+			// labels.statusInvalid.id,
+			// labels.statusWontFix.id,
+			// labels.statusBackburner.id,
 		];
 		if (except !== '') {
 			labelIds = labelIds.filter((labelID) => labelID !== except);
