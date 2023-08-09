@@ -1,3 +1,15 @@
 name: E2E Tests
 description: Action for running E2E tests
-
+inputs:
+    cafe-repo:
+        description: Path to Cafe git repository
+        required: true
+    barista-repo:
+        description: Path to Barista git repository
+        required: true
+    e2e-tests-repo:
+        description: Path to E2E Tests git repository
+        required: true
+runs:
+    using: 'node16'
+    main: 'dist/main.js'
