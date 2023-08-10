@@ -3,5 +3,8 @@
 		"**/node_modules": true,
 		"**/dist": true,
 		"**/lib": true
+	},
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": false
 	}
 }
