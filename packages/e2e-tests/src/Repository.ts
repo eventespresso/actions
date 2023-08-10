@@ -9,7 +9,7 @@ class Repository {
 
 	constructor(params: Parameters) {
 		this.name = this.sanitizeName(params.name);
-		this.cwd = this.getCwd(params.localOrRemote);
+		this.cwd = this.determineCwd(params.localOrRemote);
 	}
 
 	public exec(command: string): void {
@@ -20,7 +20,12 @@ class Repository {
 		});
 	}
 
-	private getCwd(localOrRemote: string): string {
+	public getCwd(): string {
+		// conceal cwd behind method to enforce validation
+		return this.cwd;
+	}
+
+	private determineCwd(localOrRemote: string): string {
 		const type = this.getType(localOrRemote);
 		if (type === 'local') return this.checkPath(localOrRemote);
 		if (type === 'remote') return this.clone(localOrRemote);
