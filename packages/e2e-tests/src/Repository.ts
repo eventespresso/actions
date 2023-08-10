@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
-import * as path from 'path';
-import * as child_process from 'child_process';
+import * as Path from 'path';
+import * as ChildProcess from 'child_process';
 
 class Repository {
 	private readonly name: string;
@@ -13,7 +13,7 @@ class Repository {
 	}
 
 	public exec(command: string): void {
-		child_process.spawnSync(command, {
+		ChildProcess.spawnSync(command, {
 			shell: true,
 			stdio: 'inherit',
 			cwd: this.cwd,
@@ -60,12 +60,12 @@ class Repository {
 	private clone(remote: string): string {
 		const path = this.getPath(this.name);
 		const cmd = `git clone ${remote} ${path}`;
-		child_process.execSync(cmd);
+		ChildProcess.execSync(cmd);
 		return path;
 	}
 
 	private getPath(subpath?: string): string {
-		return path.resolve(os.tmpdir(), subpath ?? '');
+		return Path.resolve(os.tmpdir(), subpath ?? '');
 	}
 }
 

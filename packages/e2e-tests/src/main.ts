@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import * as process from 'process';
 import { Repository } from './Repository';
-import * as child_process from 'child_process';
+import * as ChildProcess from 'child_process';
 
 const e2eTests = (): void => {
 	dotenv.config({
@@ -54,11 +54,11 @@ const e2eTests = (): void => {
 
 	// ### prepare environment
 
-	child_process.execSync('sudo apt-get install --yes mkcert');
+	ChildProcess.execSync('sudo apt-get install --yes mkcert');
 
-	child_process.execSync('curl -fsSL https://ddev.com/install.sh | bash');
+	ChildProcess.execSync('curl -fsSL https://ddev.com/install.sh | bash');
 
-	child_process.execSync('npx playwright install --with-deps');
+	ChildProcess.execSync('npx playwright install --with-deps');
 
 	// ### run actual tests
 
