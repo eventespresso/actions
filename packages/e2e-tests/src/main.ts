@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { Repository } from './Repository';
 import * as ChildProcess from 'child_process';
-import core from '@actions/core';
+import * as core from '@actions/core';
 
 const e2eTests = (): void => {
 	dotenv.config({
