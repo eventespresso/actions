@@ -27,15 +27,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
-const process = __importStar(require("process"));
 const Repository_1 = require("./Repository");
 const ChildProcess = __importStar(require("child_process"));
+const core_1 = __importDefault(require("@actions/core"));
 const e2eTests = () => {
     dotenv_1.default.config({
         path: '../.dotenv',
     });
     // ### prepare cafe repo
-    const cafeEnv = process.env['CAFE'];
+    const cafeEnv = core_1.default.getInput('cafe-repo');
     if (!cafeEnv) {
         throw new Error('Missing environment variable: CAFE');
     }
@@ -43,7 +43,7 @@ const e2eTests = () => {
     // TODO: cache for composer deps here
     cafeRepo.exec('composer install');
     // ### prepare barista repo (optional)
-    const baristaEnv = process.env['BARISTA'];
+    const baristaEnv = core_1.default.getInput('barista-repo');
     if (!baristaEnv) {
         throw new Error('Missing environment variable: BARISTA');
     }
@@ -53,7 +53,7 @@ const e2eTests = () => {
     baristaRepo.exec('npm ci');
     baristaRepo.exec('yarn build');
     // ### prepare e2e tests repo
-    const e2eTestsEnv = process.env['E2E_TESTS'];
+    const e2eTestsEnv = core_1.default.getInput('e2e-tests-repo');
     if (!e2eTestsEnv) {
         throw new Error('Missing environment variable: E2E_TESTS');
     }

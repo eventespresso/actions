@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import * as process from 'process';
 import { Repository } from './Repository';
 import * as ChildProcess from 'child_process';
+import core from '@actions/core';
 
 const e2eTests = (): void => {
 	dotenv.config({
@@ -10,7 +10,7 @@ const e2eTests = (): void => {
 
 	// ### prepare cafe repo
 
-	const cafeEnv = process.env['CAFE'];
+	const cafeEnv = core.getInput('cafe-repo');
 
 	if (!cafeEnv) {
 		throw new Error('Missing environment variable: CAFE');
@@ -24,7 +24,7 @@ const e2eTests = (): void => {
 
 	// ### prepare barista repo (optional)
 
-	const baristaEnv = process.env['BARISTA'];
+	const baristaEnv = core.getInput('barista-repo');
 
 	if (!baristaEnv) {
 		throw new Error('Missing environment variable: BARISTA');
@@ -42,7 +42,7 @@ const e2eTests = (): void => {
 
 	// ### prepare e2e tests repo
 
-	const e2eTestsEnv = process.env['E2E_TESTS'];
+	const e2eTestsEnv = core.getInput('e2e-tests-repo');
 
 	if (!e2eTestsEnv) {
 		throw new Error('Missing environment variable: E2E_TESTS');
