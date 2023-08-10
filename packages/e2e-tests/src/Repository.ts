@@ -51,7 +51,7 @@ class Repository {
 		return name
 			.toLowerCase() // all lower case, easy to work with cli
 			.replaceAll(' ', '-') // no spaces
-			.replaceAll(/[^a-z0-9]/, ''); // only letters and digits
+			.replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
 	}
 
 	/**
