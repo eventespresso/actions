@@ -9,10 +9,7 @@ class Repository {
 
 	constructor(params: Parameters) {
 		this.name = this.sanitizeName(params.name);
-		this.cwd = params.remote ? this.clone(params.remote) : params.local ? this.checkPath(params.local) : 'unknown';
-		if (this.cwd === 'unknown') {
-			throw new Error('Unexpected runtime condition!');
-		}
+		this.cwd = this.getCwd(params.localOrRemote);
 	}
 
 	public exec(command: string): void {
@@ -23,11 +20,26 @@ class Repository {
 		});
 	}
 
+	private getCwd(localOrRemote: string): string {
+		const type = this.getType(localOrRemote);
+		if (type === 'local') return this.checkPath(localOrRemote);
+		if (type === 'remote') return this.clone(localOrRemote);
+		throw new Error(`Unknown git repository format: \n${localOrRemote}`);
+	}
+
 	private checkPath(path: string): string {
 		if (!fs.existsSync(path)) {
 			throw new Error(`Path does not exist: \n${path}`);
 		}
 		return path;
+	}
+
+	private getType(localOrRemote: string): 'local' | 'remote' {
+		if (localOrRemote.startsWith('https://')) return 'remote';
+		if (localOrRemote.endsWith('.git')) return 'remote';
+		if (localOrRemote.startsWith('.')) return 'local';
+		if (localOrRemote.startsWith('/')) return 'local';
+		throw new Error(`Unsupported git path: \n${localOrRemote}`);
 	}
 
 	private sanitizeName(name: string): string {
@@ -54,8 +66,7 @@ class Repository {
 
 type Parameters = {
 	name: string;
-	remote?: string; // if repo is already cloned, we don't need remote
-	local?: string; // if repo is not yet cloned, there cannot be local
+	localOrRemote: string;
 };
 
 export { Repository };
