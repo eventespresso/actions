@@ -36,23 +36,14 @@ class Repository {
     exec(command) {
         const outcome = ChildProcess.spawnSync(command, {
             shell: true,
-            stdio: 'inherit',
+            stdio: ['inherit', 'inherit', 'pipe'],
             cwd: this.cwd,
         });
         if (outcome.status !== 0) {
-            throw new Error(this.getFailedExecMsg(outcome, command));
+            const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()];
+            const msg = strArr.join('\n');
+            throw new Error(msg);
         }
-    }
-    getFailedExecMsg(outcome, command) {
-        let msg = '';
-        msg += 'Failed to execute command';
-        msg += '\n';
-        msg += command;
-        if (outcome.error) {
-            msg += '\n';
-            msg += outcome.error.message;
-        }
-        return msg;
     }
     getCwd() {
         // conceal cwd behind method to enforce validation

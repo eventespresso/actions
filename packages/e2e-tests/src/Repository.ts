@@ -15,24 +15,14 @@ class Repository {
 	public exec(command: string): void {
 		const outcome = ChildProcess.spawnSync(command, {
 			shell: true,
-			stdio: 'inherit',
+			stdio: ['inherit', 'inherit', 'pipe'],
 			cwd: this.cwd,
 		});
 		if (outcome.status !== 0) {
-			throw new Error(this.getFailedExecMsg(outcome, command));
+			const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()] as const;
+			const msg = strArr.join('\n');
+			throw new Error(msg);
 		}
-	}
-
-	private getFailedExecMsg(outcome: ReturnType<typeof ChildProcess.spawnSync>, command: string): string {
-		let msg = '';
-		msg += 'Failed to execute command';
-		msg += '\n';
-		msg += command;
-		if (outcome.error) {
-			msg += '\n';
-			msg += outcome.error.message;
-		}
-		return msg;
 	}
 
 	public getCwd(): string {
