@@ -34,11 +34,25 @@ class Repository {
         this.cwd = this.determineCwd(params.localOrRemote);
     }
     exec(command) {
-        ChildProcess.spawnSync(command, {
+        const outcome = ChildProcess.spawnSync(command, {
             shell: true,
             stdio: 'inherit',
             cwd: this.cwd,
         });
+        if (outcome.status !== 0) {
+            throw new Error(this.getFailedExecMsg(outcome, command));
+        }
+    }
+    getFailedExecMsg(outcome, command) {
+        let msg = '';
+        msg += 'Failed to execute command';
+        msg += '\n';
+        msg += command;
+        if (outcome.error) {
+            msg += '\n';
+            msg += outcome.error.message;
+        }
+        return msg;
     }
     getCwd() {
         // conceal cwd behind method to enforce validation
