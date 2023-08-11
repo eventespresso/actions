@@ -18,8 +18,6 @@ const e2eTests = (): void => {
 
 	const cafeRepo = new Repository({ name: 'cafe', localOrRemote: cafeEnv });
 
-	// TODO: cache for composer deps here
-
 	cafeRepo.exec('composer install');
 
 	// ### prepare barista repo (optional)
@@ -31,10 +29,6 @@ const e2eTests = (): void => {
 	}
 
 	const baristaRepo = new Repository({ name: 'barista', localOrRemote: baristaEnv });
-
-	// TODO:: barista can be optional as cafe contains all assets
-
-	// TODO: cache for yarn deps here
 
 	baristaRepo.exec('npm ci');
 
