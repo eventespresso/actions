@@ -5,10 +5,6 @@ class InputFactory {
 		return core.getInput('cafe-repo-branch', { required: true });
 	}
 
-	public useBaristaRepo(): boolean {
-		return core.getBooleanInput('use-barista-repo', { required: true });
-	}
-
 	public getBaristaRepoBranch(): string {
 		return core.getInput('barista-repo-branch', { required: false });
 	}

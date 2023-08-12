@@ -5,10 +5,6 @@ inputs:
         description: Which branch to use for Cafe repository?
         type: string
         required: true
-    use-barista-repo:
-        description: Should Barista repo be cloned?
-        type: boolean
-        required: true
     barista-repo-branch:
         description: Which branch to use for Barista repository?
         type: string

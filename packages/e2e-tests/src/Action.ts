@@ -8,7 +8,7 @@ class Action {
 	public run(): void {
 		this.getCafe().clone().exec('composer install');
 
-		if (this.inputs.useBaristaRepo()) {
+		if (this.inputs.getBaristaRepoBranch()) {
 			this.getBarista().clone().exec('npm ci').exec('yarn build');
 		}
 
