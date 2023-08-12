@@ -1,3 +1,5 @@
-import main from './main';
+import { Action } from './Action';
 
-main();
+const action = new Action();
+
+action.run();
