@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as Path from 'path';
-import core from '@actions/core';
+import * as core from '@actions/core';
 import * as ChildProcess from 'child_process';
 
 type Parameters = {
