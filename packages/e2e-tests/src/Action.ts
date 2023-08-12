@@ -12,7 +12,7 @@ class Action {
 		let barista = undefined;
 
 		if (this.inputs.getBaristaRepoBranch()) {
-			barista = this.getBarista().clone().exec('npm ci').exec('yarn build');
+			barista = this.getBarista().clone().exec('yarn install --frozen-lockfile').exec('yarn build');
 		}
 
 		this.installDependencies();
@@ -20,7 +20,10 @@ class Action {
 		const envVars = this.makeEnvVars(cafe, barista);
 
 		// TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
-		this.getE2E().clone().exec('npm ci').exec(`${envVars} yarn workspace @eventespresso/e2e test`);
+		this.getE2E()
+			.clone()
+			.exec('yarn install --frozen-lockfile')
+			.exec(`${envVars} yarn workspace @eventespresso/e2e test`);
 	}
 
 	private makeEnvVars(...repos: (Repository | undefined)[]): string {
