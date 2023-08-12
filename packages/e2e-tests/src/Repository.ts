@@ -63,18 +63,8 @@ class Repository {
 	}
 
 	public clone(): Repository {
-		ChildProcess.execSync(this.getGitCloneCmd());
+		ChildProcess.execSync(`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`);
 		return this;
-	}
-
-	private getGitCloneCmd(): string {
-		return `
-			git clone
-				--branch ${this.branch}
-				--single-branch
-				--no-tags
-			${this.remote}
-			${this.cwd}`;
 	}
 }
 
