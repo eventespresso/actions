@@ -1,6 +1,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as Path from 'path';
+import core from '@actions/core';
 import * as ChildProcess from 'child_process';
 
 type Parameters = {
@@ -43,14 +44,14 @@ class Repository {
 		if (outcome.status !== 0) {
 			const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()] as const;
 			const msg = strArr.join('\n');
-			throw new Error(msg);
+			core.setFailed(msg);
 		}
 		return this;
 	}
 
 	private checkPathAvailable(path: string): void {
 		if (fs.existsSync(path)) {
-			throw new Error(`Given path already exists: \n${path}`);
+			core.setFailed(`Given path already exists: \n${path}`);
 		}
 	}
 
