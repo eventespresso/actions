@@ -3,15 +3,39 @@ import * as fs from 'fs';
 import * as Path from 'path';
 import * as ChildProcess from 'child_process';
 
+type Parameters = {
+	name: string;
+	remote: string;
+	branch: string;
+};
+
 class Repository {
-	private readonly name: string;
-	private readonly cwd: string;
+	public readonly name: string;
+	public readonly branch: string;
+	public readonly cwd: string;
+	public readonly remote: string;
 
 	constructor(params: Parameters) {
-		this.name = this.sanitizeName(params.name);
-		this.cwd = this.determineCwd(params.localOrRemote);
+		const name = this.sanitizeName(params.name);
+		const cwd = this.getCwd(name);
+
+		this.name = name;
+		this.branch = params.branch;
+		this.cwd = cwd;
+		this.remote = params.name;
 	}
 
+	private getCwd(name: string): string {
+		// TODO: remove workaround once e2e-tests package is extracted from Barista repository
+		const workaround = name === 'e2e-tests' ? 'e2e-tests' : '';
+		const cwd = Path.resolve(os.tmpdir(), name, workaround);
+		this.checkPathAvailable(cwd);
+		return cwd;
+	}
+
+	/**
+	 * Execute given command in working directory of the repository
+	 */
 	public exec(command: string): void {
 		const outcome = ChildProcess.spawnSync(command, {
 			shell: true,
@@ -25,31 +49,10 @@ class Repository {
 		}
 	}
 
-	public getCwd(): string {
-		// conceal cwd behind method to enforce validation
-		return this.cwd;
-	}
-
-	private determineCwd(localOrRemote: string): string {
-		const type = this.getType(localOrRemote);
-		if (type === 'local') return this.checkPath(localOrRemote);
-		if (type === 'remote') return this.clone(localOrRemote);
-		throw new Error(`Unknown git repository format: \n${localOrRemote}`);
-	}
-
-	private checkPath(path: string): string {
-		if (!fs.existsSync(path)) {
-			throw new Error(`Path does not exist: \n${path}`);
+	private checkPathAvailable(path: string): void {
+		if (fs.existsSync(path)) {
+			throw new Error(`Given path already exists: \n${path}`);
 		}
-		return path;
-	}
-
-	private getType(localOrRemote: string): 'local' | 'remote' {
-		if (localOrRemote.startsWith('https://')) return 'remote';
-		if (localOrRemote.endsWith('.git')) return 'remote';
-		if (localOrRemote.startsWith('.')) return 'local';
-		if (localOrRemote.startsWith('/')) return 'local';
-		throw new Error(`Unsupported git path: \n${localOrRemote}`);
 	}
 
 	private sanitizeName(name: string): string {
@@ -59,24 +62,19 @@ class Repository {
 			.replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
 	}
 
-	/**
-	 * @return local path to repository
-	 */
-	private clone(remote: string): string {
-		const path = this.getPath(this.name);
-		const cmd = `git clone ${remote} ${path}`;
-		ChildProcess.execSync(cmd);
-		return path;
+	public clone(): void {
+		ChildProcess.execSync(this.getGitCloneCmd());
 	}
 
-	private getPath(subpath?: string): string {
-		return Path.resolve(os.tmpdir(), subpath ?? '');
+	private getGitCloneCmd(): string {
+		return `
+			git clone
+				--branch ${this.branch}
+				--single-branch
+				--no-tags
+			${this.remote}
+			${this.cwd}`;
 	}
 }
-
-type Parameters = {
-	name: string;
-	localOrRemote: string;
-};
 
 export { Repository };
