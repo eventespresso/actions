@@ -17,7 +17,7 @@ class Repository {
 
 	constructor(params: Parameters) {
 		const name = this.sanitizeName(params.name);
-		const cwd = this.getCwd(name);
+		const cwd = this.makeCwd(name);
 
 		this.name = name;
 		this.branch = params.branch;
@@ -25,10 +25,8 @@ class Repository {
 		this.remote = params.name;
 	}
 
-	private getCwd(name: string): string {
-		// TODO: remove workaround once e2e-tests package is extracted from Barista repository
-		const workaround = name === 'e2e-tests' ? 'e2e-tests' : '';
-		const cwd = Path.resolve(os.tmpdir(), name, workaround);
+	private makeCwd(name: string): string {
+		const cwd = Path.resolve(os.tmpdir(), name);
 		this.checkPathAvailable(cwd);
 		return cwd;
 	}
@@ -36,7 +34,7 @@ class Repository {
 	/**
 	 * Execute given command in working directory of the repository
 	 */
-	public exec(command: string): void {
+	public exec(command: string): Repository {
 		const outcome = ChildProcess.spawnSync(command, {
 			shell: true,
 			stdio: ['inherit', 'inherit', 'pipe'],
@@ -47,6 +45,7 @@ class Repository {
 			const msg = strArr.join('\n');
 			throw new Error(msg);
 		}
+		return this;
 	}
 
 	private checkPathAvailable(path: string): void {
@@ -62,8 +61,9 @@ class Repository {
 			.replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
 	}
 
-	public clone(): void {
+	public clone(): Repository {
 		ChildProcess.execSync(this.getGitCloneCmd());
+		return this;
 	}
 
 	private getGitCloneCmd(): string {

@@ -3,7 +3,7 @@ import { Repository } from './Repository';
 class RepositoryFactory {
 	constructor() {}
 
-	public cafe(branch: string = 'DEV'): Repository {
+	public cafe(branch: string): Repository {
 		return new Repository({
 			name: 'cafe',
 			branch: branch,
@@ -11,7 +11,7 @@ class RepositoryFactory {
 		});
 	}
 
-	public barista(branch: string = 'master'): Repository {
+	public barista(branch: string): Repository {
 		return new Repository({
 			name: 'barista',
 			branch: branch,
@@ -19,7 +19,7 @@ class RepositoryFactory {
 		});
 	}
 
-	public e2e(branch: string = 'master'): Repository {
+	public e2e(branch: string): Repository {
 		return new Repository({
 			name: 'e2e-tests',
 			branch: branch,
