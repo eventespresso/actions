@@ -49,7 +49,7 @@ class Action {
 
 	private installDependencies(): void {
 		const cmds = [
-			'sudo apt-get install --yes mkcert',
+			'sudo apt-get install --yes libnss3-tools mkcert',
 			'curl -fsSL https://ddev.com/install.sh | bash',
 			'npx playwright install --with-deps',
 		];
