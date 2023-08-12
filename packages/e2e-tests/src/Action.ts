@@ -7,7 +7,8 @@ class Action {
 	constructor(private readonly inputs: InputFactory, private readonly repos: RepositoryFactory) {}
 
 	public run(): void {
-		const cafe = this.getCafe().clone().exec('composer install');
+		const cafe = this.getCafe().clone();
+
 		let barista = undefined;
 
 		if (this.inputs.getBaristaRepoBranch()) {
