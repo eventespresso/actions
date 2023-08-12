@@ -27,12 +27,25 @@ exports.Repository = void 0;
 const os = __importStar(require("os"));
 const fs = __importStar(require("fs"));
 const Path = __importStar(require("path"));
+const core = __importStar(require("@actions/core"));
 const ChildProcess = __importStar(require("child_process"));
 class Repository {
     constructor(params) {
-        this.name = this.sanitizeName(params.name);
-        this.cwd = this.determineCwd(params.localOrRemote);
+        const name = this.sanitizeName(params.name);
+        const cwd = this.makeCwd(name);
+        this.name = name;
+        this.branch = params.branch;
+        this.cwd = cwd;
+        this.remote = params.remote;
     }
+    makeCwd(name) {
+        const cwd = Path.resolve(os.tmpdir(), name);
+        this.checkPathAvailable(cwd);
+        return cwd;
+    }
+    /**
+     * Execute given command in working directory of the repository
+     */
     exec(command) {
         const outcome = ChildProcess.spawnSync(command, {
             shell: true,
@@ -42,37 +55,14 @@ class Repository {
         if (outcome.status !== 0) {
             const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()];
             const msg = strArr.join('\n');
-            throw new Error(msg);
+            core.setFailed(msg);
         }
+        return this;
     }
-    getCwd() {
-        // conceal cwd behind method to enforce validation
-        return this.cwd;
-    }
-    determineCwd(localOrRemote) {
-        const type = this.getType(localOrRemote);
-        if (type === 'local')
-            return this.checkPath(localOrRemote);
-        if (type === 'remote')
-            return this.clone(localOrRemote);
-        throw new Error(`Unknown git repository format: \n${localOrRemote}`);
-    }
-    checkPath(path) {
-        if (!fs.existsSync(path)) {
-            throw new Error(`Path does not exist: \n${path}`);
+    checkPathAvailable(path) {
+        if (fs.existsSync(path)) {
+            core.setFailed(`Given path already exists: \n${path}`);
         }
-        return path;
-    }
-    getType(localOrRemote) {
-        if (localOrRemote.startsWith('https://'))
-            return 'remote';
-        if (localOrRemote.endsWith('.git'))
-            return 'remote';
-        if (localOrRemote.startsWith('.'))
-            return 'local';
-        if (localOrRemote.startsWith('/'))
-            return 'local';
-        throw new Error(`Unsupported git path: \n${localOrRemote}`);
     }
     sanitizeName(name) {
         return name
@@ -80,17 +70,9 @@ class Repository {
             .replaceAll(' ', '-') // no spaces
             .replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
     }
-    /**
-     * @return local path to repository
-     */
-    clone(remote) {
-        const path = this.getPath(this.name);
-        const cmd = `git clone ${remote} ${path}`;
-        ChildProcess.execSync(cmd);
-        return path;
-    }
-    getPath(subpath) {
-        return Path.resolve(os.tmpdir(), subpath !== null && subpath !== void 0 ? subpath : '');
+    clone() {
+        ChildProcess.execSync(`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`);
+        return this;
     }
 }
 exports.Repository = Repository;
