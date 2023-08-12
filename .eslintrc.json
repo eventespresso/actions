@@ -7,11 +7,10 @@
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint"],
 	"extends": [
-		"plugin:jest/recommended",
-		"plugin:@typescript-eslint/recommended",
 		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended-type-checked",
 		"plugin:prettier/recommended",
-		"plugin:github/recommended"
+		"plugin:jest/recommended"
 	],
 	"globals": {
 		"Atomics": "readonly",
