@@ -23,7 +23,7 @@ class Repository {
 		this.name = name;
 		this.branch = params.branch;
 		this.cwd = cwd;
-		this.remote = params.name;
+		this.remote = params.remote;
 	}
 
 	private makeCwd(name: string): string {

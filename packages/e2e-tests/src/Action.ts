@@ -32,7 +32,7 @@ class Action {
 	}
 
 	private getCafe(): Repository {
-		return this.repos.cafe(this.inputs.getBaristaRepoBranch());
+		return this.repos.cafe(this.inputs.getCafeRepoBranch());
 	}
 
 	private getBarista(): Repository {
