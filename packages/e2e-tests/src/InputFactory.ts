@@ -1,8 +1,6 @@
 import core from '@actions/core';
 
 class InputFactory {
-	constructor() {}
-
 	public getCafeRepoBranch(): string {
 		return core.getInput('cafe-repo-branch', { required: true });
 	}

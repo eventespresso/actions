@@ -1,8 +1,6 @@
 import { Repository } from './Repository';
 
 class RepositoryFactory {
-	constructor() {}
-
 	public cafe(branch: string): Repository {
 		return new Repository({
 			name: 'cafe',
