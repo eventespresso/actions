@@ -1,6 +1,7 @@
 import { InputFactory } from './InputFactory';
 import { Repository } from './Repository';
 import { RepositoryFactory } from './RepositoryFactory';
+import * as child_process from 'child_process';
 
 class Action {
 	constructor(private readonly inputs: InputFactory, private readonly repos: RepositoryFactory) {}
@@ -11,6 +12,10 @@ class Action {
 		if (this.inputs.getBaristaRepoBranch()) {
 			this.getBarista().clone().exec('npm ci').exec('yarn build');
 		}
+
+		this.installDependencies();
+
+		const envVars = this.makeEnvVars(cafe, barista);
 
 		// TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
 		this.getE2E().clone().exec('npm ci').exec('yarn workspace @eventespresso/e2e test');
@@ -26,6 +31,17 @@ class Action {
 
 	private getE2E(): Repository {
 		return this.repos.e2e(this.inputs.getE2ETestsRepoBranch());
+	}
+
+	private installDependencies(): void {
+		const cmds = [
+			'sudo apt-get install --yes mkcert',
+			'curl -fsSL https://ddev.com/install.sh | bash',
+			'npx playwright install --with-deps',
+		];
+		for (const cmd of cmds) {
+			child_process.execSync(cmd);
+		}
 	}
 }
 
