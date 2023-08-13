@@ -16,6 +16,7 @@
 		]
 	},
 	"dependencies": {
+		"@actions/cache": "^3.2.2",
 		"@actions/core": "^1.2.6",
 		"@actions/exec": "^1.0.4",
 		"@actions/github": "^5.1.1",
