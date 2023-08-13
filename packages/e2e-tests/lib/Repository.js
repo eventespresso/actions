@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Repository = void 0;
 const os = __importStar(require("os"));
@@ -30,7 +39,8 @@ const Path = __importStar(require("path"));
 const core = __importStar(require("@actions/core"));
 const ChildProcess = __importStar(require("child_process"));
 class Repository {
-    constructor(params) {
+    constructor(params, cache) {
+        this.cache = cache;
         const name = this.sanitizeName(params.name);
         const cwd = this.makeCwd(name);
         this.name = name;
@@ -72,8 +82,32 @@ class Repository {
             .replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
     }
     clone() {
-        ChildProcess.execSync(`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`);
-        return this;
+        return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = this.getCacheKey();
+            const optKeys = this.getOptCacheKeys();
+            const cloneFromRemote = () => ChildProcess.execSync(`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`);
+            const cloneFromCache = () => {
+                return this.cache.restore(cacheKey, [this.cwd], optKeys);
+            };
+            if (yield cloneFromCache()) {
+                core.info(`Found git repository '${this.name}' in cache`);
+                return this;
+            }
+            core.notice(`Did not find git repository '${this.name}' in cache, cloning from remote`);
+            cloneFromRemote();
+            yield this.cache.save(cacheKey, [this.cwd]);
+            return this;
+        });
+    }
+    getCacheKey() {
+        return `git-${this.name}-${this.branch}-${this.getLastCommitSha()}`;
+    }
+    getOptCacheKeys() {
+        return [`git-${this.name}-${this.branch}-`, `git-${this.name}-`, 'git-'];
+    }
+    getLastCommitSha() {
+        // courtesy of https://stackoverflow.com/a/24750310/4343719
+        return ChildProcess.execSync(`git ls-remote ${this.remote} HEAD | awk '{ print $1}'`).toString();
     }
 }
 exports.Repository = Repository;

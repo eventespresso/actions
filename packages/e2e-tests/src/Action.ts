@@ -6,13 +6,18 @@ import * as child_process from 'child_process';
 class Action {
 	constructor(private readonly inputs: InputFactory, private readonly repos: RepositoryFactory) {}
 
-	public run(): void {
-		const cafe = this.getCafe().clone();
+	public async run(): Promise<void> {
+		const cafe = this.getCafe();
+		const barista = this.getBarista();
+		const e2e = this.getE2E();
 
-		let barista = undefined;
+		await cafe.clone();
 
+		// it is optional to clone barista repo
 		if (this.inputs.getBaristaRepoBranch()) {
-			barista = this.getBarista().clone().exec('yarn install --frozen-lockfile').exec('yarn build');
+			await barista.clone();
+			barista.exec('yarn install --frozen-lockfile');
+			barista.exec('yarn build');
 		}
 
 		this.installDependencies();
@@ -25,11 +30,11 @@ class Action {
 			env['BARISTA'] = barista.cwd;
 		}
 
+		await e2e.clone();
+
 		// TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
-		this.getE2E()
-			.clone()
-			.exec('yarn install --frozen-lockfile')
-			.exec(`yarn workspace @eventespresso/e2e test`, env);
+		e2e.exec('yarn install --frozen-lockfile');
+		e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
 	}
 
 	private makeEnvVars(...repos: (Repository | undefined)[]): string {

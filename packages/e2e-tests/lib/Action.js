@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
 const Repository_1 = require("./Repository");
@@ -32,22 +41,28 @@ class Action {
         this.repos = repos;
     }
     run() {
-        const cafe = this.getCafe().clone();
-        let barista = undefined;
-        if (this.inputs.getBaristaRepoBranch()) {
-            barista = this.getBarista().clone().exec('yarn install --frozen-lockfile').exec('yarn build');
-        }
-        this.installDependencies();
-        const env = {};
-        env['CAFE'] = cafe.cwd;
-        if (barista) {
-            env['BARISTA'] = barista.cwd;
-        }
-        // TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
-        this.getE2E()
-            .clone()
-            .exec('yarn install --frozen-lockfile')
-            .exec(`yarn workspace @eventespresso/e2e test`, env);
+        return __awaiter(this, void 0, void 0, function* () {
+            const cafe = this.getCafe();
+            const barista = this.getBarista();
+            const e2e = this.getE2E();
+            yield cafe.clone();
+            // it is optional to clone barista repo
+            if (this.inputs.getBaristaRepoBranch()) {
+                yield barista.clone();
+                barista.exec('yarn install --frozen-lockfile');
+                barista.exec('yarn build');
+            }
+            this.installDependencies();
+            const env = {};
+            env['CAFE'] = cafe.cwd;
+            if (barista) {
+                env['BARISTA'] = barista.cwd;
+            }
+            yield e2e.clone();
+            // TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
+            e2e.exec('yarn install --frozen-lockfile');
+            e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
+        });
     }
     makeEnvVars(...repos) {
         return repos

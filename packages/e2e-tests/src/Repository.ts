@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as Path from 'path';
 import * as core from '@actions/core';
 import * as ChildProcess from 'child_process';
+import { Cache } from './Cache';
 
 type Parameters = {
 	name: string;
@@ -16,7 +17,7 @@ class Repository {
 	public readonly cwd: string;
 	public readonly remote: string;
 
-	constructor(params: Parameters) {
+	constructor(params: Parameters, private readonly cache: Cache) {
 		const name = this.sanitizeName(params.name);
 		const cwd = this.makeCwd(name);
 
@@ -63,9 +64,37 @@ class Repository {
 			.replaceAll(/[^a-z0-9]/g, ''); // only letters and digits
 	}
 
-	public clone(): Repository {
-		ChildProcess.execSync(`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`);
+	public async clone(): Promise<Repository> {
+		const cacheKey = this.getCacheKey();
+		const optKeys = this.getOptCacheKeys();
+		const cloneFromRemote = () =>
+			ChildProcess.execSync(
+				`git clone --branch ${this.branch} --single-branch --no-tags ${this.remote} ${this.cwd}`
+			);
+		const cloneFromCache = (): Promise<boolean> => {
+			return this.cache.restore(cacheKey, [this.cwd], optKeys);
+		};
+		if (await cloneFromCache()) {
+			core.info(`Found git repository '${this.name}' in cache`);
+			return this;
+		}
+		core.notice(`Did not find git repository '${this.name}' in cache, cloning from remote`);
+		cloneFromRemote();
+		await this.cache.save(cacheKey, [this.cwd]);
 		return this;
+	}
+
+	private getCacheKey(): string {
+		return `git-${this.name}-${this.branch}-${this.getLastCommitSha()}`;
+	}
+
+	private getOptCacheKeys(): string[] {
+		return [`git-${this.name}-${this.branch}-`, `git-${this.name}-`, 'git-'];
+	}
+
+	private getLastCommitSha(): string {
+		// courtesy of https://stackoverflow.com/a/24750310/4343719
+		return ChildProcess.execSync(`git ls-remote ${this.remote} HEAD | awk '{ print $1}'`).toString();
 	}
 }
 

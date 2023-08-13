@@ -14,18 +14,5 @@ inputs:
         type: string
         required: true
 runs:
-    using: 'composite'
-    steps:
-        - name: Fix Node version to v16
-          uses: actions/setup-node@v3
-          with:
-              node-version: 16
-        - name: Run custom GitHub Action
-          # for composite actions, a workaround is required for inputs
-          # https://github.com/actions/runner/issues/665
-          env:
-              INPUT_CAFE_REPO_BRANCH: ${{ inputs.cafe_repo_branch }}
-              INPUT_BARISTA_REPO_BRANCH: ${{ inputs.barista_repo_branch }}
-              INPUT_E2E_TESTS_REPO_BRANCH: ${{ inputs.e2e_tests_repo_branch }}
-          run: node ${{ github.action_path }}/dist/index.js
-          shell: bash
+    using: node16
+    main: dist/index.js
