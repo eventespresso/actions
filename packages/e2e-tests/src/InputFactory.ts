@@ -2,15 +2,15 @@ import * as core from '@actions/core';
 
 class InputFactory {
 	public getCafeRepoBranch(): string {
-		return core.getInput('cafe-repo-branch', { required: true });
+		return core.getInput('cafe_repo_branch', { required: true });
 	}
 
 	public getBaristaRepoBranch(): string {
-		return core.getInput('barista-repo-branch', { required: false });
+		return core.getInput('barista_repo_branch', { required: false });
 	}
 
 	public getE2ETestsRepoBranch(): string {
-		return core.getInput('e2e-tests-repo-branch', { required: true });
+		return core.getInput('e2e_tests_repo_branch', { required: true });
 	}
 }
 

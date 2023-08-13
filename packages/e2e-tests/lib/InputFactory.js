@@ -27,13 +27,13 @@ exports.InputFactory = void 0;
 const core = __importStar(require("@actions/core"));
 class InputFactory {
     getCafeRepoBranch() {
-        return core.getInput('cafe-repo-branch', { required: true });
+        return core.getInput('cafe_repo_branch', { required: true });
     }
     getBaristaRepoBranch() {
-        return core.getInput('barista-repo-branch', { required: false });
+        return core.getInput('barista_repo_branch', { required: false });
     }
     getE2ETestsRepoBranch() {
-        return core.getInput('e2e-tests-repo-branch', { required: true });
+        return core.getInput('e2e_tests_repo_branch', { required: true });
     }
 }
 exports.InputFactory = InputFactory;
