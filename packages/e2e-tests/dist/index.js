@@ -2732,12 +2732,16 @@ class Action {
             barista = this.getBarista().clone().exec('yarn install --frozen-lockfile').exec('yarn build');
         }
         this.installDependencies();
-        const envVars = this.makeEnvVars(cafe, barista);
+        const env = {};
+        env['CAFE'] = cafe.cwd;
+        if (barista) {
+            env['BARISTA'] = barista.cwd;
+        }
         // TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
         this.getE2E()
             .clone()
             .exec('yarn install --frozen-lockfile')
-            .exec(`${envVars} yarn workspace @eventespresso/e2e test`);
+            .exec(`yarn workspace @eventespresso/e2e test`, env);
     }
     makeEnvVars(...repos) {
         return repos
@@ -2871,11 +2875,12 @@ class Repository {
     /**
      * Execute given command in working directory of the repository
      */
-    exec(command) {
+    exec(command, env = {}) {
         const outcome = ChildProcess.spawnSync(command, {
             shell: true,
             stdio: ['inherit', 'inherit', 'pipe'],
             cwd: this.cwd,
+            env: Object.assign(Object.assign({}, process.env), env),
         });
         if (outcome.status !== 0) {
             const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()];

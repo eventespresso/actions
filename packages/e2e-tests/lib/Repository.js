@@ -46,11 +46,12 @@ class Repository {
     /**
      * Execute given command in working directory of the repository
      */
-    exec(command) {
+    exec(command, env = {}) {
         const outcome = ChildProcess.spawnSync(command, {
             shell: true,
             stdio: ['inherit', 'inherit', 'pipe'],
             cwd: this.cwd,
+            env: Object.assign(Object.assign({}, process.env), env),
         });
         if (outcome.status !== 0) {
             const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()];
