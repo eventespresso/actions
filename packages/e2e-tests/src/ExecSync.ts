@@ -20,15 +20,15 @@ class ExecSync {
 		env: Record<string, string> = {}
 	): [string, string[], Record<string, string>] {
 		const node = process.execPath;
-		const [arg0, args] = this.extractBinFromArgs(command);
-		switch (arg0) {
+		const [bin, args] = this.extractBinFromArgs(command);
+		switch (bin) {
 			case 'node':
-				return [`${node}`, args, env];
+				return [`${node} ${args}`, [], env];
 			case 'yarn':
 			case 'npm':
-				return [`${node}`, [this.which(arg0), ...args], env];
+				return [`${node} ${this.which(bin)} ${args}`, [], env];
 			default:
-				return [arg0, args, env];
+				return [command, [], env];
 		}
 	}
 
@@ -38,6 +38,9 @@ class ExecSync {
 		env: Record<string, string> = {},
 		stdio: StdioOptions = ['inherit', 'inherit', 'pipe']
 	): SpawnSyncReturns<Buffer> {
+		core.notice('Running command...');
+		core.notice(`bin: ${bin}`);
+		core.notice(`args: ${args.join(', ')}`);
 		const buffer = child_process.spawnSync(bin, args, {
 			shell: true,
 			stdio: stdio,
@@ -63,9 +66,12 @@ class ExecSync {
 		return child_process.execSync(`which ${bin}`).toString().trim();
 	}
 
-	private extractBinFromArgs(command: string): [string, string[]] {
-		const [arg0, ...args] = command.split(' ');
-		return [arg0, args];
+	private extractBinFromArgs(command: string): [string, string] {
+		const bin = command.split(' ', 1)[0];
+		if (!bin || bin.length < 1) {
+			core.setFailed(`Failed to extract bin from command: ${command}`);
+		}
+		return [bin, command.replace(bin, '')];
 	}
 }
 
