@@ -37,15 +37,6 @@ class Action {
 		e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
 	}
 
-	private makeEnvVars(...repos: (Repository | undefined)[]): string {
-		return repos
-			.filter((any): any is Repository => {
-				return typeof any === 'object' && any.constructor.name === Repository.name;
-			})
-			.map((r) => `${r.name}=${r.cwd}`)
-			.join(' ');
-	}
-
 	private getCafe(): Repository {
 		return this.repos.cafe(this.inputs.getCafeRepoBranch());
 	}

@@ -37,18 +37,51 @@ class Repository {
 	 * Execute given command in working directory of the repository
 	 */
 	public exec(command: string, env: Record<string, string> = {}): Repository {
-		const outcome = ChildProcess.spawnSync(command, {
+		const node = process.execPath;
+		const [arg0, args] = this.extractBinFromArgs(command);
+		switch (arg0) {
+			case 'node':
+				this.callBinWithArgs(`${node}`, args, env);
+				break;
+			case 'yarn':
+			case 'npm':
+				this.callBinWithArgs(`${node} ${this.which(arg0)}`, args, env);
+				break;
+			default:
+				this.callBinWithArgs(arg0, args, env);
+		}
+		return this;
+	}
+
+	private callBinWithArgs(bin: string, args: string[] = [], env: Record<string, string> = {}): Repository {
+		const stderr = ChildProcess.spawnSync(bin, args, {
 			shell: true,
 			stdio: ['inherit', 'inherit', 'pipe'],
 			cwd: this.cwd,
 			env: { ...process.env, ...env },
+			argv0: process.execArgv.join(' '),
 		});
-		if (outcome.status !== 0) {
-			const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()] as const;
-			const msg = strArr.join('\n');
-			core.setFailed(msg);
+		if (stderr.status !== 0) {
+			const msg = [
+				`Failed to execute command!`,
+				`bin: ${bin}`,
+				`args: ${args.join(', ')}`,
+				`env: ${JSON.stringify(env, undefined, 2)}`,
+				'stderr:',
+				stderr.stderr.toString(),
+			] as const;
+			core.setFailed(msg.join('\n'));
 		}
 		return this;
+	}
+
+	private which(bin: string): string {
+		return ChildProcess.execSync(`which ${bin}`).toString().trim();
+	}
+
+	private extractBinFromArgs(command: string): [string, string[]] {
+		const [arg0, ...args] = command.split(' ');
+		return [arg0, args];
 	}
 
 	private checkPathAvailable(path: string): void {

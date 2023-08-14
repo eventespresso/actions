@@ -33,7 +33,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
-const Repository_1 = require("./Repository");
 const child_process = __importStar(require("child_process"));
 class Action {
     constructor(inputs, repos) {
@@ -63,14 +62,6 @@ class Action {
             e2e.exec('yarn install --frozen-lockfile');
             e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
         });
-    }
-    makeEnvVars(...repos) {
-        return repos
-            .filter((any) => {
-            return typeof any === 'object' && any.constructor.name === Repository_1.Repository.name;
-        })
-            .map((r) => `${r.name}=${r.cwd}`)
-            .join(' ');
     }
     getCafe() {
         return this.repos.cafe(this.inputs.getCafeRepoBranch());

@@ -58899,7 +58899,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
-const Repository_1 = __nccwpck_require__(7286);
 const child_process = __importStar(__nccwpck_require__(2081));
 class Action {
     constructor(inputs, repos) {
@@ -58929,14 +58928,6 @@ class Action {
             e2e.exec('yarn install --frozen-lockfile');
             e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
         });
-    }
-    makeEnvVars(...repos) {
-        return repos
-            .filter((any) => {
-            return typeof any === 'object' && any.constructor.name === Repository_1.Repository.name;
-        })
-            .map((r) => `${r.name}=${r.cwd}`)
-            .join(' ');
     }
     getCafe() {
         return this.repos.cafe(this.inputs.getCafeRepoBranch());
@@ -59153,18 +59144,48 @@ class Repository {
      * Execute given command in working directory of the repository
      */
     exec(command, env = {}) {
-        const outcome = ChildProcess.spawnSync(command, {
+        const node = process.execPath;
+        const [arg0, args] = this.extractBinFromArgs(command);
+        switch (arg0) {
+            case 'node':
+                this.callBinWithArgs(`${node}`, args, env);
+                break;
+            case 'yarn':
+            case 'npm':
+                this.callBinWithArgs(`${node} ${this.which(arg0)}`, args, env);
+                break;
+            default:
+                this.callBinWithArgs(arg0, args, env);
+        }
+        return this;
+    }
+    callBinWithArgs(bin, args = [], env = {}) {
+        const stderr = ChildProcess.spawnSync(bin, args, {
             shell: true,
             stdio: ['inherit', 'inherit', 'pipe'],
             cwd: this.cwd,
             env: Object.assign(Object.assign({}, process.env), env),
+            argv0: process.execArgv.join(' '),
         });
-        if (outcome.status !== 0) {
-            const strArr = [`Failed to execute command: ${command}`, '\n', outcome.stderr.toString()];
-            const msg = strArr.join('\n');
-            core.setFailed(msg);
+        if (stderr.status !== 0) {
+            const msg = [
+                `Failed to execute command!`,
+                `bin: ${bin}`,
+                `args: ${args.join(', ')}`,
+                `env: ${JSON.stringify(env, undefined, 2)}`,
+                'stderr:',
+                stderr.stderr.toString(),
+            ];
+            core.setFailed(msg.join('\n'));
         }
         return this;
+    }
+    which(bin) {
+        return ChildProcess.execSync(`which ${bin}`).toString().trim();
+    }
+    extractBinFromArgs(command) {
+        const [arg0, ...args] = command.split(' ');
+        return [arg0, args];
     }
     checkPathAvailable(path) {
         if (fs.existsSync(path)) {
