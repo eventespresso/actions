@@ -276,7 +276,7 @@ export const assignLabelsToOpenPullRequests = async (
 	switch (pullRequest.reviewDecision) {
 		case PR_REVIEW_DECISION.APPROVED:
 			if (hasLabel(pullRequest, labels.statusMerge.id)) {
-				return new Promise((resolve) => resolve('PR ready for merge'));
+				return 'PR ready for merge';
 			}
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
 			await addAssigneesAfterReviewApproved(pullRequest.id);
@@ -343,7 +343,7 @@ export const assignLabelsToMergedPullRequests = async (
 export const assignStatusLabels = async (
 	repo: RepoName,
 	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string> => {
 	try {
 		// eslint-disable-next-line no-console
 		console.log('%c pullRequest.state', 'color: HotPink;', pullRequest.state);
