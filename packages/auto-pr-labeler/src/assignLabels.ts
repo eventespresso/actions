@@ -68,6 +68,24 @@ const addLabels = async (labelIds: Array<ID>, labelableId: ID): Promise<GraphQlQ
 };
 
 /**
+ * returns true if the supplied Pull Request has the specified label
+ *
+ * @param pullRequest: PullRequest
+ * @param labelableId ID
+ * @returns boolean
+ */
+const hasLabel = (pullRequest: PullRequest, labelableId: ID): boolean => {
+	try {
+		// eslint-disable-next-line no-console
+		console.log('%c hasLabel', 'color: HotPink;', { pullRequest, labelableId });
+		const existingLabels = pullRequest.labels.nodes.map((label) => label.id);
+		return existingLabels.includes(labelableId);
+	} catch (error) {
+		core.setFailed(error.message);
+	}
+};
+
+/**
  * adds the `has fix` label to the specified Issue
  *
  * @param labels LabelList
@@ -251,12 +269,15 @@ export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection
 export const assignLabelsToOpenPullRequests = async (
 	labels: LabelList,
 	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string> => {
 	await assignLabelsToClosingIssues(pullRequest.closingIssuesReferences, labels);
 	// for OPEN PRs, let's first look whether a code review has either been requested or received a response
 	// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 	switch (pullRequest.reviewDecision) {
 		case PR_REVIEW_DECISION.APPROVED:
+			if (hasLabel(pullRequest, labels.statusMerge.id)) {
+				return new Promise((resolve) => resolve('PR ready for merge'));
+			}
 			await removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
 			await addAssigneesAfterReviewApproved(pullRequest.id);
 			return await assignLabelsAfterReviewApproved(labels, pullRequest.id);
