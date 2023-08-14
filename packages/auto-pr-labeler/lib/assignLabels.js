@@ -84,6 +84,24 @@ const addLabels = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, f
     }
 });
 /**
+ * returns true if the supplied Pull Request has the specified label
+ *
+ * @param pullRequest: PullRequest
+ * @param labelableId ID
+ * @returns boolean
+ */
+const hasLabel = (pullRequest, labelableId) => {
+    try {
+        // eslint-disable-next-line no-console
+        console.log('%c hasLabel', 'color: HotPink;', { pullRequest, labelableId });
+        const existingLabels = pullRequest.labels.nodes.map((label) => label.id);
+        return existingLabels.includes(labelableId);
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
+};
+/**
  * adds the `has fix` label to the specified Issue
  *
  * @param labels LabelList
@@ -234,6 +252,9 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0
     // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
+            if (hasLabel(pullRequest, labels.statusMerge.id)) {
+                return 'PR ready for merge';
+            }
             yield removeAllStatusLabels(labels, pullRequest.id, labels.statusNeedsTesting.id);
             yield addAssigneesAfterReviewApproved(pullRequest.id);
             return yield assignLabelsAfterReviewApproved(labels, pullRequest.id);

@@ -33,7 +33,7 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 				repository(name: $repo, owner: $owner) {
 					pullRequest(number: $pr) {
 						id
-						labels(first: 10) {
+						labels(first: 100) {
 							nodes {
 								id
 								name
@@ -42,7 +42,7 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 						number
 						reviewDecision
 						state
-						closingIssuesReferences(first: 10) {
+						closingIssuesReferences(first: 100) {
 							nodes {
 								id
 								number
@@ -50,7 +50,7 @@ const getPullRequest = (pr) => __awaiter(void 0, void 0, void 0, function* () {
 							}
 							totalCount
 						}
-						reviewRequests(first: 10) {
+						reviewRequests(first: 100) {
 							totalCount
 						}
 						assignees(first: 10) {
