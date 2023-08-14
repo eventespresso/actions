@@ -12,18 +12,25 @@ class Yarn {
 	) {}
 
 	public async install({ frozenLockfile }: { frozenLockfile: boolean }): Promise<Yarn> {
-		const flags: string[] = [];
+		const args = ['install'];
+
 		if (frozenLockfile) {
-			flags.push('--frozen-lockfile');
-		}
-		let command = 'install';
-		if (flags.length > 0) {
-			command += ' ';
-			command += flags.join(' ');
+			args.push('--frozen-lockfile');
 		}
 
-		await this.execSyncCached(command, ['node_modules', '*/node_modules']);
+		await this.execSyncCached(args, ['node_modules', '*/node_modules']);
 
+		return this;
+	}
+
+	public async build(): Promise<Yarn> {
+		await this.execSyncCached(['build'], ['build']);
+		return this;
+	}
+
+	public test(env: Record<string, string>): Yarn {
+		// TODO: once e2e-tests package is extracted, update this
+		this.execSync.call('yarn', ['workspace', '@eventespresso/e2e', 'test'], { env });
 		return this;
 	}
 
@@ -45,8 +52,8 @@ class Yarn {
 		return glob.hashFiles(path.resolve(this.repo.cwd, file));
 	}
 
-	private async execSyncCached(command: string, paths: string[]): Promise<void> {
-		const action = `yarn-${command}`;
+	private async execSyncCached(args: string[], paths: string[]): Promise<void> {
+		const action = `yarn-${args.join('-')}`;
 		const key = await this.makeCacheKey(action);
 		const optKeys = await this.makeCacheOptKeys(action);
 		const _paths = paths.map((_p) => path.resolve(this.repo.cwd, _p));
@@ -59,20 +66,9 @@ class Yarn {
 			return;
 		}
 
-		this.execSync.void(action);
+		this.execSync.call('yarn', args);
 
 		await this.cache.save(key, _paths);
-	}
-
-	public async build(): Promise<Yarn> {
-		await this.execSyncCached('build', ['build']);
-		return this;
-	}
-
-	public test(env: Record<string, string>): Yarn {
-		// TODO: once e2e-tests package is extracted, update this
-		this.execSync.void('yarn workspace @eventespresso/e2e test', env);
-		return this;
 	}
 }
 

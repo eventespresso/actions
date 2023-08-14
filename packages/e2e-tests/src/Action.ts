@@ -29,20 +29,25 @@ class Action {
 
 		await e2e.git.clone();
 		await e2e.yarn.install({ frozenLockfile: true });
-		await e2e.yarn.test(env);
+		// TODO: perhaps cache this as well?
+		// https://playwright.dev/docs/library#managing-browser-binaries
+		await e2e.call('npx', ['playwright', 'install', '--with-deps']);
 
-		this.installDependencies();
+		// install dependencies
+		this.mkcert();
+		this.ddev();
+
+		// TODO: add ability to skip this step to allow cache pre-warm
+		await e2e.yarn.test(env);
 	}
 
-	private installDependencies(): void {
-		const cmds = [
-			'sudo apt-get install --yes libnss3-tools mkcert',
-			'curl -fsSL https://ddev.com/install.sh | bash',
-			'npx playwright install --with-deps',
-		];
-		for (const cmd of cmds) {
-			this.execSync.void(cmd);
-		}
+	private mkcert(): void {
+		this.execSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
+	}
+
+	private ddev(): void {
+		const curl = this.execSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
+		this.execSync.call('', [], { input: curl.stdout });
 	}
 
 	private getEnv(cafe: Context, barista?: Context): Record<string, string> {

@@ -1,10 +1,12 @@
+import { IOType } from 'child_process';
 import { Cache } from './Cache';
-import { ExecSync } from './ExecSync';
+import { ExecSync, ExecSyncInterface } from './ExecSync';
 import { Git } from './Git';
 import { Repository } from './Repository';
 import { Yarn } from './Yarn';
+import type { SpawnSyncOptions, ProcessEnvOptions, SpawnSyncReturns } from 'child_process';
 
-class Context {
+class Context implements ExecSyncInterface {
 	private readonly execSync: ExecSync;
 
 	constructor(
@@ -20,9 +22,17 @@ class Context {
 		return this.repo.cwd;
 	}
 
-	public run(command: string, env: Record<string, string> = {}): Context {
-		this.execSync.void(command, env);
-		return this;
+	call(
+		command: string,
+		args: string[] = [],
+		opts: {
+			input?: SpawnSyncOptions['input'];
+			stdin?: IOType;
+			stdout?: IOType;
+			env?: ProcessEnvOptions['env'];
+		} = {}
+	): SpawnSyncReturns<string> {
+		return this.execSync.call(command, args, opts);
 	}
 }
 

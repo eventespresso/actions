@@ -4,11 +4,11 @@ import { Repository } from './Repository';
 import * as core from '@actions/core';
 
 class Git {
-	private readonly exec: ExecSync;
+	private readonly execSync: ExecSync;
 	private readonly cache: Cache;
 
 	constructor(private readonly repo: Repository) {
-		this.exec = new ExecSync(repo.cwd);
+		this.execSync = new ExecSync(repo.cwd);
 		this.cache = new Cache(repo);
 	}
 
@@ -16,7 +16,15 @@ class Git {
 		const cacheKey = this.getCacheKey();
 		const optKeys = this.getOptCacheKeys();
 		const cloneFromRemote = (): void => {
-			this.exec.void(this.getCloneCmd());
+			this.execSync.call('git', [
+				'clone',
+				'--branch',
+				this.repo.branch,
+				'--single-branch',
+				'--no-tags',
+				this.repo.remote,
+				this.repo.cwd,
+			]);
 		};
 		const cloneFromCache = (): Promise<boolean> => {
 			return this.cache.restore(cacheKey, [this.repo.cwd], optKeys);
@@ -31,10 +39,6 @@ class Git {
 		return this;
 	}
 
-	private getCloneCmd(): string {
-		return `git clone --branch ${this.repo.branch} --single-branch --no-tags ${this.repo.remote} ${this.repo.cwd}`;
-	}
-
 	private getCacheKey(): string {
 		return `git-${this.repo.name}-${this.repo.branch}-${this.getLastCommitSha()}`;
 	}
@@ -45,8 +49,10 @@ class Git {
 
 	private getLastCommitSha(): string {
 		// courtesy of https://stackoverflow.com/a/24750310/4343719
-		const command = `git ls-remote ${this.repo.remote} HEAD | awk '{ print $1}'`;
-		return this.exec.stdout(command);
+		const git = this.execSync.call('git', ['ls-remote', this.repo.remote, 'HEAD'], {
+			stdout: 'pipe',
+		});
+		return this.execSync.call('awk', ['{ print $1 }'], { input: git.stdout, stdout: 'pipe' }).stdout;
 	}
 }
 
