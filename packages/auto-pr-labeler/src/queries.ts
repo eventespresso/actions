@@ -28,7 +28,7 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 				repository(name: $repo, owner: $owner) {
 					pullRequest(number: $pr) {
 						id
-						labels(first: 10) {
+						labels(first: 100) {
 							nodes {
 								id
 								name
@@ -37,7 +37,7 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 						number
 						reviewDecision
 						state
-						closingIssuesReferences(first: 10) {
+						closingIssuesReferences(first: 100) {
 							nodes {
 								id
 								number
@@ -45,7 +45,7 @@ export const getPullRequest = async (pr: number): Promise<PullRequestQueryRespon
 							}
 							totalCount
 						}
-						reviewRequests(first: 10) {
+						reviewRequests(first: 100) {
 							totalCount
 						}
 						assignees(first: 10) {
