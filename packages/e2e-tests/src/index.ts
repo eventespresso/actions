@@ -1,6 +1,7 @@
 import { Action } from './Action';
-import { Cache } from './Cache';
+import { ContextFactory } from './ContextFactory';
+import { ExecSync } from './ExecSync';
 import { InputFactory } from './InputFactory';
 import { RepositoryFactory } from './RepositoryFactory';
 
-new Action(new InputFactory(), new RepositoryFactory(new Cache())).run();
+new Action(new InputFactory(), new ContextFactory(new RepositoryFactory()), new ExecSync(__dirname)).run();

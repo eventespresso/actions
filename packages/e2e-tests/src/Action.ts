@@ -1,52 +1,37 @@
+import { ExecSync } from './ExecSync';
 import { InputFactory } from './InputFactory';
-import { Repository } from './Repository';
-import { RepositoryFactory } from './RepositoryFactory';
-import * as child_process from 'child_process';
+import { ContextFactory } from './ContextFactory';
+import { Context } from './Context';
 
 class Action {
-	constructor(private readonly inputs: InputFactory, private readonly repos: RepositoryFactory) {}
+	constructor(
+		private readonly inputs: InputFactory,
+		private readonly contexts: ContextFactory,
+		private readonly execSync: ExecSync
+	) {}
 
 	public async run(): Promise<void> {
-		const cafe = this.getCafe();
-		const barista = this.getBarista();
-		const e2e = this.getE2E();
+		const cafe = this.contexts.make('cafe', this.inputs.cafeBranch());
+		const barista = this.contexts.make('barista', this.inputs.baristaBranch());
+		const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
+		const env = this.getEnv(cafe, barista);
 
-		await cafe.clone();
+		await cafe.git.clone();
 
 		// it is optional to clone barista repo
-		if (this.inputs.getBaristaRepoBranch()) {
-			await barista.clone();
-			barista.exec('yarn install --frozen-lockfile');
-			barista.exec('yarn build');
+		if (this.inputs.baristaBranch()) {
+			await barista.git.clone();
+			await barista.yarn.install({ frozenLockfile: true });
+			await barista.yarn.build();
 		}
+
+		// TODO: once e2e-tests package is extracted, update this
+
+		await e2e.git.clone();
+		await e2e.yarn.install({ frozenLockfile: true });
+		await e2e.yarn.test(env);
 
 		this.installDependencies();
-
-		const env: Record<string, string> = {};
-
-		env['CAFE'] = cafe.cwd;
-
-		if (barista) {
-			env['BARISTA'] = barista.cwd;
-		}
-
-		await e2e.clone();
-
-		// TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
-		e2e.exec('yarn install --frozen-lockfile');
-		e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
-	}
-
-	private getCafe(): Repository {
-		return this.repos.cafe(this.inputs.getCafeRepoBranch());
-	}
-
-	private getBarista(): Repository {
-		return this.repos.barista(this.inputs.getBaristaRepoBranch());
-	}
-
-	private getE2E(): Repository {
-		return this.repos.e2e(this.inputs.getE2ETestsRepoBranch());
 	}
 
 	private installDependencies(): void {
@@ -56,8 +41,16 @@ class Action {
 			'npx playwright install --with-deps',
 		];
 		for (const cmd of cmds) {
-			child_process.execSync(cmd);
+			this.execSync.void(cmd);
 		}
+	}
+
+	private getEnv(cafe: Context, barista?: Context): Record<string, string> {
+		const env: Record<string, string> = { CAFE: cafe.cwd };
+		if (barista) {
+			env['BARISTA'] = barista.cwd;
+		}
+		return env;
 	}
 }
 
