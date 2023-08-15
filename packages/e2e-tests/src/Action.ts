@@ -2,6 +2,7 @@ import { ExecSync } from './ExecSync';
 import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
+import * as core from '@actions/core';
 
 class Action {
 	constructor(
@@ -42,10 +43,12 @@ class Action {
 	}
 
 	private mkcert(): void {
+		core.info('Installing mkcert');
 		this.execSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
 	}
 
 	private ddev(): void {
+		core.info('Installing DDEV');
 		const curl = this.execSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
 		this.execSync.call('bash', [], { input: curl.stdout });
 	}
