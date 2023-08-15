@@ -64,11 +64,13 @@ class Yarn {
 		// if cache was found, the *outcome* of the command was cached
 		// so there is no need to waste cpu cycles running it again
 		if (cache) {
-			core.info(`Found yarn dependencies for git repository '${this.repo.name}' in cache`);
+			core.info(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
 			return;
 		}
 
-		core.notice(`Did not find yarn dependencies for git repository '${this.repo.name}' in cache`);
+		core.notice(
+			`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`
+		);
 
 		this.execSync.call('yarn', args);
 
