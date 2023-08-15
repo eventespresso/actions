@@ -45,6 +45,7 @@ class Action {
 	private mkcert(): void {
 		core.info('Installing mkcert');
 		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
+		this.spawnSync.call('sudo', ['mkcert', '-install']);
 	}
 
 	private ddev(): void {
