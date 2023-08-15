@@ -15,7 +15,9 @@ class Cache {
 	public async save(key: string, paths: string[]): Promise<number | false> {
 		const k = this.makeKey(key);
 		try {
-			return await cache.saveCache(paths, k);
+			// .slice() is a required workaround until GitHub fixes cache
+			// https://github.com/actions/toolkit/issues/1377
+			return await cache.saveCache(paths.slice(), k);
 		} catch (error) {
 			core.error(`Failed to save cache with key: \n${k}`);
 			core.error(error as string);
@@ -25,7 +27,9 @@ class Cache {
 
 	public async restore(key: string, paths: string[], optKeys?: string[]): Promise<boolean> {
 		const k = this.makeKey(key);
-		const restore = await cache.restoreCache(paths, k, optKeys);
+		// .slice() is a required workaround until GitHub fixes cache
+		// https://github.com/actions/toolkit/issues/1377
+		const restore = await cache.restoreCache(paths.slice(), k, optKeys);
 		if (typeof restore === 'undefined') {
 			core.notice(`Did not find cache with key: \n${k}`);
 			return false;
