@@ -3,13 +3,18 @@ import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
 import * as core from '@actions/core';
+import { Browsers } from './Browsers';
 
 class Action {
+	private readonly browsers: Browsers;
+
 	constructor(
 		private readonly inputs: InputFactory,
 		private readonly contexts: ContextFactory,
 		private readonly spawnSync: SpawnSync
-	) {}
+	) {
+		this.browsers = new Browsers(this.spawnSync);
+	}
 
 	public async run(): Promise<void> {
 		const cafe = this.contexts.make('cafe', this.inputs.cafeBranch());
@@ -32,11 +37,11 @@ class Action {
 		await e2e.yarn.install({ frozenLockfile: true });
 		// TODO: perhaps cache this as well?
 		// https://playwright.dev/docs/library#managing-browser-binaries
-		await e2e.call('npx', ['playwright', 'install', '--with-deps']);
 
 		// install dependencies
 		this.mkcert();
 		this.ddev();
+		this.browsers.install(e2e);
 
 		// TODO: add ability to skip this step to allow cache pre-warm
 		await e2e.yarn.test(env);
@@ -45,7 +50,6 @@ class Action {
 	private mkcert(): void {
 		core.info('Installing mkcert');
 		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
-		this.spawnSync.call('sudo', ['mkcert', '-install']);
 	}
 
 	private ddev(): void {
