@@ -18,13 +18,13 @@ class Yarn {
 			args.push('--frozen-lockfile');
 		}
 
-		await this.execSyncCached(args, ['node_modules', '*/node_modules']);
+		await this.call(args, ['node_modules', '*/node_modules']);
 
 		return this;
 	}
 
 	public async build(): Promise<Yarn> {
-		await this.execSyncCached(['build'], ['build']);
+		await this.call(['build'], ['build']);
 		return this;
 	}
 
@@ -52,7 +52,7 @@ class Yarn {
 		return glob.hashFiles(path.resolve(this.repo.cwd, file), this.repo.cwd);
 	}
 
-	private async execSyncCached(args: string[], paths: string[]): Promise<void> {
+	private async call(args: string[], paths: string[]): Promise<void> {
 		const action = `yarn-${args.join('-')}`;
 		const key = await this.makeCacheKey(action);
 		const optKeys = await this.makeCacheOptKeys(action);
