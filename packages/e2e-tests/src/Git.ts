@@ -13,8 +13,9 @@ class Git {
 	}
 
 	public async clone(): Promise<Git> {
-		const cacheKey = this.getCacheKey();
-		const optKeys = this.getOptCacheKeys();
+		const sha = this.getLastCommitSha();
+		const key = `git-clone-${sha}`;
+		const optKeys = ['git-clone'];
 		const cloneFromRemote = (): void => {
 			this.execSync.call('git', [
 				'clone',
@@ -27,7 +28,7 @@ class Git {
 			]);
 		};
 		const cloneFromCache = (): Promise<boolean> => {
-			return this.cache.restore(cacheKey, [this.repo.cwd], optKeys);
+			return this.cache.restore(key, [this.repo.cwd], optKeys);
 		};
 		if (await cloneFromCache()) {
 			core.info(`Found git repository '${this.repo.name}' in cache`);
@@ -35,16 +36,8 @@ class Git {
 		}
 		core.notice(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
 		cloneFromRemote();
-		await this.cache.save(cacheKey, [this.repo.cwd]);
+		await this.cache.save(key, [this.repo.cwd]);
 		return this;
-	}
-
-	private getCacheKey(): string {
-		return `git-${this.repo.name}-${this.repo.branch}-${this.getLastCommitSha()}`;
-	}
-
-	private getOptCacheKeys(): string[] {
-		return [`git-${this.repo.name}-${this.repo.branch}-`, `git-${this.repo.name}-`, 'git-'];
 	}
 
 	private getLastCommitSha(): string {
