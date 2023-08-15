@@ -2,13 +2,13 @@ import * as path from 'path';
 import { Cache } from './Cache';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import { ExecSync } from './ExecSync';
+import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 
 class Yarn {
 	constructor(
 		private readonly repo: Repository,
-		private readonly execSync: ExecSync,
+		private readonly spawnSync: SpawnSync,
 		private readonly cache: Cache
 	) {}
 
@@ -31,7 +31,7 @@ class Yarn {
 
 	public test(env: Record<string, string>): Yarn {
 		// TODO: once e2e-tests package is extracted, update this
-		this.execSync.call('yarn', ['workspace', '@eventespresso/e2e', 'test'], { env });
+		this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'test'], { env });
 		return this;
 	}
 
@@ -73,7 +73,7 @@ class Yarn {
 			`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`
 		);
 
-		this.execSync.call('yarn', args);
+		this.spawnSync.call('yarn', args);
 
 		await this.cache.save(key, paths);
 	}

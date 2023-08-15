@@ -25,7 +25,7 @@ interface ExecSyncInterface {
 	call: Call;
 }
 
-class ExecSync implements ExecSyncInterface {
+class SpawnSync implements ExecSyncInterface {
 	constructor(private readonly cwd: string) {}
 
 	public call(
@@ -103,5 +103,5 @@ class ExecSync implements ExecSyncInterface {
 	}
 }
 
-export { ExecSync };
+export { SpawnSync };
 export type { ExecSyncInterface };

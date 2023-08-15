@@ -1,4 +1,4 @@
-import { ExecSync } from './ExecSync';
+import { SpawnSync } from './SpawnSync';
 import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
@@ -8,7 +8,7 @@ class Action {
 	constructor(
 		private readonly inputs: InputFactory,
 		private readonly contexts: ContextFactory,
-		private readonly execSync: ExecSync
+		private readonly spawnSync: SpawnSync
 	) {}
 
 	public async run(): Promise<void> {
@@ -44,13 +44,13 @@ class Action {
 
 	private mkcert(): void {
 		core.info('Installing mkcert');
-		this.execSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
+		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
 	}
 
 	private ddev(): void {
 		core.info('Installing DDEV');
-		const curl = this.execSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-		this.execSync.call('bash', [], { input: curl.stdout });
+		const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
+		this.spawnSync.call('bash', [], { input: curl.stdout });
 	}
 
 	private getEnv(cafe: Context, barista?: Context): Record<string, string> {

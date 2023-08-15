@@ -1,6 +1,6 @@
 import { Cache } from './Cache';
 import { Context } from './Context';
-import { ExecSync } from './ExecSync';
+import { SpawnSync } from './SpawnSync';
 import { Git } from './Git';
 import { RepositoryFactory } from './RepositoryFactory';
 import { Yarn } from './Yarn';
@@ -12,8 +12,8 @@ class ContextFactory {
 		const repo = this.repos[type](branch);
 		const git = new Git(repo);
 		const cache = new Cache(repo);
-		const exec = new ExecSync(repo.cwd);
-		const yarn = new Yarn(repo, exec, cache);
+		const spawn = new SpawnSync(repo.cwd);
+		const yarn = new Yarn(repo, spawn, cache);
 		return new Context(repo, cache, yarn, git);
 	}
 }

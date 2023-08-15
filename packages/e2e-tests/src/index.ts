@@ -1,7 +1,7 @@
 import { Action } from './Action';
 import { ContextFactory } from './ContextFactory';
-import { ExecSync } from './ExecSync';
+import { SpawnSync } from './SpawnSync';
 import { InputFactory } from './InputFactory';
 import { RepositoryFactory } from './RepositoryFactory';
 
-new Action(new InputFactory(), new ContextFactory(new RepositoryFactory()), new ExecSync(__dirname)).run();
+new Action(new InputFactory(), new ContextFactory(new RepositoryFactory()), new SpawnSync(__dirname)).run();
