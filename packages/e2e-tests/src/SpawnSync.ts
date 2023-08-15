@@ -36,6 +36,7 @@ class SpawnSync implements ExecSyncInterface {
 			input?: SpawnSyncOptions['input'];
 			stdin?: IOType;
 			stdout?: IOType;
+			stderr?: IOType;
 			env?: ProcessEnvOptions['env'];
 		} = {}
 	): SpawnSyncReturns<string> {
@@ -43,7 +44,8 @@ class SpawnSync implements ExecSyncInterface {
 		const cwd = this.getCwd(opts.cwd);
 		const stdin = opts.stdin ?? 'inherit';
 		const stdout = opts.stdout ?? 'inherit';
-		const stdio: StdioOptions = [stdin, stdout, 'pipe'];
+		const stderr = opts.stderr ?? 'inherit';
+		const stdio: StdioOptions = [stdin, stdout, stderr];
 		const env = { ...opts.env, ...process.env };
 
 		if (arg0) {
@@ -61,15 +63,7 @@ class SpawnSync implements ExecSyncInterface {
 		const buffer = child_process.spawnSync(command, args, options);
 
 		if (buffer.status !== 0) {
-			core.setFailed(
-				[
-					`Failed to execute command!`,
-					`command: ${command}`,
-					`args: ${args.join(', ')}`,
-					`stderr:`,
-					buffer.stderr.toString(),
-				].join('\n')
-			);
+			core.setFailed(`Failed to execute command! \ncommand: ${command} \nargs: ${args.join(', ')}`);
 		}
 
 		return buffer;
