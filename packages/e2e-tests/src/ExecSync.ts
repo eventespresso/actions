@@ -29,7 +29,7 @@ class ExecSync implements ExecSyncInterface {
 	constructor(private readonly cwd: string) {}
 
 	public call(
-		command: string,
+		cmd: string,
 		args: string[] = [],
 		opts: {
 			cwd?: SpawnSyncOptions['cwd'];
@@ -41,15 +41,18 @@ class ExecSync implements ExecSyncInterface {
 			env: {},
 		}
 	): SpawnSyncReturns<string> {
+		const [command, arg0] = this.overrideCommand(cmd);
 		const cwd = this.getCwd(opts.cwd);
-		const argv0 = process.execArgv.join(' ');
 		const stdio: StdioOptions = [opts.stdin, opts.stdout, 'pipe'];
 		const env = { ...opts.env, ...process.env };
+
+		if (arg0) {
+			args.unshift(arg0);
+		}
 
 		const options: SpawnSyncOptionsWithStringEncoding = {
 			cwd: cwd,
 			input: opts.input,
-			argv0: argv0,
 			stdio: stdio,
 			env: env,
 			encoding: 'utf8',
@@ -61,7 +64,7 @@ class ExecSync implements ExecSyncInterface {
 			core.setFailed(
 				[
 					`Failed to execute command!`,
-					`command: ${command}`,
+					`command: ${cmd}`,
 					`args: ${args.join(', ')}`,
 					`stderr:`,
 					buffer.stderr.toString(),
@@ -70,6 +73,18 @@ class ExecSync implements ExecSyncInterface {
 		}
 
 		return buffer;
+	}
+
+	private overrideCommand(command: string): [string, string | undefined] {
+		const targets = ['node', 'yarn', 'npm'];
+		if (!targets.includes(command)) {
+			return [command, undefined];
+		}
+		return [process.execPath, this.which(command)];
+	}
+
+	private which(command: string): string {
+		return child_process.execSync(`which ${command}`).toString().trim();
 	}
 
 	private getCwd(override?: SpawnSyncOptions['cwd']): SpawnSyncOptions['cwd'] {
