@@ -84,7 +84,7 @@ class SpawnSync implements ExecSyncInterface {
 	}
 
 	private which(command: string): string {
-		return child_process.execSync(`which ${command}`).toString().trim();
+		return this.call('which', [command], { stdout: 'pipe' }).stdout.trim();
 	}
 
 	private getCwd(override?: SpawnSyncOptions['cwd']): SpawnSyncOptions['cwd'] {
