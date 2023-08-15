@@ -54,12 +54,13 @@ class Yarn {
 	}
 
 	private async call(args: string[], paths: string[]): Promise<void> {
+		paths = paths.map((p) => path.resolve(this.repo.cwd, p));
+
 		const action = `yarn-${args.join('-')}`;
 		const key = await this.makeCacheKey(action);
 		const optKeys = await this.makeCacheOptKeys(action);
-		const _paths = paths.map((_p) => path.resolve(this.repo.cwd, _p));
 
-		const cache = await this.cache.restore(key, _paths, optKeys);
+		const cache = await this.cache.restore(key, paths, optKeys);
 
 		// if cache was found, the *outcome* of the command was cached
 		// so there is no need to waste cpu cycles running it again
@@ -74,7 +75,7 @@ class Yarn {
 
 		this.execSync.call('yarn', args);
 
-		await this.cache.save(key, _paths);
+		await this.cache.save(key, paths);
 	}
 }
 
