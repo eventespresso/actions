@@ -64,7 +64,7 @@ class ExecSync implements ExecSyncInterface {
 			core.setFailed(
 				[
 					`Failed to execute command!`,
-					`command: ${cmd}`,
+					`command: ${command}`,
 					`args: ${args.join(', ')}`,
 					`stderr:`,
 					buffer.stderr.toString(),
