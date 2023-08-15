@@ -17,7 +17,7 @@ class Cache {
 		try {
 			return await cache.saveCache(paths, k);
 		} catch (error) {
-			core.error(`Failed to save cache with key ${k}`);
+			core.error(`Failed to save cache with key: \n${k}`);
 			core.error(error as string);
 			return false;
 		}
@@ -27,7 +27,7 @@ class Cache {
 		const k = this.makeKey(key);
 		const restore = await cache.restoreCache(paths, k, optKeys);
 		if (typeof restore === 'undefined') {
-			core.notice(`Did not find cache with key ${k}`);
+			core.notice(`Did not find cache with key: \n${k}`);
 			return false;
 		}
 		return true;

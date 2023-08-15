@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Cache } from './Cache';
+import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import { ExecSync } from './ExecSync';
 import { Repository } from './Repository';
@@ -63,8 +64,11 @@ class Yarn {
 		// if cache was found, the *outcome* of the command was cached
 		// so there is no need to waste cpu cycles running it again
 		if (cache) {
+			core.info(`Found yarn dependencies for git repository '${this.repo.name}' in cache`);
 			return;
 		}
+
+		core.notice(`Did not find yarn dependencies for git repository '${this.repo.name}' in cache`);
 
 		this.execSync.call('yarn', args);
 
