@@ -37,13 +37,13 @@ class ExecSync implements ExecSyncInterface {
 			stdin?: IOType;
 			stdout?: IOType;
 			env?: ProcessEnvOptions['env'];
-		} = {
-			env: {},
-		}
+		} = {}
 	): SpawnSyncReturns<string> {
 		const [command, arg0] = this.overrideCommand(cmd);
 		const cwd = this.getCwd(opts.cwd);
-		const stdio: StdioOptions = [opts.stdin, opts.stdout, 'pipe'];
+		const stdin = opts.stdin ?? 'inherit';
+		const stdout = opts.stdout ?? 'inherit';
+		const stdio: StdioOptions = [stdin, stdout, 'pipe'];
 		const env = { ...opts.env, ...process.env };
 
 		if (arg0) {
