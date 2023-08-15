@@ -50,7 +50,7 @@ class Action {
 	private ddev(): void {
 		core.info('Installing DDEV');
 		const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-		this.spawnSync.call('bash', [], { input: curl.stdout });
+		this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
 	}
 
 	private getEnv(cafe: Context, barista?: Context): Record<string, string> {
