@@ -47,7 +47,7 @@ class Action {
 
 	private ddev(): void {
 		const curl = this.execSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-		this.execSync.call('', [], { input: curl.stdout });
+		this.execSync.call('bash', [], { input: curl.stdout });
 	}
 
 	private getEnv(cafe: Context, barista?: Context): Record<string, string> {
