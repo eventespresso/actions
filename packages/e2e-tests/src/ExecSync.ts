@@ -76,7 +76,7 @@ class ExecSync implements ExecSyncInterface {
 	}
 
 	private overrideCommand(command: string): [string, string | undefined] {
-		const targets = ['node', 'yarn', 'npm'];
+		const targets = ['node', 'yarn', 'npm', 'npx'];
 		if (!targets.includes(command)) {
 			return [command, undefined];
 		}
