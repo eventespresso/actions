@@ -31,7 +31,15 @@ class Yarn {
 
 	public test(env: Record<string, string>): Yarn {
 		// TODO: once e2e-tests package is extracted, update this
-		this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'test'], { env });
+
+		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
+
+		env['NODE_EXTRA_CA_CERTS'] = `${caRoot}/rootCA.pem`;
+
+		this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
+			env,
+		});
+
 		return this;
 	}
 
