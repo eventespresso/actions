@@ -49,7 +49,7 @@ class Yarn {
 	 * Get SHA-256 of the file relative to the root of the repository
 	 */
 	private getFileSha256(file: string): Promise<string> {
-		return glob.hashFiles(path.resolve(this.repo.cwd, file));
+		return glob.hashFiles(path.resolve(this.repo.cwd, file), this.repo.cwd);
 	}
 
 	private async execSyncCached(args: string[], paths: string[]): Promise<void> {
