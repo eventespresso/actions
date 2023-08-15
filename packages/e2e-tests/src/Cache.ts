@@ -19,8 +19,7 @@ class Cache {
 			// https://github.com/actions/toolkit/issues/1377
 			return await cache.saveCache(paths.slice(), k);
 		} catch (error) {
-			core.error(`Failed to save cache with key: \n${k}`);
-			core.error(error as string);
+			core.error(`Failed to save cache with key: \n${k}\n${error}`);
 			return false;
 		}
 	}
@@ -31,7 +30,7 @@ class Cache {
 		// https://github.com/actions/toolkit/issues/1377
 		const restore = await cache.restoreCache(paths.slice(), k, optKeys);
 		if (typeof restore === 'undefined') {
-			core.notice(`Did not find cache with key: \n${k}`);
+			core.notice(`Failed to retrieve cache with key: \n${k}`);
 			return false;
 		}
 		return true;
