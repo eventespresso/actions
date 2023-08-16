@@ -1,7 +1,10 @@
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { Cache } from './Cache';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
+import * as artifact from '@actions/artifact';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 
@@ -29,18 +32,63 @@ class Yarn {
 		return this;
 	}
 
-	public test(env: Record<string, string>): Yarn {
+	public async test(env: Record<string, string>): Promise<Yarn> {
 		// TODO: once e2e-tests package is extracted, update this
 
 		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
 
+		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+
 		env['NODE_EXTRA_CA_CERTS'] = `${caRoot}/rootCA.pem`;
 
-		this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
+		env['PLAYWRIGHT_HTML_REPORT'] = reportPath;
+
+		const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
 			env,
 		});
 
+		if (buffer.status !== 0) {
+			await this.saveTestReport(reportPath);
+		}
+
 		return this;
+	}
+
+	private async saveTestReport(reportPath: string): Promise<void> {
+		// due to bug with GitHub Toolkit, we need to manually check
+		// if the files/directories exist or not
+		// https://github.com/actions/toolkit/issues/1496
+
+		if (!fs.existsSync(reportPath)) {
+			core.error(`Playwright report not found at: ${reportPath}`);
+			return;
+		}
+
+		core.notice(`Saving Playwright report found at: ${reportPath}`);
+
+		const client = artifact.create();
+
+		const pattern = path.resolve(reportPath, '**/*');
+
+		const globber = await glob.create(pattern);
+
+		const files = await globber.glob();
+
+		if (files.length === 0) {
+			core.error(`Playwright report is empty: ${reportPath}`);
+			return;
+		}
+
+		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+
+		const response = await client.uploadArtifact(reportName, files, reportPath, {
+			continueOnError: true,
+			retentionDays: 7,
+		});
+
+		if (response.failedItems.length > 0) {
+			core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
+		}
 	}
 
 	private async makeCacheKey(action: string): Promise<string> {
