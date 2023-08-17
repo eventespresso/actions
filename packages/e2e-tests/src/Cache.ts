@@ -24,13 +24,13 @@ class Cache {
 		}
 	}
 
-	public async restore(key: string, paths: string[], optKeys?: string[]): Promise<boolean> {
+	public async restore(key: string, paths: string[]): Promise<boolean> {
 		const k = this.makeKey(key);
 		let restore = undefined;
 		try {
 			// .slice() is a required workaround until GitHub fixes cache
 			// https://github.com/actions/toolkit/issues/1377
-			restore = await cache.restoreCache(paths.slice(), k, optKeys);
+			restore = await cache.restoreCache(paths.slice(), k);
 		} catch (error) {
 			core.error(`${error}`);
 		}

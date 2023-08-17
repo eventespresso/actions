@@ -97,11 +97,6 @@ class Yarn {
 		return `${action}-${manifest}-${lockfile}`;
 	}
 
-	private async makeCacheOptKeys(action: string): Promise<string[]> {
-		const manifest = await this.getFileSha256('package.json');
-		return [`${action}-${manifest}`, action];
-	}
-
 	/**
 	 * Get SHA-256 of the file relative to the root of the repository
 	 */
@@ -114,9 +109,8 @@ class Yarn {
 
 		const action = `yarn-${args.join('-')}`;
 		const key = await this.makeCacheKey(action);
-		const optKeys = await this.makeCacheOptKeys(action);
 
-		const cache = await this.cache.restore(key, paths, optKeys);
+		const cache = await this.cache.restore(key, paths);
 
 		// if cache was found, the *outcome* of the command was cached
 		// so there is no need to waste cpu cycles running it again

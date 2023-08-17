@@ -15,7 +15,6 @@ class Git {
 	public async clone(): Promise<Git> {
 		const sha = this.getLastCommitSha();
 		const key = `git-clone-${sha}`;
-		const optKeys = ['git-clone'];
 		const cloneFromRemote = (): void => {
 			this.spawnSync.call('git', [
 				'clone',
@@ -28,7 +27,7 @@ class Git {
 			]);
 		};
 		const cloneFromCache = (): Promise<boolean> => {
-			return this.cache.restore(key, [this.repo.cwd], optKeys);
+			return this.cache.restore(key, [this.repo.cwd]);
 		};
 		if (await cloneFromCache()) {
 			core.info(`Found git repository '${this.repo.name}' in cache`);
