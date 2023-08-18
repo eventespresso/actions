@@ -21,6 +21,7 @@ class Action {
 		const barista = this.contexts.make('barista', this.inputs.baristaBranch());
 		const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
 		const env = this.getEnv(cafe, barista);
+		const skipTests = this.inputs.skipTests();
 
 		await cafe.git.clone();
 
@@ -35,16 +36,15 @@ class Action {
 
 		await e2e.git.clone();
 		await e2e.yarn.install({ frozenLockfile: true });
-		// TODO: perhaps cache this as well?
-		// https://playwright.dev/docs/library#managing-browser-binaries
 
 		// install dependencies
 		this.mkcert();
 		this.ddev();
 		this.browsers.install(e2e);
 
-		// TODO: add ability to skip this step to allow cache pre-warm
-		await e2e.yarn.test(env);
+		if (!skipTests) {
+			await e2e.yarn.test(env);
+		}
 	}
 
 	private mkcert(): void {

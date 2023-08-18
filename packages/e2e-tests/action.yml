@@ -13,6 +13,10 @@ inputs:
         description: Which branch to use for E2E Tests repository?
         type: string
         required: true
+    skip_tests:
+        description: Skip tests (used for cache warm-up workflow)
+        type: boolean
+        required: false
 runs:
     using: node16
     main: dist/index.js

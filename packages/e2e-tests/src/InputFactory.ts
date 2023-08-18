@@ -12,6 +12,10 @@ class InputFactory {
 	public e2eBranch(): string {
 		return core.getInput('e2e_tests_repo_branch', { required: true });
 	}
+
+	public skipTests(): boolean {
+		return core.getBooleanInput('skip_tests', { required: false });
+	}
 }
 
 export { InputFactory };

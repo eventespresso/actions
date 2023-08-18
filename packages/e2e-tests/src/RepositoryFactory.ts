@@ -18,6 +18,7 @@ class RepositoryFactory {
 	}
 
 	public e2e(branch: string): Repository {
+		// TODO: once e2e-tests package is extracted, update this
 		return new Repository({
 			name: 'e2e-tests',
 			branch: branch,
