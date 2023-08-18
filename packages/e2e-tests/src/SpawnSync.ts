@@ -63,7 +63,11 @@ class SpawnSync implements ExecSyncInterface {
 		const buffer = child_process.spawnSync(command, args, options);
 
 		if (buffer.status !== 0) {
-			core.setFailed(`Failed to execute command! \ncommand: ${command} \nargs: ${args.join(', ')}`);
+			core.setFailed(
+				`Failed to execute command! For more details see above! \ncommand: ${command} \nargs: ${args.join(
+					', '
+				)}`
+			);
 		}
 
 		return buffer;
