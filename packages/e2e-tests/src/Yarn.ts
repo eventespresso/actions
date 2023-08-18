@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Cache } from './Cache';
@@ -46,6 +45,8 @@ class Yarn {
 		const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
 			env,
 		});
+
+		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
 			await this.saveTestReport(reportPath);
