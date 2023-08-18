@@ -55,15 +55,6 @@ class Yarn {
 	}
 
 	private async saveTestReport(reportPath: string): Promise<void> {
-		// due to bug with GitHub Toolkit, we need to manually check
-		// if the files/directories exist or not
-		// https://github.com/actions/toolkit/issues/1496
-
-		if (!fs.existsSync(reportPath)) {
-			core.error(`Playwright report not found at: ${reportPath}`);
-			return;
-		}
-
 		core.notice(`Saving Playwright report found at: ${reportPath}`);
 
 		const client = artifact.create();
@@ -74,17 +65,19 @@ class Yarn {
 
 		const files = await globber.glob();
 
-		if (files.length === 0) {
-			core.error(`Playwright report is empty: ${reportPath}`);
-			return;
-		}
-
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
-		const response = await client.uploadArtifact(reportName, files, reportPath, {
-			continueOnError: true,
-			retentionDays: 7,
-		});
+		let response = undefined;
+
+		try {
+			response = await client.uploadArtifact(reportName, files, reportPath, {
+				continueOnError: true,
+				retentionDays: 7,
+			});
+		} catch (error) {
+			core.error(error as string);
+			return;
+		}
 
 		if (response.failedItems.length > 0) {
 			core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
