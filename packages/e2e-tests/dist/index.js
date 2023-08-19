@@ -66019,8 +66019,10 @@ class Git {
         });
     }
     getLastCommitSha() {
+        // courtesy of https://stackoverflow.com/a/15679887/4343719
+        const ref = `refs/heads/${this.repo.branch}`;
         // courtesy of https://stackoverflow.com/a/24750310/4343719
-        const git = this.spawnSync.call('git', ['ls-remote', this.repo.remote, 'HEAD'], {
+        const git = this.spawnSync.call('git', ['ls-remote', this.repo.remote, ref], {
             stdout: 'pipe',
         });
         return this.spawnSync.call('awk', ['{ print $1 }'], { input: git.stdout, stdout: 'pipe' }).stdout;
