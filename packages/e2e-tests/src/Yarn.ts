@@ -42,6 +42,8 @@ class Yarn {
 
 		env['PLAYWRIGHT_HTML_REPORT'] = reportPath;
 
+		// if docker cache will become available, restore should be called here
+
 		const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
 			env,
 		});
