@@ -32,61 +32,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Cache = void 0;
+exports.Git = void 0;
+const Cache_1 = require("./Cache");
+const SpawnSync_1 = require("./SpawnSync");
 const core = __importStar(require("@actions/core"));
-const cache = __importStar(require("@actions/cache"));
-class Cache {
+class Git {
     constructor(repo) {
         this.repo = repo;
-        if (!cache.isFeatureAvailable()) {
-            core.error('Cache service is not available');
-        }
+        this.spawnSync = new SpawnSync_1.SpawnSync(repo.cwd);
+        this.cache = new Cache_1.Cache(repo);
     }
-    /**
-     * @returns cache id or false if saving failed
-     */
-    save(key, paths) {
+    clone() {
         return __awaiter(this, void 0, void 0, function* () {
-            const k = this.makeKey(key);
-            try {
-                // .slice() is a required workaround until GitHub fixes cache
-                // https://github.com/actions/toolkit/issues/1377
-                return yield cache.saveCache(paths.slice(), k);
+            const sha = this.getLastCommitSha();
+            const key = `git-clone-${sha}`;
+            const cloneFromRemote = () => {
+                this.spawnSync.call('git', [
+                    'clone',
+                    '--branch',
+                    this.repo.branch,
+                    '--single-branch',
+                    '--no-tags',
+                    this.repo.remote,
+                    this.repo.cwd,
+                ]);
+            };
+            const cloneFromCache = () => {
+                return this.cache.restore(key, [this.repo.cwd]);
+            };
+            if (yield cloneFromCache()) {
+                core.info(`Found git repository '${this.repo.name}' in cache`);
+                return this;
             }
-            catch (error) {
-                core.error(`Failed to save cache with key: \n${k}\n${error}`);
-                return false;
-            }
+            core.notice(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
+            cloneFromRemote();
+            yield this.cache.save(key, [this.repo.cwd]);
+            return this;
         });
     }
-    restore(key, paths) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const k = this.makeKey(key);
-            let restore = undefined;
-            try {
-                // .slice() is a required workaround until GitHub fixes cache
-                // https://github.com/actions/toolkit/issues/1377
-                restore = yield cache.restoreCache(paths.slice(), k);
-            }
-            catch (error) {
-                core.error(`${error}`);
-            }
-            if (typeof restore === 'undefined') {
-                core.notice(`Failed to retrieve cache with key: \n${k}`);
-                return false;
-            }
-            return true;
+    getLastCommitSha() {
+        // courtesy of https://stackoverflow.com/a/24750310/4343719
+        const git = this.spawnSync.call('git', ['ls-remote', this.repo.remote, 'HEAD'], {
+            stdout: 'pipe',
         });
-    }
-    makeKey(key) {
-        // generate contextual key since we are dealing with multiple repositories
-        const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-        if (k.length > 512) {
-            // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-            const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-            core.setFailed(msg);
-        }
-        return k;
+        return this.spawnSync.call('awk', ['{ print $1 }'], { input: git.stdout, stdout: 'pipe' }).stdout;
     }
 }
-exports.Cache = Cache;
+exports.Git = Git;

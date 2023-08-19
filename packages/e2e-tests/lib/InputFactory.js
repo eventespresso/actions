@@ -26,14 +26,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InputFactory = void 0;
 const core = __importStar(require("@actions/core"));
 class InputFactory {
-    getCafeRepoBranch() {
+    cafeBranch() {
         return core.getInput('cafe_repo_branch', { required: true });
     }
-    getBaristaRepoBranch() {
+    baristaBranch() {
         return core.getInput('barista_repo_branch', { required: false });
     }
-    getE2ETestsRepoBranch() {
+    e2eBranch() {
         return core.getInput('e2e_tests_repo_branch', { required: true });
+    }
+    skipTests() {
+        return core.getBooleanInput('skip_tests', { required: false });
     }
 }
 exports.InputFactory = InputFactory;

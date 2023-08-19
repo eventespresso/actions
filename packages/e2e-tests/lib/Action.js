@@ -33,54 +33,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
-const child_process = __importStar(require("child_process"));
+const core = __importStar(require("@actions/core"));
+const Browsers_1 = require("./Browsers");
 class Action {
-    constructor(inputs, repos) {
+    constructor(inputs, contexts, spawnSync) {
         this.inputs = inputs;
-        this.repos = repos;
+        this.contexts = contexts;
+        this.spawnSync = spawnSync;
+        this.browsers = new Browsers_1.Browsers(this.spawnSync);
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            const cafe = this.getCafe();
-            const barista = this.getBarista();
-            const e2e = this.getE2E();
-            yield cafe.clone();
+            const cafe = this.contexts.make('cafe', this.inputs.cafeBranch());
+            const barista = this.contexts.make('barista', this.inputs.baristaBranch());
+            const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
+            const env = this.getEnv(cafe, barista);
+            const skipTests = this.inputs.skipTests();
+            yield cafe.git.clone();
             // it is optional to clone barista repo
-            if (this.inputs.getBaristaRepoBranch()) {
-                yield barista.clone();
-                barista.exec('yarn install --frozen-lockfile');
-                barista.exec('yarn build');
+            if (this.inputs.baristaBranch()) {
+                yield barista.git.clone();
+                yield barista.yarn.install({ frozenLockfile: true });
+                yield barista.yarn.build();
             }
-            this.installDependencies();
-            const env = {};
-            env['CAFE'] = cafe.cwd;
-            if (barista) {
-                env['BARISTA'] = barista.cwd;
+            // TODO: once e2e-tests package is extracted, update this
+            yield e2e.git.clone();
+            yield e2e.yarn.install({ frozenLockfile: true });
+            // install dependencies
+            this.mkcert();
+            this.ddev();
+            this.browsers.install(e2e);
+            if (!skipTests) {
+                yield e2e.yarn.test(env);
             }
-            yield e2e.clone();
-            // TODO: once e2e-tests package is extracted from Barista repository, update the .exec() command
-            e2e.exec('yarn install --frozen-lockfile');
-            e2e.exec(`yarn workspace @eventespresso/e2e test`, env);
         });
     }
-    getCafe() {
-        return this.repos.cafe(this.inputs.getCafeRepoBranch());
+    mkcert() {
+        core.info('Installing mkcert');
+        this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
     }
-    getBarista() {
-        return this.repos.barista(this.inputs.getBaristaRepoBranch());
+    ddev() {
+        core.info('Installing DDEV');
+        const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
+        this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
     }
-    getE2E() {
-        return this.repos.e2e(this.inputs.getE2ETestsRepoBranch());
-    }
-    installDependencies() {
-        const cmds = [
-            'sudo apt-get install --yes libnss3-tools mkcert',
-            'curl -fsSL https://ddev.com/install.sh | bash',
-            'npx playwright install --with-deps',
-        ];
-        for (const cmd of cmds) {
-            child_process.execSync(cmd);
+    getEnv(cafe, barista) {
+        const env = { CAFE: cafe.cwd };
+        if (barista) {
+            env['BARISTA'] = barista.cwd;
         }
+        return env;
     }
 }
 exports.Action = Action;

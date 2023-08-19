@@ -32,61 +32,78 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Cache = void 0;
+exports.Docker = void 0;
 const core = __importStar(require("@actions/core"));
 const cache = __importStar(require("@actions/cache"));
-class Cache {
-    constructor(repo) {
-        this.repo = repo;
-        if (!cache.isFeatureAvailable()) {
-            core.error('Cache service is not available');
-        }
+const os = __importStar(require("os"));
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+/**
+ * This class add ability to save and restore docker images
+ * Currently, it is not in use due to sub-optimal performance results
+ * https://github.com/eventespresso/barista/issues/1222#issuecomment-1684280811
+ */
+class Docker {
+    constructor(spawnSync) {
+        this.spawnSync = spawnSync;
     }
-    /**
-     * @returns cache id or false if saving failed
-     */
-    save(key, paths) {
+    saveImages() {
         return __awaiter(this, void 0, void 0, function* () {
-            const k = this.makeKey(key);
-            try {
-                // .slice() is a required workaround until GitHub fixes cache
-                // https://github.com/actions/toolkit/issues/1377
-                return yield cache.saveCache(paths.slice(), k);
-            }
-            catch (error) {
-                core.error(`Failed to save cache with key: \n${k}\n${error}`);
+            const [fileName, workDir, filePath] = this.getParams();
+            core.notice(`Saving docker images to cache: ${fileName}`);
+            const imagesList = this.listImages();
+            this.spawnSync.call('docker', ['save', '--output', filePath, ...imagesList]);
+            if (!fs.existsSync(filePath)) {
+                core.error(`Failed to save docker images at ${filePath}`);
                 return false;
             }
-        });
-    }
-    restore(key, paths) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const k = this.makeKey(key);
-            let restore = undefined;
             try {
-                // .slice() is a required workaround until GitHub fixes cache
-                // https://github.com/actions/toolkit/issues/1377
-                restore = yield cache.restoreCache(paths.slice(), k);
+                yield cache.saveCache([filePath], fileName);
             }
             catch (error) {
-                core.error(`${error}`);
-            }
-            if (typeof restore === 'undefined') {
-                core.notice(`Failed to retrieve cache with key: \n${k}`);
+                core.error('Failed to save docker images into cache');
+                core.error(error);
                 return false;
             }
             return true;
         });
     }
-    makeKey(key) {
-        // generate contextual key since we are dealing with multiple repositories
-        const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-        if (k.length > 512) {
-            // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-            const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-            core.setFailed(msg);
-        }
-        return k;
+    loadImages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [fileName, workDir, filePath] = this.getParams();
+            let restore = undefined;
+            try {
+                restore = yield cache.restoreCache([filePath], fileName, [], {});
+            }
+            catch (error) {
+                core.notice('Failed to restore docker images from cache');
+                core.notice(error);
+                return false;
+            }
+            if (!restore) {
+                core.notice('No cache found for docker images');
+                return false;
+            }
+            this.spawnSync.call('docker', ['load', '--input', filePath]);
+            return true;
+        });
+    }
+    listImages() {
+        return this.spawnSync
+            .call('docker', ['images', '--quiet'], {
+            stdout: 'pipe',
+        })
+            .stdout.trim()
+            .split('\n');
+    }
+    /**
+     * @return {[string,string,string]} [filename, workdir, full path]
+     */
+    getParams() {
+        const fileName = 'docker-images.tar';
+        const workDir = os.tmpdir();
+        const filePath = path.resolve(workDir, fileName);
+        return [fileName, workDir, filePath];
     }
 }
-exports.Cache = Cache;
+exports.Docker = Docker;
