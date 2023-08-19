@@ -20,7 +20,6 @@ class Action {
 		const cafe = this.contexts.make('cafe', this.inputs.cafeBranch());
 		const barista = this.contexts.make('barista', this.inputs.baristaBranch());
 		const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
-		const env = this.getEnv(cafe, barista);
 		const skipTests = this.inputs.skipTests();
 
 		await cafe.git.clone();
@@ -43,7 +42,7 @@ class Action {
 		this.browsers.install(e2e);
 
 		if (!skipTests) {
-			await e2e.yarn.test(env);
+			await e2e.yarn.test(this.getEnvVars(cafe, barista));
 		}
 	}
 
@@ -58,13 +57,20 @@ class Action {
 		this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
 	}
 
-	private getEnv(cafe: Context, barista?: Context): Record<string, string> {
-		const env: Record<string, string> = { CAFE: cafe.cwd };
+	private getEnvVars(cafe: Context, barista?: Context): EnvVars {
+		const vars: EnvVars = { CAFE: cafe.cwd };
 		if (barista) {
-			env['BARISTA'] = barista.cwd;
+			vars.BARISTA = barista.cwd;
 		}
-		return env;
+		return vars;
 	}
 }
 
+type EnvVars = {
+	CAFE: string;
+	BARISTA?: string;
+};
+
 export { Action };
+
+export type { EnvVars as EnvVars };

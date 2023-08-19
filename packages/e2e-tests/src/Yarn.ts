@@ -6,6 +6,7 @@ import * as glob from '@actions/glob';
 import * as artifact from '@actions/artifact';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
+import { EnvVars } from './Action';
 
 class Yarn {
 	constructor(
@@ -31,16 +32,18 @@ class Yarn {
 		return this;
 	}
 
-	public async test(env: Record<string, string>): Promise<Yarn> {
+	public async test(envVars: EnvVars): Promise<Yarn> {
 		// TODO: once e2e-tests package is extracted, update this
 
 		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
 
 		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
 
-		env['NODE_EXTRA_CA_CERTS'] = `${caRoot}/rootCA.pem`;
-
-		env['PLAYWRIGHT_HTML_REPORT'] = reportPath;
+		const env = {
+			NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
+			PLAYWRIGHT_HTML_REPORT: reportPath,
+			...envVars,
+		} as const;
 
 		// if docker cache will become available, restore should be called here
 

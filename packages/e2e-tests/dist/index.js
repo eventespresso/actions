@@ -65654,7 +65654,6 @@ class Action {
             const cafe = this.contexts.make('cafe', this.inputs.cafeBranch());
             const barista = this.contexts.make('barista', this.inputs.baristaBranch());
             const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
-            const env = this.getEnv(cafe, barista);
             const skipTests = this.inputs.skipTests();
             yield cafe.git.clone();
             // it is optional to clone barista repo
@@ -65671,7 +65670,7 @@ class Action {
             this.ddev();
             this.browsers.install(e2e);
             if (!skipTests) {
-                yield e2e.yarn.test(env);
+                yield e2e.yarn.test(this.getEnvVars(cafe, barista));
             }
         });
     }
@@ -65684,12 +65683,12 @@ class Action {
         const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
         this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
     }
-    getEnv(cafe, barista) {
-        const env = { CAFE: cafe.cwd };
+    getEnvVars(cafe, barista) {
+        const vars = { CAFE: cafe.cwd };
         if (barista) {
-            env['BARISTA'] = barista.cwd;
+            vars.BARISTA = barista.cwd;
         }
-        return env;
+        return vars;
     }
 }
 exports.Action = Action;
@@ -66341,13 +66340,12 @@ class Yarn {
             return this;
         });
     }
-    test(env) {
+    test(envVars) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO: once e2e-tests package is extracted, update this
             const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
             const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
-            env['NODE_EXTRA_CA_CERTS'] = `${caRoot}/rootCA.pem`;
-            env['PLAYWRIGHT_HTML_REPORT'] = reportPath;
+            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
             // if docker cache will become available, restore should be called here
             const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
                 env,
