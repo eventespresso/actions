@@ -4,11 +4,12 @@ This action makes it trivial to run end-to-end tests for Event Espresso product 
 
 ## Input
 
-| Name                    | Description                                   | Type   | Required |
-| ----------------------- | --------------------------------------------- | ------ | :------: |
-| `cafe-repo-branch`      | Which branch to use for Cafe repository?      | string |    \*    |
-| `barista-repo-branch`   | Which branch to use for Barista repository?   | string |          |
-| `e2e-tests-repo-branch` | Which branch to use for E2E Tests repository? | string |    \*    |
+| Name                    | Description                                   | Type    | Required |
+| ----------------------- | --------------------------------------------- | ------- | :------: |
+| `cafe_repo_branch`      | Which branch to use for Cafe repository?      | string  |    \*    |
+| `barista_repo_branch`   | Which branch to use for Barista repository?   | string  |          |
+| `e2e_tests_repo_branch` | Which branch to use for E2E Tests repository? | string  |    \*    |
+| `skip_tests`            | Should E2E tests be skipped?                  | boolean |          |
 
 ## Example Workflow File
 
@@ -35,9 +36,9 @@ jobs:
                   private-key: ${{ secrets.GH_ACTIONS_SSH_PRIVATE_KEY }}
 
             - name: Run E2E Tests
-              uses: eventespresso/actions/packages/e2e-tests@CHORE/create-e2e-tests-package
+              uses: eventespresso/actions/packages/e2e-tests@main
               with:
-                  cafe-repo-branch: DEV
-                  barista-repo-branch: master
-                  e2e-tests-repo-branch: master
+                  cafe_repo_branch: DEV
+                  barista_repo_branch: master
+                  e2e_tests_repo_branch: master
 ```
