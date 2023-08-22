@@ -17,6 +17,7 @@ inputs:
         description: Skip tests (used for cache warm-up workflow)
         type: boolean
         required: false
+        default: false
 runs:
     using: node16
     main: dist/index.js
