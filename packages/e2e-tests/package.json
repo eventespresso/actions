@@ -1,0 +1,19 @@
+{
+  "author": "Event Espresso",
+  "license": "GPL-3.0",
+  "main": "lib/index.js",
+  "name": "@eventespresso-actions/e2e-tests",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "package": "ncc build --source-map --license licenses.txt",
+    "all": "npm run build && npm run format && npm run lint && npm run package"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
