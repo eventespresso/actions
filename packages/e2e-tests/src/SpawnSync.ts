@@ -73,6 +73,12 @@ class SpawnSync implements ExecSyncInterface {
 		return buffer;
 	}
 
+	/**
+	 * For node, yarn, npm, and npx resolve to absolute path so that
+	 * command is run on the same Node version as action.yml does
+	 * @param command actual cli command to run
+	 * @returns tuple of commands
+	 */
 	private overrideCommand(command: string): [string, string | undefined] {
 		const targets = ['node', 'yarn', 'npm', 'npx'];
 		if (!targets.includes(command)) {
@@ -93,6 +99,9 @@ class SpawnSync implements ExecSyncInterface {
 			return override;
 		}
 
+		// if cwd will be non-existing directory, Node will return ENOENT;
+		// in case of commands like 'git clone', working directory *has*
+		// to be missing, so we provide middle ground here
 		if (!fs.existsSync(this.cwd)) {
 			return __dirname;
 		}

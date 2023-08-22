@@ -71,14 +71,15 @@ class Yarn {
 
 		const files = await globber.glob();
 
+		// include workflow # as well as attempt # in the report (artifact) filename
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
 		let response = undefined;
 
 		try {
 			response = await client.uploadArtifact(reportName, files, reportPath, {
-				continueOnError: true,
-				retentionDays: 7,
+				continueOnError: true, // even if Playwright report is not fully saved, we still have a meaningful outcome i.e. something fails so no need to halt the rest of the workflow
+				retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
 			});
 		} catch (error) {
 			core.error(error as string);
@@ -90,6 +91,11 @@ class Yarn {
 		}
 	}
 
+	/**
+	 * Bind Yarn cache to sha256 of `package.json` and `yarn.lock` as output/outcome of commands may change when dependencies change
+	 * @param action Yarn action we are running
+	 * @returns Promise with cache key as string
+	 */
 	private async makeCacheKey(action: string): Promise<string> {
 		const manifest = await this.getFileSha256('package.json');
 		const lockfile = await this.getFileSha256('yarn.lock');
@@ -103,7 +109,14 @@ class Yarn {
 		return glob.hashFiles(path.resolve(this.repo.cwd, file), this.repo.cwd);
 	}
 
+	/**
+	 * Bind cache to specific commands to avoid collisions and ensure each Yarn command is saved under unique cache as we are working with 3 different repositories
+	 * @param args arguments for Yarn cli command
+	 * @param paths array of path to be cached (relative or absolute)
+	 * @returns empty Promise
+	 */
 	private async call(args: string[], paths: string[]): Promise<void> {
+		// in case of relative paths, resolve it into absolute path against cwd
 		paths = paths.map((p) => path.resolve(this.repo.cwd, p));
 
 		const action = `yarn-${args.join('-')}`;
