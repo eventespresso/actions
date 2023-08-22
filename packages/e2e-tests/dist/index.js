@@ -66246,6 +66246,12 @@ class SpawnSync {
         }
         return buffer;
     }
+    /**
+     * For node, yarn, npm, and npx resolve to absolute path so that
+     * command is run on the same Node version as action.yml does
+     * @param command actual cli command to run
+     * @returns tuple of commands
+     */
     overrideCommand(command) {
         const targets = ['node', 'yarn', 'npm', 'npx'];
         if (!targets.includes(command)) {
@@ -66263,6 +66269,9 @@ class SpawnSync {
             }
             return override;
         }
+        // if cwd will be non-existing directory, Node will return ENOENT;
+        // in case of commands like 'git clone', working directory *has*
+        // to be missing, so we provide middle ground here
         if (!fs.existsSync(this.cwd)) {
             return __dirname;
         }
@@ -66364,12 +66373,13 @@ class Yarn {
             const pattern = path.resolve(reportPath, '**/*');
             const globber = yield glob.create(pattern);
             const files = yield globber.glob();
+            // include workflow # as well as attempt # in the report (artifact) filename
             const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             let response = undefined;
             try {
                 response = yield client.uploadArtifact(reportName, files, reportPath, {
                     continueOnError: true,
-                    retentionDays: 7,
+                    retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
                 });
             }
             catch (error) {
@@ -66381,6 +66391,11 @@ class Yarn {
             }
         });
     }
+    /**
+     * Bind Yarn cache to sha256 of `package.json` and `yarn.lock` as output/outcome of commands may change when dependencies change
+     * @param action Yarn action we are running
+     * @returns Promise with cache key as string
+     */
     makeCacheKey(action) {
         return __awaiter(this, void 0, void 0, function* () {
             const manifest = yield this.getFileSha256('package.json');
@@ -66394,8 +66409,15 @@ class Yarn {
     getFileSha256(file) {
         return glob.hashFiles(path.resolve(this.repo.cwd, file), this.repo.cwd);
     }
+    /**
+     * Bind cache to specific commands to avoid collisions and ensure each Yarn command is saved under unique cache as we are working with 3 different repositories
+     * @param args arguments for Yarn cli command
+     * @param paths array of path to be cached (relative or absolute)
+     * @returns empty Promise
+     */
     call(args, paths) {
         return __awaiter(this, void 0, void 0, function* () {
+            // in case of relative paths, resolve it into absolute path against cwd
             paths = paths.map((p) => path.resolve(this.repo.cwd, p));
             const action = `yarn-${args.join('-')}`;
             const key = yield this.makeCacheKey(action);
