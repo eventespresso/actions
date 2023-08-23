@@ -18,11 +18,10 @@ class RepositoryFactory {
 	}
 
 	public e2e(branch: string): Repository {
-		// TODO: once e2e-tests package is extracted, update this
 		return new Repository({
 			name: 'e2e-tests',
 			branch: branch,
-			remote: 'git@github.com:eventespresso/barista.git',
+			remote: 'git@github.com:eventespresso/e2e-tests.git',
 		});
 	}
 }
