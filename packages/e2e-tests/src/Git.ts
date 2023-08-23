@@ -47,7 +47,19 @@ class Git {
 		const git = this.spawnSync.call('git', ['ls-remote', this.repo.remote, ref], {
 			stdout: 'pipe',
 		});
-		return this.spawnSync.call('awk', ['{ print $1 }'], { input: git.stdout, stdout: 'pipe' }).stdout;
+
+		// courtesy of https://stackoverflow.com/a/24750310/4343719
+		const cut = this.spawnSync.call('cut', ['-f', '1'], { input: git.stdout, stdin: 'pipe', stdout: 'pipe' });
+
+		const sha = cut.stdout;
+
+		if (!sha || sha.length === 0) {
+			core.setFailed(
+				`Failed to obtain latest commit sha for repository '${this.repo.name}' for branch '${this.repo.branch}' \ngit refs: \n${git.stdout} \ncut outcome: ${sha}`
+			);
+		}
+
+		return sha;
 	}
 }
 
