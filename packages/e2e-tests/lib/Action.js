@@ -55,7 +55,6 @@ class Action {
                 yield barista.yarn.install({ frozenLockfile: true });
                 yield barista.yarn.build();
             }
-            // TODO: once e2e-tests package is extracted, update this
             yield e2e.git.clone();
             yield e2e.yarn.install({ frozenLockfile: true });
             // install dependencies

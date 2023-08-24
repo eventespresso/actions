@@ -33,8 +33,6 @@ class Yarn {
 	}
 
 	public async test(envVars: EnvVars): Promise<Yarn> {
-		// TODO: once e2e-tests package is extracted, update this
-
 		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
 
 		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
@@ -47,7 +45,7 @@ class Yarn {
 
 		// if docker cache will become available, restore should be called here
 
-		const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
+		const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
 			env,
 		});
 

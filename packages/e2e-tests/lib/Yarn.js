@@ -62,12 +62,11 @@ class Yarn {
     }
     test(envVars) {
         return __awaiter(this, void 0, void 0, function* () {
-            // TODO: once e2e-tests package is extracted, update this
             const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
             const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
             const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
             // if docker cache will become available, restore should be called here
-            const buffer = this.spawnSync.call('yarn', ['workspace', '@eventespresso/e2e', 'playwright', 'test'], {
+            const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
                 env,
             });
             // if docker cache will become available, save should be called here

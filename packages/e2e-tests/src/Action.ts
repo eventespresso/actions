@@ -31,8 +31,6 @@ class Action {
 			await barista.yarn.build();
 		}
 
-		// TODO: once e2e-tests package is extracted, update this
-
 		await e2e.git.clone();
 		await e2e.yarn.install({ frozenLockfile: true });
 
