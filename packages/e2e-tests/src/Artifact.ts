@@ -28,7 +28,9 @@ class Artifact {
 		const options: UploadOptions = { continueOnError: true, retentionDays: days };
 
 		if (files.length === 0) {
-			core.notice(`Given artifact input is empty: ${this.inputToStr(input)}`);
+			core.notice(
+				`Given artifact input '${this.inputToStr(input)}' is empty following working directory '${workDir}'`
+			);
 			return false;
 		}
 

@@ -36,7 +36,12 @@ class Yarn {
 	public async test(envVars: EnvVars): Promise<Yarn> {
 		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
 
+		// used by env var NODE_EXTRA_CA_CERTS
+		// see https://playwright.dev/docs/test-reporters#html-reporter
+		// used by CLI
+		// see https://playwright.dev/docs/test-cli#reference
 		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+		const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
 
 		const env = {
 			NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
@@ -46,7 +51,7 @@ class Yarn {
 
 		// if docker cache will become available, restore should be called here
 
-		const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
+		const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
 			env,
 		});
 
@@ -54,6 +59,7 @@ class Yarn {
 
 		if (buffer.status !== 0) {
 			await this.saveReport(reportPath);
+			await this.saveTestResults(resultsPath);
 		}
 
 		return this;
@@ -64,6 +70,13 @@ class Yarn {
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
 		return await this.artifact.save('*', reportPath, reportName, 7);
+	}
+
+	private async saveTestResults(resultsPath: string): Promise<boolean> {
+		// include workflow # as well as attempt # in results (artifact) filename
+		const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+
+		return await this.artifact.save('*', resultsPath, resultsName, 7);
 	}
 
 	/**
