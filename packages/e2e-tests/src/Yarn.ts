@@ -3,16 +3,17 @@ import * as path from 'path';
 import { Cache } from './Cache';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import * as artifact from '@actions/artifact';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 import { EnvVars } from './Action';
+import { Artifact } from './Artifact';
 
 class Yarn {
 	constructor(
 		private readonly repo: Repository,
 		private readonly spawnSync: SpawnSync,
-		private readonly cache: Cache
+		private readonly cache: Cache,
+		private readonly artifact: Artifact
 	) {}
 
 	public async install({ frozenLockfile }: { frozenLockfile: boolean }): Promise<Yarn> {
@@ -52,48 +53,17 @@ class Yarn {
 		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
-			await this.saveTestReport(reportPath);
+			await this.saveReport(reportPath);
 		}
 
 		return this;
 	}
 
-	private async saveTestReport(reportPath: string): Promise<void> {
-		core.notice(`Attempting to save Playwright report from '${reportPath}'`);
-
-		const client = artifact.create();
-
-		const pattern = '**/*';
-
-		const resolvedPath = path.resolve(reportPath, pattern);
-
-		const globber = await glob.create(resolvedPath);
-
-		const files = await globber.glob();
-
-		if (files.length === 0) {
-			core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
-			return;
-		}
-
+	private async saveReport(reportPath: string): Promise<boolean> {
 		// include workflow # as well as attempt # in the report (artifact) filename
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
-		let response = undefined;
-
-		try {
-			response = await client.uploadArtifact(reportName, files, reportPath, {
-				continueOnError: true, // even if Playwright report is not fully saved, we still have a meaningful outcome i.e. something fails so no need to halt the rest of the workflow
-				retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
-			});
-		} catch (error) {
-			core.error(error as string);
-			return;
-		}
-
-		if (response.failedItems.length > 0) {
-			core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
-		}
+		return await this.artifact.save('*', reportPath, reportName, 7);
 	}
 
 	/**
