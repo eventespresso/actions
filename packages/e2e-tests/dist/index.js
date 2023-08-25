@@ -66371,11 +66371,16 @@ class Yarn {
     }
     saveTestReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            core.notice(`Saving Playwright report found at: ${reportPath}`);
+            core.notice(`Attempting to save Playwright report from '${reportPath}'`);
             const client = artifact.create();
-            const pattern = path.resolve(reportPath, '**/*');
-            const globber = yield glob.create(pattern);
+            const pattern = '**/*';
+            const resolvedPath = path.resolve(reportPath, pattern);
+            const globber = yield glob.create(resolvedPath);
             const files = yield globber.glob();
+            if (files.length === 0) {
+                core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
+                return;
+            }
             // include workflow # as well as attempt # in the report (artifact) filename
             const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             let response = undefined;
