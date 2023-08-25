@@ -65695,6 +65695,147 @@ exports.Action = Action;
 
 /***/ }),
 
+/***/ 2660:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Artifact = void 0;
+const path = __importStar(__nccwpck_require__(9411));
+const core = __importStar(__nccwpck_require__(7117));
+const glob = __importStar(__nccwpck_require__(3553));
+const artifact = __importStar(__nccwpck_require__(7814));
+class Artifact {
+    constructor() {
+        this.client = artifact.create();
+    }
+    /**
+     * Save given files/folders as an GitHub artifact
+     * @param input A path or an array of paths to files or directories
+     * @parma workDir Working directory (absolute path) from where files/folders are upload (parent directory for the given input)
+     * @param name Name under which artifact will be saved
+     * @param days For how many days artifact will be kept
+     * @returns True if artifact was saved and false otherwise
+     */
+    save(input, workDir, name, days) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const files = yield this.getFiles(input, workDir);
+            // no need to abort CI runner if artifact upload fails
+            // this method returns true/false which allows the invoking
+            // code to decide if process should be stopped or not
+            const options = { continueOnError: true, retentionDays: days };
+            if (files.length === 0) {
+                core.notice(`Given artifact input '${this.inputToStr(input)}' is empty following working directory '${workDir}'`);
+                return false;
+            }
+            let upload = undefined;
+            try {
+                upload = yield this.client.uploadArtifact(name, files, workDir, options);
+            }
+            catch (error) {
+                core.error(`Failed to save artifact '${name}', see below for details`);
+                core.error(`${error}`);
+                return false;
+            }
+            if (upload.failedItems.length > 0) {
+                const failed = upload.failedItems.join('\n');
+                core.error(`Failied to upload some files for artifact '${name}':\n${failed}`);
+                return false;
+            }
+            return true;
+        });
+    }
+    /**
+     * Convert given input string or array of inputs to string
+     */
+    inputToStr(input) {
+        if (typeof input === 'string') {
+            return input;
+        }
+        return input.join(', ');
+    }
+    /**
+     * Convert given path(s) of whatever (files/folders) to an array of individual files with absolute path
+     */
+    getFiles(input, workDir) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const arrInput = this.inputToArr(input);
+            const absInput = arrInput.map((i) => this.absPath(i, workDir));
+            const promises = absInput.map((i) => this.inputToFiles(i));
+            const files = yield Promise.all(promises);
+            return files.flat();
+        });
+    }
+    /**
+     * Ensure that given input is always returned as an array
+     */
+    inputToArr(input) {
+        if (typeof input === 'string') {
+            return [input];
+        }
+        return input;
+    }
+    /**
+     * Convert given input (assuming with pattern) to array of individuals files
+     */
+    inputToFiles(input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (input.slice(-1) !== '*') {
+                // if no pattern is present, there is nothing to be globbed
+                return [input];
+            }
+            return (yield glob.create(input)).glob();
+        });
+    }
+    /**
+     * Ensure given path is always absolute
+     */
+    absPath(input, workDir) {
+        if (input[0] === '/') {
+            // input is already absolute, nothing to be done
+            return input;
+        }
+        return path.resolve(workDir, input);
+    }
+}
+exports.Artifact = Artifact;
+
+
+/***/ }),
+
 /***/ 6037:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -65922,6 +66063,7 @@ const Context_1 = __nccwpck_require__(3738);
 const SpawnSync_1 = __nccwpck_require__(8258);
 const Git_1 = __nccwpck_require__(7734);
 const Yarn_1 = __nccwpck_require__(62);
+const Artifact_1 = __nccwpck_require__(2660);
 class ContextFactory {
     constructor(repos) {
         this.repos = repos;
@@ -65931,7 +66073,8 @@ class ContextFactory {
         const git = new Git_1.Git(repo);
         const cache = new Cache_1.Cache(repo);
         const spawn = new SpawnSync_1.SpawnSync(repo.cwd);
-        const yarn = new Yarn_1.Yarn(repo, spawn, cache);
+        const artifact = new Artifact_1.Artifact();
+        const yarn = new Yarn_1.Yarn(repo, spawn, cache, artifact);
         return new Context_1.Context(repo, cache, yarn, git);
     }
 }
@@ -66330,12 +66473,12 @@ const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(7117));
 const glob = __importStar(__nccwpck_require__(3553));
-const artifact = __importStar(__nccwpck_require__(7814));
 class Yarn {
-    constructor(repo, spawnSync, cache) {
+    constructor(repo, spawnSync, cache, artifact) {
         this.repo = repo;
         this.spawnSync = spawnSync;
         this.cache = cache;
+        this.artifact = artifact;
     }
     install({ frozenLockfile }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -66356,47 +66499,37 @@ class Yarn {
     test(envVars) {
         return __awaiter(this, void 0, void 0, function* () {
             const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
+            // used by env var NODE_EXTRA_CA_CERTS
+            // see https://playwright.dev/docs/test-reporters#html-reporter
+            // used by CLI
+            // see https://playwright.dev/docs/test-cli#reference
             const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+            const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
             const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
             // if docker cache will become available, restore should be called here
-            const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
+            const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
                 env,
             });
             // if docker cache will become available, save should be called here
             if (buffer.status !== 0) {
-                yield this.saveTestReport(reportPath);
+                yield this.saveReport(reportPath);
+                yield this.saveTestResults(resultsPath);
             }
             return this;
         });
     }
-    saveTestReport(reportPath) {
+    saveReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            core.notice(`Attempting to save Playwright report from '${reportPath}'`);
-            const client = artifact.create();
-            const pattern = '**/*';
-            const resolvedPath = path.resolve(reportPath, pattern);
-            const globber = yield glob.create(resolvedPath);
-            const files = yield globber.glob();
-            if (files.length === 0) {
-                core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
-                return;
-            }
             // include workflow # as well as attempt # in the report (artifact) filename
             const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
-            let response = undefined;
-            try {
-                response = yield client.uploadArtifact(reportName, files, reportPath, {
-                    continueOnError: true,
-                    retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
-                });
-            }
-            catch (error) {
-                core.error(error);
-                return;
-            }
-            if (response.failedItems.length > 0) {
-                core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
-            }
+            return yield this.artifact.save('*', reportPath, reportName, 7);
+        });
+    }
+    saveTestResults(resultsPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // include workflow # as well as attempt # in results (artifact) filename
+            const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+            return yield this.artifact.save('*', resultsPath, resultsName, 7);
         });
     }
     /**
@@ -66524,6 +66657,14 @@ module.exports = require("https");
 
 "use strict";
 module.exports = require("net");
+
+/***/ }),
+
+/***/ 9411:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
 
 /***/ }),
 
