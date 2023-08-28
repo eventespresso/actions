@@ -59,15 +59,22 @@ class Yarn {
 	}
 
 	private async saveTestReport(reportPath: string): Promise<void> {
-		core.notice(`Saving Playwright report found at: ${reportPath}`);
+		core.notice(`Attempting to save Playwright report from '${reportPath}'`);
 
 		const client = artifact.create();
 
-		const pattern = path.resolve(reportPath, '**/*');
+		const pattern = '**/*';
 
-		const globber = await glob.create(pattern);
+		const resolvedPath = path.resolve(reportPath, pattern);
+
+		const globber = await glob.create(resolvedPath);
 
 		const files = await globber.glob();
+
+		if (files.length === 0) {
+			core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
+			return;
+		}
 
 		// include workflow # as well as attempt # in the report (artifact) filename
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
