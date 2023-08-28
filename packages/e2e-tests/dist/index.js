@@ -65758,7 +65758,7 @@ class Artifact {
             // code to decide if process should be stopped or not
             const options = { continueOnError: true, retentionDays: days };
             if (files.length === 0) {
-                core.notice(`Given artifact input '${this.inputToStr(input)}' is empty following working directory '${workDir}'`);
+                core.notice(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
                 return false;
             }
             let upload = undefined;

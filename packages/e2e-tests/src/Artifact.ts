@@ -29,7 +29,7 @@ class Artifact {
 
 		if (files.length === 0) {
 			core.notice(
-				`Given artifact input '${this.inputToStr(input)}' is empty following working directory '${workDir}'`
+				`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`
 			);
 			return false;
 		}
