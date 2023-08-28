@@ -37,12 +37,12 @@ const os = __importStar(require("os"));
 const path = __importStar(require("path"));
 const core = __importStar(require("@actions/core"));
 const glob = __importStar(require("@actions/glob"));
-const artifact = __importStar(require("@actions/artifact"));
 class Yarn {
-    constructor(repo, spawnSync, cache) {
+    constructor(repo, spawnSync, cache, artifact) {
         this.repo = repo;
         this.spawnSync = spawnSync;
         this.cache = cache;
+        this.artifact = artifact;
     }
     install({ frozenLockfile }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,47 +63,37 @@ class Yarn {
     test(envVars) {
         return __awaiter(this, void 0, void 0, function* () {
             const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
+            // used by env var NODE_EXTRA_CA_CERTS
+            // see https://playwright.dev/docs/test-reporters#html-reporter
+            // used by CLI
+            // see https://playwright.dev/docs/test-cli#reference
             const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+            const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
             const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
             // if docker cache will become available, restore should be called here
-            const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
+            const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
                 env,
             });
             // if docker cache will become available, save should be called here
             if (buffer.status !== 0) {
-                yield this.saveTestReport(reportPath);
+                yield this.saveReport(reportPath);
+                yield this.saveTestResults(resultsPath);
             }
             return this;
         });
     }
-    saveTestReport(reportPath) {
+    saveReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            core.notice(`Attempting to save Playwright report from '${reportPath}'`);
-            const client = artifact.create();
-            const pattern = '**/*';
-            const resolvedPath = path.resolve(reportPath, pattern);
-            const globber = yield glob.create(resolvedPath);
-            const files = yield globber.glob();
-            if (files.length === 0) {
-                core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
-                return;
-            }
             // include workflow # as well as attempt # in the report (artifact) filename
             const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
-            let response = undefined;
-            try {
-                response = yield client.uploadArtifact(reportName, files, reportPath, {
-                    continueOnError: true,
-                    retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
-                });
-            }
-            catch (error) {
-                core.error(error);
-                return;
-            }
-            if (response.failedItems.length > 0) {
-                core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
-            }
+            return yield this.artifact.save('*', reportPath, reportName, 7);
+        });
+    }
+    saveTestResults(resultsPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // include workflow # as well as attempt # in results (artifact) filename
+            const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+            return yield this.artifact.save('*', resultsPath, resultsName, 7);
         });
     }
     /**

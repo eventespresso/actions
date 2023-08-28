@@ -3,16 +3,17 @@ import * as path from 'path';
 import { Cache } from './Cache';
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import * as artifact from '@actions/artifact';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 import { EnvVars } from './Action';
+import { Artifact } from './Artifact';
 
 class Yarn {
 	constructor(
 		private readonly repo: Repository,
 		private readonly spawnSync: SpawnSync,
-		private readonly cache: Cache
+		private readonly cache: Cache,
+		private readonly artifact: Artifact
 	) {}
 
 	public async install({ frozenLockfile }: { frozenLockfile: boolean }): Promise<Yarn> {
@@ -35,7 +36,12 @@ class Yarn {
 	public async test(envVars: EnvVars): Promise<Yarn> {
 		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
 
+		// used by env var NODE_EXTRA_CA_CERTS
+		// see https://playwright.dev/docs/test-reporters#html-reporter
+		// used by CLI
+		// see https://playwright.dev/docs/test-cli#reference
 		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+		const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
 
 		const env = {
 			NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
@@ -45,55 +51,32 @@ class Yarn {
 
 		// if docker cache will become available, restore should be called here
 
-		const buffer = this.spawnSync.call('yarn', ['playwright', 'test'], {
+		const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
 			env,
 		});
 
 		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
-			await this.saveTestReport(reportPath);
+			await this.saveReport(reportPath);
+			await this.saveTestResults(resultsPath);
 		}
 
 		return this;
 	}
 
-	private async saveTestReport(reportPath: string): Promise<void> {
-		core.notice(`Attempting to save Playwright report from '${reportPath}'`);
-
-		const client = artifact.create();
-
-		const pattern = '**/*';
-
-		const resolvedPath = path.resolve(reportPath, pattern);
-
-		const globber = await glob.create(resolvedPath);
-
-		const files = await globber.glob();
-
-		if (files.length === 0) {
-			core.notice(`Did not find any files matching pattern '${pattern}' at path '${resolvedPath}'`);
-			return;
-		}
-
+	private async saveReport(reportPath: string): Promise<boolean> {
 		// include workflow # as well as attempt # in the report (artifact) filename
 		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
-		let response = undefined;
+		return await this.artifact.save('*', reportPath, reportName, 7);
+	}
 
-		try {
-			response = await client.uploadArtifact(reportName, files, reportPath, {
-				continueOnError: true, // even if Playwright report is not fully saved, we still have a meaningful outcome i.e. something fails so no need to halt the rest of the workflow
-				retentionDays: 7, // no need to cache artifacts for too long as after the test fails, the expectation is to fix it
-			});
-		} catch (error) {
-			core.error(error as string);
-			return;
-		}
+	private async saveTestResults(resultsPath: string): Promise<boolean> {
+		// include workflow # as well as attempt # in results (artifact) filename
+		const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 
-		if (response.failedItems.length > 0) {
-			core.error(`Failed to upload some artifact items: \n${response.failedItems.join(', ')}`);
-		}
+		return await this.artifact.save('*', resultsPath, resultsName, 7);
 	}
 
 	/**
