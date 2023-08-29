@@ -65641,6 +65641,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
 const core = __importStar(__nccwpck_require__(7117));
+const node_process_1 = __nccwpck_require__(7742);
 const Browsers_1 = __nccwpck_require__(6037);
 class Action {
     constructor(inputs, contexts, spawnSync) {
@@ -65684,7 +65685,7 @@ class Action {
     }
     getEnvVars(cafe, barista) {
         const vars = { CAFE: cafe.cwd };
-        if (barista) {
+        if (node_process_1.env['BARISTA']) {
             vars.BARISTA = barista.cwd;
         }
         return vars;
@@ -66665,6 +66666,14 @@ module.exports = require("net");
 
 "use strict";
 module.exports = require("node:path");
+
+/***/ }),
+
+/***/ 7742:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:process");
 
 /***/ }),
 

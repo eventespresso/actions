@@ -3,6 +3,7 @@ import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
 import * as core from '@actions/core';
+import { env } from 'node:process';
 import { Browsers } from './Browsers';
 
 class Action {
@@ -55,9 +56,9 @@ class Action {
 		this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
 	}
 
-	private getEnvVars(cafe: Context, barista?: Context): EnvVars {
+	private getEnvVars(cafe: Context, barista: Context): EnvVars {
 		const vars: EnvVars = { CAFE: cafe.cwd };
-		if (barista) {
+		if (env['BARISTA']) {
 			vars.BARISTA = barista.cwd;
 		}
 		return vars;
