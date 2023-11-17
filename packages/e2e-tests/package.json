@@ -14,6 +14,10 @@
     "all": "npm run build && npm run format && npm run lint && npm run package"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/zxcvbn": "^4.4.4"
   }
 }
