@@ -18,6 +18,16 @@ inputs:
         type: boolean
         required: false
         default: false
+    gpg_password:
+        description: This value will be used to encrypt artifacts
+        type: string
+        required: false
+        default: ''
+    gpg_cipher:
+        description: Type of cipher to be used for GPG encryption
+        type: string
+        required: false
+        default: AES256
 runs:
     using: node16
     main: dist/index.js

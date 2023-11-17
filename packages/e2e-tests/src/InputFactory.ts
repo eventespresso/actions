@@ -16,6 +16,14 @@ class InputFactory {
 	public skipTests(): boolean {
 		return core.getBooleanInput('skip_tests', { required: false });
 	}
+
+	public gpgPassword(): string {
+		return core.getInput('gpg_password', { required: false });
+	}
+
+	public gpgCipher(): string {
+		return core.getInput('gpg_cipher', { required: false });
+	}
 }
 
 export { InputFactory };
