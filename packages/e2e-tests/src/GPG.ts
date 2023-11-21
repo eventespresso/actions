@@ -4,6 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import zxcvbn from 'zxcvbn';
 import * as core from '@actions/core';
+import { command, logSpawnSyncError } from './utilities';
 
 class GPG {
 	private readonly groupName: string = 'GPG';
@@ -11,30 +12,7 @@ class GPG {
 	constructor(private readonly inputs: InputFactory) {}
 
 	private isInstalled(): boolean {
-		const bin = 'command';
-		const args = ['-v', 'gpg'] as const;
-		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', encoding: 'utf-8', shell: true };
-		const command = child_process.spawnSync(bin, args, options);
-		if (command.status !== 0) {
-			const msg = 'Did not find GPG binary!';
-			this.logSpawnSyncError(command, msg);
-			return false;
-		}
-		return true;
-	}
-
-	private logSpawnSyncError(command: SpawnSyncReturns<string | Buffer>, message?: string): void {
-		core.startGroup(this.groupName);
-		if (message) {
-			core.error(message);
-		}
-		core.error('Stderr: ' + command.stderr);
-		core.error('Signal: ' + command.signal);
-		core.error('Status: ' + command.status);
-		if (command.error) {
-			core.error('Error: ' + command.error.message);
-		}
-		core.endGroup();
+		return command('gpg');
 	}
 
 	/**
@@ -63,10 +41,10 @@ class GPG {
 		}
 		const args = ['--batch', '--decrypt', '--passphrase-fd', '0', '--output', output, input] as const;
 		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', input: password, encoding: 'utf-8' };
-		const gpg = child_process.spawnSync('gpg', args, options);
-		if (gpg.status !== 0) {
-			const msg = `Failed to decrypt GPG file: '${input}' !`;
-			this.logSpawnSyncError(gpg, msg);
+		const command = child_process.spawnSync('gpg', args, options);
+		if (command.status !== 0) {
+			const message = `Failed to decrypt GPG file: '${input}' !`;
+			logSpawnSyncError({ command, message, group: this.groupName });
 			return false;
 		}
 		return true;
@@ -105,10 +83,10 @@ class GPG {
 			input,
 		] as const;
 		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', input: password, encoding: 'utf-8' };
-		const gpg = child_process.spawnSync('gpg', args, options);
-		if (gpg.status !== 0) {
-			const msg = 'GPG encryption has failed!';
-			this.logSpawnSyncError(gpg, msg);
+		const command = child_process.spawnSync('gpg', args, options);
+		if (command.status !== 0) {
+			const message = 'GPG encryption has failed!';
+			logSpawnSyncError({ command, message, group: this.groupName });
 			return false;
 		}
 		return true;
@@ -183,15 +161,15 @@ class GPG {
 	}
 
 	private getSupportedCiphers(): string[] | false {
-		const gpg = child_process.spawnSync('gpg', ['--version'], { stdio: 'pipe', encoding: 'utf-8' });
+		const command = child_process.spawnSync('gpg', ['--version'], { stdio: 'pipe', encoding: 'utf-8' });
 
-		if (gpg.status !== 0) {
-			const msg = 'Failed to get available GPG ciphers!';
-			this.logSpawnSyncError(gpg, msg);
+		if (command.status !== 0) {
+			const message = 'Failed to get available GPG ciphers!';
+			logSpawnSyncError({ command, message, group: this.groupName });
 			return false;
 		}
 
-		const stdoutArray = gpg.stdout.split('\n').filter((s) => s.length > 0);
+		const stdoutArray = command.stdout.split('\n').filter((s) => s.length > 0);
 
 		const ciphersIndex = stdoutArray.findIndex((s) => s.startsWith('Cipher: '));
 
