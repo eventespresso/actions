@@ -17,8 +17,9 @@ class GPG {
 	/**
 	 * @param source Path to encrypted GPG file
 	 * @param target Where to saved decrypted file to (defaults to source minus '.gpg' part)
+	 * @returns Absolute path to decrypted file or `false` on failure
 	 */
-	public decrypt(source: string, target?: string): boolean {
+	public decrypt(source: string, target?: string): string | false {
 		if (!this.isInstalled()) {
 			return false;
 		}
@@ -57,14 +58,15 @@ class GPG {
 			return false;
 		}
 
-		return true;
+		return output;
 	}
 
 	/**
 	 * @param source Path to file (NOT folders) which require encryption
 	 * @param target Where to save the encrypted file (defaults to 'source.gpg')
+	 * @return Absolute path to encrypted file or `false` on failure
 	 */
-	public encrypt(source: string, target?: string): boolean {
+	public encrypt(source: string, target?: string): string | false {
 		if (!this.isInstalled()) {
 			return false;
 		}
@@ -113,7 +115,7 @@ class GPG {
 			return false;
 		}
 
-		return true;
+		return output;
 	}
 
 	private getPath(input: string): string | false {
