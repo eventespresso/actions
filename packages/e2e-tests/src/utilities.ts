@@ -44,3 +44,24 @@ export function logSpawnSyncError({
 		core.endGroup();
 	}
 }
+
+type LogType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
+
+type LogOptions = { type?: LogType; group?: string };
+
+export function log(message: string | string[], options: LogOptions = { type: 'error' }): void {
+	const type = options.type ?? 'error';
+	const group = options.group;
+	if (group) {
+		core.startGroup(group);
+	}
+	if (typeof message === 'string') {
+		core[type](message);
+	}
+	if (Array.isArray(message)) {
+		message.forEach((m) => core[type](m));
+	}
+	if (group) {
+		core.endGroup();
+	}
+}
