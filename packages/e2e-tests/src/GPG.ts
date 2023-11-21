@@ -22,15 +22,20 @@ class GPG {
 		if (!this.isInstalled()) {
 			return false;
 		}
+
 		const password = this.getPassword();
+
 		if (!password) {
 			return false;
 		}
+
 		const input = this.getPath(source);
 		if (!input) {
 			return false;
 		}
+
 		const output = target ? absPath(target) : input.replace('.gpg', '');
+
 		if (fs.existsSync(output)) {
 			core.startGroup(this.groupName);
 			core.error('Cannot decrypt GPG file in-place!');
@@ -38,15 +43,20 @@ class GPG {
 			core.endGroup();
 			return false;
 		}
+
 		const args = ['--batch', '--decrypt', '--passphrase-fd', '0', '--output', output, input] as const;
+
 		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', input: password, encoding: 'utf-8' };
+
 		const command = child_process.spawnSync('gpg', args, options);
 		console.log(command.stdout);
+
 		if (command.status !== 0) {
 			const message = `Failed to decrypt GPG file: '${input}' !`;
 			logSpawnSyncError({ command, message, group: this.groupName });
 			return false;
 		}
+
 		return true;
 	}
 
@@ -58,19 +68,27 @@ class GPG {
 		if (!this.isInstalled()) {
 			return false;
 		}
+
 		const password = this.getPassword();
+
 		if (!password) {
 			return false;
 		}
+
 		const cipher = this.getCipher();
+
 		if (!cipher) {
 			return false;
 		}
+
 		const input = this.getPath(source);
+
 		if (!input) {
 			return false;
 		}
+
 		const output = target ? absPath(target) : input + '.gpg';
+
 		const args = [
 			'--batch',
 			'--symmetric',
@@ -82,14 +100,19 @@ class GPG {
 			output,
 			input,
 		] as const;
+
 		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', input: password, encoding: 'utf-8' };
+
 		const command = child_process.spawnSync('gpg', args, options);
+
 		console.log(command.stdout);
+
 		if (command.status !== 0) {
 			const message = 'GPG encryption has failed!';
 			logSpawnSyncError({ command, message, group: this.groupName });
 			return false;
 		}
+
 		return true;
 	}
 
@@ -118,13 +141,16 @@ class GPG {
 
 	private getPassword(): string | false {
 		const password = this.inputs.gpgPassword();
+
 		if (password.length === 0) {
 			core.startGroup(this.groupName);
 			core.error(`Missing value for input 'password' !`);
 			core.endGroup();
 			return false;
 		}
+
 		const strength = zxcvbn(password);
+
 		if (strength.score < 3) {
 			core.startGroup(this.groupName);
 			strength.feedback.suggestions.forEach((s) => core.notice(s));
@@ -132,6 +158,7 @@ class GPG {
 			core.endGroup();
 			return false;
 		}
+
 		return password;
 	}
 
