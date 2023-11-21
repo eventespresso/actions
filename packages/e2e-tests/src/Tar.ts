@@ -12,8 +12,9 @@ class Tar {
 	/**
 	 * @param files Files to be tarballed
 	 * @param tarball Path to the (newly) created tarball
+	 * @returns Absolute path to tarball file or `false` on failure
 	 */
-	public create(files: string | string[], tarball?: string): boolean {
+	public create(files: string | string[], tarball?: string): string | false {
 		if (!this.isInstalled()) {
 			return false;
 		}
@@ -50,7 +51,7 @@ class Tar {
 			return false;
 		}
 
-		return true;
+		return output;
 	}
 
 	private getTarballPath(files: string | string[], archive?: string): string | false {
@@ -90,8 +91,9 @@ class Tar {
 	/**
 	 * @param tarball Path to tarball
 	 * @param directory Specify output directory (optional, see --directory)
+	 * @returns Absolute path to extraction path or `false` on failure
 	 */
-	public extract(tarball: string, directory?: string): boolean {
+	public extract(tarball: string, directory?: string): string | false {
 		if (!this.isInstalled()) {
 			return false;
 		}
@@ -124,7 +126,7 @@ class Tar {
 			return false;
 		}
 
-		return true;
+		return output;
 	}
 }
 
