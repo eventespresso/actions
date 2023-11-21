@@ -1,4 +1,5 @@
 import path from 'node:path';
+import process from 'node:process';
 import * as core from '@actions/core';
 import child_process, { type SpawnSyncReturns, type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 
@@ -71,5 +72,13 @@ export function absPath(source: string): string {
 	if (path.isAbsolute(source)) {
 		return source;
 	}
-	return path.resolve(__dirname, source);
+	return path.resolve(cwd(), source);
+}
+
+/**
+ * Return current working directory of the command line
+ * @link https://stackoverflow.com/a/12239689/4343719
+ */
+export function cwd(): string {
+	return process.cwd();
 }
