@@ -1,3 +1,4 @@
+import path from 'node:path';
 import * as core from '@actions/core';
 import child_process, { type SpawnSyncReturns, type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 
@@ -64,4 +65,11 @@ export function log(message: string | string[], options: LogOptions = { type: 'e
 	if (group) {
 		core.endGroup();
 	}
+}
+
+export function absPath(source: string): string {
+	if (path.isAbsolute(source)) {
+		return source;
+	}
+	return path.resolve(__dirname, source);
 }

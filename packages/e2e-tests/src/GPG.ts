@@ -1,10 +1,9 @@
 import { InputFactory } from './InputFactory';
-import child_process, { type SpawnSyncReturns, type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
-import path from 'node:path';
+import child_process, { type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 import fs from 'node:fs';
 import zxcvbn from 'zxcvbn';
 import * as core from '@actions/core';
-import { command, logSpawnSyncError } from './utilities';
+import { absPath, command, logSpawnSyncError } from './utilities';
 
 class GPG {
 	private readonly groupName: string = 'GPG';
@@ -31,7 +30,7 @@ class GPG {
 		if (!input) {
 			return false;
 		}
-		const output = target ? this.normalizePath(target) : input.replace('.gpg', '');
+		const output = target ? absPath(target) : input.replace('.gpg', '');
 		if (fs.existsSync(output)) {
 			core.startGroup(this.groupName);
 			core.error('Cannot decrypt GPG file in-place!');
@@ -70,7 +69,7 @@ class GPG {
 		if (!input) {
 			return false;
 		}
-		const output = target ? this.normalizePath(target) : input + '.gpg';
+		const output = target ? absPath(target) : input + '.gpg';
 		const args = [
 			'--batch',
 			'--symmetric',
@@ -93,16 +92,16 @@ class GPG {
 	}
 
 	private getPath(input: string): string | false {
-		const absPath = this.normalizePath(input);
-		if (!this.checkPath(absPath)) {
+		const p = absPath(input);
+		if (!this.checkPath(p)) {
 			core.startGroup(this.groupName);
 			core.error('Given input path does not exist!');
 			core.error('Raw input: ' + input);
-			core.error('Absolute path: ' + absPath);
+			core.error('Absolute path: ' + p);
 			core.endGroup();
 			return false;
 		}
-		return absPath;
+		return p;
 	}
 
 	private checkPath(path: string): boolean {
@@ -113,13 +112,6 @@ class GPG {
 			return false;
 		}
 		return true;
-	}
-
-	private normalizePath(source: string): string {
-		if (path.isAbsolute(source)) {
-			return source;
-		}
-		return path.resolve(__dirname, source);
 	}
 
 	private getPassword(): string | false {
