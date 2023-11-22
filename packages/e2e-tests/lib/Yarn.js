@@ -38,11 +38,13 @@ const path = __importStar(require("path"));
 const core = __importStar(require("@actions/core"));
 const glob = __importStar(require("@actions/glob"));
 class Yarn {
-    constructor(repo, spawnSync, cache, artifact) {
+    constructor(repo, spawnSync, cache, artifact, tar, gpg) {
         this.repo = repo;
         this.spawnSync = spawnSync;
         this.cache = cache;
         this.artifact = artifact;
+        this.tar = tar;
+        this.gpg = gpg;
     }
     install({ frozenLockfile }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -82,18 +84,33 @@ class Yarn {
             return this;
         });
     }
+    saveArtifact(file, report) {
+        const tarball = this.tar.create(file);
+        if (!tarball) {
+            return false;
+        }
+        const gpg = this.gpg.encrypt(tarball);
+        if (!gpg) {
+            return false;
+        }
+        const fileName = path.basename(gpg);
+        const rootDir = path.dirname(gpg);
+        return this.artifact.save(fileName, rootDir, report.name, report.expiry);
+    }
     saveReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
             // include workflow # as well as attempt # in the report (artifact) filename
-            const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
-            return yield this.artifact.save('*', reportPath, reportName, 7);
+            const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+            const expiry = 7; // days
+            return this.saveArtifact(reportPath, { name, expiry });
         });
     }
     saveTestResults(resultsPath) {
         return __awaiter(this, void 0, void 0, function* () {
             // include workflow # as well as attempt # in results (artifact) filename
-            const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
-            return yield this.artifact.save('*', resultsPath, resultsName, 7);
+            const name = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+            const expiry = 7; // days
+            return this.saveArtifact(resultsPath, { name, expiry });
         });
     }
     /**

@@ -38,5 +38,11 @@ class InputFactory {
     skipTests() {
         return core.getBooleanInput('skip_tests', { required: false });
     }
+    gpgPassword() {
+        return core.getInput('gpg_password', { required: false });
+    }
+    gpgCipher() {
+        return core.getInput('gpg_cipher', { required: false });
+    }
 }
 exports.InputFactory = InputFactory;
