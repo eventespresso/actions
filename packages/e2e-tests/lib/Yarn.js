@@ -102,7 +102,7 @@ class Yarn {
             // include workflow # as well as attempt # in the report (artifact) filename
             const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             const expiry = 7; // days
-            return this.saveArtifact(reportPath, { name, expiry });
+            return yield this.saveArtifact(reportPath, { name, expiry });
         });
     }
     saveTestResults(resultsPath) {
@@ -110,7 +110,7 @@ class Yarn {
             // include workflow # as well as attempt # in results (artifact) filename
             const name = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             const expiry = 7; // days
-            return this.saveArtifact(resultsPath, { name, expiry });
+            return yield this.saveArtifact(resultsPath, { name, expiry });
         });
     }
     /**

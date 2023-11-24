@@ -68416,12 +68416,10 @@ class Tar {
             if (archive) {
                 return (0, utilities_1.absPath)(archive);
             }
-            if (!archive) {
-                (0, utilities_1.log)('When supplying an array of files to tar, need to explicitly set archive file name!', {
-                    group: this.group,
-                });
-                return false;
-            }
+            (0, utilities_1.log)('When supplying an array of files to tar, need to explicitly set archive file name!', {
+                group: this.group,
+            });
+            return false;
         }
         (0, utilities_1.log)(`Tar received unsupported data type for argument 'files': ${typeof files} \nOnly supported: string, array!`, { group: this.group });
         return false;
@@ -68569,7 +68567,7 @@ class Yarn {
             // include workflow # as well as attempt # in the report (artifact) filename
             const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             const expiry = 7; // days
-            return this.saveArtifact(reportPath, { name, expiry });
+            return yield this.saveArtifact(reportPath, { name, expiry });
         });
     }
     saveTestResults(resultsPath) {
@@ -68577,7 +68575,7 @@ class Yarn {
             // include workflow # as well as attempt # in results (artifact) filename
             const name = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
             const expiry = 7; // days
-            return this.saveArtifact(resultsPath, { name, expiry });
+            return yield this.saveArtifact(resultsPath, { name, expiry });
         });
     }
     /**
