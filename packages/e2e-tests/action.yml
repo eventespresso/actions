@@ -18,7 +18,7 @@ inputs:
         type: boolean
         required: false
         default: false
-    gpg_password:
+    e2e_gpg_password: # prefixed with e2e_ since org level secret
         description: This value will be used to encrypt artifacts
         type: string
         required: false

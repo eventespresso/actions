@@ -18,7 +18,7 @@ class InputFactory {
 	}
 
 	public gpgPassword(): string {
-		return core.getInput('gpg_password', { required: false });
+		return core.getInput('e2e_gpg_password', { required: false });
 	}
 
 	public gpgCipher(): string {
