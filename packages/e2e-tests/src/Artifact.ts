@@ -14,7 +14,7 @@ class Artifact {
 	/**
 	 * Save given files/folders as an GitHub artifact
 	 * @param input A path or an array of paths to files or directories
-	 * @parma workDir Working directory (absolute path) from where files/folders are upload (parent directory for the given input)
+	 * @param workDir Working directory (absolute path) from where files/folders are uploaded from (parent directory of the given input)
 	 * @param name Name under which artifact will be saved
 	 * @param days For how many days artifact will be kept
 	 * @returns True if artifact was saved and false otherwise

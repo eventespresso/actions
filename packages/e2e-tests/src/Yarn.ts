@@ -7,13 +7,17 @@ import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 import { EnvVars } from './Action';
 import { Artifact } from './Artifact';
+import { Tar } from './Tar';
+import { GPG } from './GPG';
 
 class Yarn {
 	constructor(
 		private readonly repo: Repository,
 		private readonly spawnSync: SpawnSync,
 		private readonly cache: Cache,
-		private readonly artifact: Artifact
+		private readonly artifact: Artifact,
+		private readonly tar: Tar,
+		private readonly gpg: GPG
 	) {}
 
 	public async install({ frozenLockfile }: { frozenLockfile: boolean }): Promise<Yarn> {
@@ -65,18 +69,45 @@ class Yarn {
 		return this;
 	}
 
+	private saveArtifact(
+		file: string,
+		report: {
+			name: string;
+			expiry: number; // in days
+		}
+	): boolean | Promise<boolean> {
+		const tarball = this.tar.create(file);
+
+		if (!tarball) {
+			return false;
+		}
+
+		const gpg = this.gpg.encrypt(tarball);
+
+		if (!gpg) {
+			return false;
+		}
+
+		const fileName = path.basename(gpg);
+		const rootDir = path.dirname(gpg);
+
+		return this.artifact.save(fileName, rootDir, report.name, report.expiry);
+	}
+
 	private async saveReport(reportPath: string): Promise<boolean> {
 		// include workflow # as well as attempt # in the report (artifact) filename
-		const reportName = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+		const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+		const expiry = 7; // days
 
-		return await this.artifact.save('*', reportPath, reportName, 7);
+		return await this.saveArtifact(reportPath, { name, expiry });
 	}
 
 	private async saveTestResults(resultsPath: string): Promise<boolean> {
 		// include workflow # as well as attempt # in results (artifact) filename
-		const resultsName = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+		const name = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
+		const expiry = 7; // days
 
-		return await this.artifact.save('*', resultsPath, resultsName, 7);
+		return await this.saveArtifact(resultsPath, { name, expiry });
 	}
 
 	/**
