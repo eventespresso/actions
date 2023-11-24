@@ -99,7 +99,7 @@ class Yarn {
 		const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 		const expiry = 7; // days
 
-		return this.saveArtifact(reportPath, { name, expiry });
+		return await this.saveArtifact(reportPath, { name, expiry });
 	}
 
 	private async saveTestResults(resultsPath: string): Promise<boolean> {
@@ -107,7 +107,7 @@ class Yarn {
 		const name = `playwright-test-results-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 		const expiry = 7; // days
 
-		return this.saveArtifact(resultsPath, { name, expiry });
+		return await this.saveArtifact(resultsPath, { name, expiry });
 	}
 
 	/**

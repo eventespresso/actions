@@ -73,12 +73,10 @@ class Tar {
 			if (archive) {
 				return absPath(archive);
 			}
-			if (!archive) {
-				log('When supplying an array of files to tar, need to explicitly set archive file name!', {
-					group: this.group,
-				});
-				return false;
-			}
+			log('When supplying an array of files to tar, need to explicitly set archive file name!', {
+				group: this.group,
+			});
+			return false;
 		}
 
 		log(
