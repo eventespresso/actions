@@ -3,7 +3,6 @@ import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
 import * as core from '@actions/core';
-import { env } from 'node:process';
 import { Browsers } from './Browsers';
 
 class Action {
@@ -58,7 +57,8 @@ class Action {
 
 	private getEnvVars(cafe: Context, barista: Context): EnvVars {
 		const vars: EnvVars = { CAFE: cafe.cwd };
-		if (env['BARISTA']) {
+		const baristaBranch = this.inputs.baristaBranch();
+		if (baristaBranch.length > 0) {
 			vars.BARISTA = barista.cwd;
 		}
 		return vars;

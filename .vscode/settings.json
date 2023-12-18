@@ -12,6 +12,6 @@
 		"**/lib": true
 	},
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": false
+		"source.organizeImports": "never"
 	}
 }
