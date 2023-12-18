@@ -34,7 +34,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
 const core = __importStar(require("@actions/core"));
-const node_process_1 = require("node:process");
 const Browsers_1 = require("./Browsers");
 class Action {
     constructor(inputs, contexts, spawnSync) {
@@ -78,7 +77,8 @@ class Action {
     }
     getEnvVars(cafe, barista) {
         const vars = { CAFE: cafe.cwd };
-        if (node_process_1.env['BARISTA']) {
+        const baristaBranch = this.inputs.baristaBranch();
+        if (baristaBranch.length > 0) {
             vars.BARISTA = barista.cwd;
         }
         return vars;
