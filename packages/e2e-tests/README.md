@@ -10,6 +10,10 @@ This action makes it trivial to run end-to-end tests for Event Espresso product 
 | `barista_repo_branch`   | Which branch to use for Barista repository?   | string  |          |
 | `e2e_tests_repo_branch` | Which branch to use for E2E Tests repository? | string  |    \*    |
 | `skip_tests`            | Should E2E tests be skipped?                  | boolean |          |
+| `gpg_password`          | Password used to encrypt Playwright artifacts | string  |   \*\*   |
+| `gpg_cipher`            | Type of cipher to be used for GPG encryption  | string  |          |
+
+\*\* Without a password, Playwright artifacts will not be uploaded to prevent exposure of sensitive information but it will _not_ prevent test runner from completing successfully
 
 ## Example Workflow File
 
@@ -41,4 +45,6 @@ jobs:
                   cafe_repo_branch: DEV
                   barista_repo_branch: master
                   e2e_tests_repo_branch: master
+                  gpg_password: ${{ secrets.E2E_GPG_PASSWORD }}
+                  gpg_cipher: AES256
 ```
