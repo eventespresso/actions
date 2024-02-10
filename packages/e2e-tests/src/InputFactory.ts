@@ -24,6 +24,19 @@ class InputFactory {
 	public gpgCipher(): string {
 		return core.getInput('gpg_cipher', { required: false });
 	}
+
+	public ddevVersion(): string | undefined {
+		const version = core.getInput('ddev_version', { required: false });
+		if (!version) {
+			return; // "Returns an empty string if the value is not defined."
+		}
+		const pattern = /([^\d\.]+)/;
+		const regex = new RegExp(pattern);
+		if (regex.test(version)) {
+			throw new Error('Use of wrong format for DDEV version!');
+		}
+		return version;
+	}
 }
 
 export { InputFactory };

@@ -4,14 +4,15 @@ This action makes it trivial to run end-to-end tests for Event Espresso product 
 
 ## Input
 
-| Name                    | Description                                   | Type    | Required |
-| ----------------------- | --------------------------------------------- | ------- | :------: |
-| `cafe_repo_branch`      | Which branch to use for Cafe repository?      | string  |    \*    |
-| `barista_repo_branch`   | Which branch to use for Barista repository?   | string  |          |
-| `e2e_tests_repo_branch` | Which branch to use for E2E Tests repository? | string  |    \*    |
-| `skip_tests`            | Should E2E tests be skipped?                  | boolean |          |
-| `gpg_password`          | Password used to encrypt Playwright artifacts | string  |   \*\*   |
-| `gpg_cipher`            | Type of cipher to be used for GPG encryption  | string  |          |
+| Name                    | Description                                              | Type    | Required |
+| ----------------------- | -------------------------------------------------------- | ------- | :------: |
+| `cafe_repo_branch`      | Which branch to use for Cafe repository?                 | string  |    \*    |
+| `barista_repo_branch`   | Which branch to use for Barista repository?              | string  |          |
+| `e2e_tests_repo_branch` | Which branch to use for E2E Tests repository?            | string  |    \*    |
+| `skip_tests`            | Should E2E tests be skipped?                             | boolean |          |
+| `gpg_password`          | Password used to encrypt Playwright artifacts            | string  |   \*\*   |
+| `gpg_cipher`            | Type of cipher to be used for GPG encryption             | string  |          |
+| `ddev_version`          | Which version of DDEV to use? Defaults to latest version | string  |          |
 
 \*\* Without a password, Playwright artifacts will not be uploaded to prevent exposure of sensitive information but it will _not_ prevent test runner from completing successfully
 
