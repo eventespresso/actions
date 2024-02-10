@@ -30,7 +30,7 @@ class InputFactory {
 		if (!version) {
 			return; // "Returns an empty string if the value is not defined."
 		}
-		const pattern = /([^\d\.]+)/;
+		const pattern = /([^\d.]+)/;
 		const regex = new RegExp(pattern);
 		if (regex.test(version)) {
 			throw new Error('Use of wrong format for DDEV version!');
