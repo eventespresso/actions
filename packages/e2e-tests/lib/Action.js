@@ -70,10 +70,23 @@ class Action {
         core.info('Installing mkcert');
         this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
     }
+    getDdevVersion() {
+        const version = this.inputs.ddevVersion();
+        if (!version) {
+            return;
+        }
+        return 'v' + version;
+    }
     ddev() {
         core.info('Installing DDEV');
         const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-        this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
+        const bashArgs = [];
+        const ddevVersion = this.getDdevVersion();
+        if (ddevVersion) {
+            bashArgs.push('-s');
+            bashArgs.push(ddevVersion);
+        }
+        this.spawnSync.call('bash', bashArgs, { stdin: 'pipe', input: curl.stdout });
     }
     getEnvVars(cafe, barista) {
         const vars = { CAFE: cafe.cwd };

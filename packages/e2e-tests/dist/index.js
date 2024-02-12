@@ -67369,10 +67369,23 @@ class Action {
         core.info('Installing mkcert');
         this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
     }
+    getDdevVersion() {
+        const version = this.inputs.ddevVersion();
+        if (!version) {
+            return;
+        }
+        return 'v' + version;
+    }
     ddev() {
         core.info('Installing DDEV');
         const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-        this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
+        const bashArgs = [];
+        const ddevVersion = this.getDdevVersion();
+        if (ddevVersion) {
+            bashArgs.push('-s');
+            bashArgs.push(ddevVersion);
+        }
+        this.spawnSync.call('bash', bashArgs, { stdin: 'pipe', input: curl.stdout });
     }
     getEnvVars(cafe, barista) {
         const vars = { CAFE: cafe.cwd };
@@ -68137,6 +68150,18 @@ class InputFactory {
     }
     gpgCipher() {
         return core.getInput('gpg_cipher', { required: false });
+    }
+    ddevVersion() {
+        const version = core.getInput('ddev_version', { required: false });
+        if (!version) {
+            return; // "Returns an empty string if the value is not defined."
+        }
+        const pattern = /([^\d.]+)/;
+        const regex = new RegExp(pattern);
+        if (regex.test(version)) {
+            throw new Error('Use of wrong format for DDEV version!');
+        }
+        return version;
     }
 }
 exports.InputFactory = InputFactory;
