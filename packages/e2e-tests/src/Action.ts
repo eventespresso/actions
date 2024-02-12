@@ -49,10 +49,24 @@ class Action {
 		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
 	}
 
+	private getDdevVersion(): string | undefined {
+		const version = this.inputs.ddevVersion();
+		if (!version) {
+			return;
+		}
+		return 'v' + version;
+	}
+
 	private ddev(): void {
 		core.info('Installing DDEV');
 		const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
-		this.spawnSync.call('bash', [], { stdin: 'pipe', input: curl.stdout });
+		const bashArgs: string[] = [];
+		const ddevVersion = this.getDdevVersion();
+		if (ddevVersion) {
+			bashArgs.push('-s');
+			bashArgs.push(ddevVersion);
+		}
+		this.spawnSync.call('bash', bashArgs, { stdin: 'pipe', input: curl.stdout });
 	}
 
 	private getEnvVars(cafe: Context, barista: Context): EnvVars {

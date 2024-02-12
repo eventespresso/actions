@@ -28,6 +28,10 @@ inputs:
         type: string
         required: false
         default: AES256
+    ddev_version:
+        description: Which version of DDEV to use?
+        type: string
+        required: false
 runs:
     using: node16
     main: dist/index.js
