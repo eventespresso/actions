@@ -6,6 +6,7 @@ import { Artifact } from './Artifact';
 import { Tar } from './Tar';
 import { GPG } from './GPG';
 import { error, log } from './utilities';
+import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -58,6 +59,8 @@ class Yarn {
 
 		const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
 			env,
+			noAnnotation: true,
+			noException: true,
 		});
 
 		// if docker cache will become available, save should be called here
@@ -65,6 +68,7 @@ class Yarn {
 		if (buffer.status !== 0) {
 			await this.saveHtmlReport(htmlReportPath);
 			await this.saveTestResults(resultsPath);
+			core.setFailed('End-to-end tests did not pass successfully!');
 		}
 
 		return this;
