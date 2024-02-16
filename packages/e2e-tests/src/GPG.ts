@@ -4,6 +4,7 @@ import zxcvbn from 'zxcvbn';
 import child_process, { type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 import fs from 'node:fs';
 
+// LATER: refactor to use SpawnSync.ts for improved error handling
 class GPG {
 	constructor(private readonly inputs: InputFactory) {}
 

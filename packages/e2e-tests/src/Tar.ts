@@ -2,6 +2,7 @@ import { absPath, command, cwd, log, error, errorForSpawnSync } from './utilitie
 import child_process from 'node:child_process';
 import fs from 'node:fs';
 
+// LATER: refactor to use SpawnSync.ts for improved error handling
 class Tar {
 	private isInstalled(): boolean {
 		return command('tar');

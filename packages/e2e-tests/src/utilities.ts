@@ -10,6 +10,7 @@ import child_process, { type SpawnSyncReturns, type SpawnSyncOptionsWithStringEn
  * @param group GitHub notice group (optional)
  * @returns
  */
+// LATER: refactor to use SpawnSync.ts for improved error handling
 export function command(binary: string): boolean {
 	const bin = 'command';
 	const args = ['-v', binary] as const;
