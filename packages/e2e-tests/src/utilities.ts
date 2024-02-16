@@ -21,7 +21,10 @@ export function command(binary: string, group?: string): boolean {
 	return true;
 }
 
-export function logSpawnSyncError({
+/**
+ * Create GitHub notice for the return of command() function
+ */
+export function noticeForCommand({
 	command,
 	group,
 	message,
@@ -47,11 +50,15 @@ export function logSpawnSyncError({
 	}
 }
 
-type LogType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
+type NoticeType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
 
-type LogOptions = { type?: LogType; group?: string };
+type NoticeOptions = { type?: NoticeType; group?: string };
 
-export function log(message: string | string[], options: LogOptions = { type: 'error' }): void {
+/**
+ * Create a GitHub notice
+ * @link https://github.com/actions/toolkit/tree/main/packages/core#logging
+ */
+export function notice(message: string | string[], options: NoticeOptions = { type: 'error' }): void {
 	const type = options.type ?? 'error';
 	const group = options.group;
 	if (group) {
@@ -81,4 +88,74 @@ export function absPath(source: string): string {
  */
 export function cwd(): string {
 	return process.cwd();
+}
+
+type LogType = keyof Pick<typeof console, 'error' | 'info' | 'log' | 'warn'>;
+
+/**
+ * Flatten given string or an array of strings using newline as a glue
+ */
+function string(string: string | string[]): string {
+	return Array.isArray(string) ? string.join('\n') : string;
+}
+
+function _log(message: string | string[], type: LogType): void {
+	console[type](string(message));
+}
+
+export function error(...message: string[]): void {
+	_log(message, 'error');
+}
+
+export function info(...message: string[]): void {
+	_log(message, 'info');
+}
+
+export function log(...message: string[]): void {
+	_log(message, 'log');
+}
+
+export function warn(...message: string[]): void {
+	_log(message, 'warn');
+}
+
+/**
+ * Convert output of command() function to a log message (single string)
+ */
+function commandToString(command: SpawnSyncReturns<string | Buffer>): string {
+	const array: string[] = [];
+	const stderr = command.stderr.toString();
+	if (stderr.length) {
+		array.push('Stderr: ' + command.stderr.toString());
+	}
+	const stdout = command.stdout.toString();
+	if (stdout.length) {
+		array.push('Stdout: ' + stdout);
+	}
+	if (command.error) {
+		array.push(command.error.name + ': ' + command.error.message);
+	}
+	if (command.signal) {
+		array.push('Signal used to kill the subprocess: ' + command.signal.toString());
+	}
+	if (command.status) {
+		array.push('Exit code of the subprocess: ' + command.status.toString());
+	}
+	return string(array);
+}
+
+export function errorForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
+	error(string(message), commandToString(spawnSync));
+}
+
+export function infoForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
+	info(string(message), commandToString(spawnSync));
+}
+
+export function logForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
+	log(string(message), commandToString(spawnSync));
+}
+
+export function warnForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, message: string[]): void {
+	warn(string(message), commandToString(spawnSync));
 }
