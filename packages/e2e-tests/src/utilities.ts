@@ -22,35 +22,6 @@ export function command(binary: string): boolean {
 	return true;
 }
 
-/**
- * Create GitHub annotation for the return of spawnSync() function
- */
-export function annotationForSpawnSync({
-	command,
-	group,
-	message,
-}: {
-	group?: string;
-	message?: string;
-	command: SpawnSyncReturns<string | Buffer>;
-}): void {
-	if (group) {
-		core.startGroup(group);
-	}
-	if (message) {
-		core.error(message);
-	}
-	core.error('Stderr: ' + command.stderr);
-	core.error('Signal: ' + command.signal);
-	core.error('Status: ' + command.status);
-	if (command.error) {
-		core.error('Error: ' + command.error.message);
-	}
-	if (group) {
-		core.endGroup();
-	}
-}
-
 type NoticeType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
 
 type NoticeOptions = { type?: NoticeType; group?: string };
