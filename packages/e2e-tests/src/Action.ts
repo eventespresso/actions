@@ -53,7 +53,7 @@ class Action {
 		const repos: InstanceType<typeof Repository>[] = contexts.map((context) => {
 			return context.repo;
 		});
-		core.summary.addHeading('Git information');
+		core.summary.addHeading('Git information', 2);
 		core.summary.addTable([
 			[
 				{ data: 'Repo', header: true },
