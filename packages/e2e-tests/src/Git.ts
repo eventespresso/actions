@@ -1,7 +1,7 @@
 import { Cache } from './Cache';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
-import { log, error, notice } from './utilities';
+import { log, error, annotation } from './utilities';
 
 class Git {
 	private readonly spawnSync: SpawnSync;
@@ -61,7 +61,7 @@ class Git {
 				'Remote refs: ' + git.stdout,
 				'Commit sha: ' + sha
 			);
-			notice(
+			annotation(
 				'Failed to obtain the latest git commit sha for the given repository and branch! (click for more details)'
 			);
 			throw new Error();

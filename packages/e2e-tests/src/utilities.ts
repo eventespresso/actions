@@ -23,9 +23,9 @@ export function command(binary: string): boolean {
 }
 
 /**
- * Create GitHub notice for the return of spawnSync() function
+ * Create GitHub annotation for the return of spawnSync() function
  */
-export function noticeForSpawnSync({
+export function annotationForSpawnSync({
 	command,
 	group,
 	message,
@@ -56,10 +56,10 @@ type NoticeType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error
 type NoticeOptions = { type?: NoticeType; group?: string };
 
 /**
- * Create a GitHub notice
+ * Create a GitHub annotation
  * @link https://github.com/actions/toolkit/tree/main/packages/core#logging
  */
-export function notice(message: string | string[], options: NoticeOptions = { type: 'error' }): void {
+export function annotation(message: string | string[], options: NoticeOptions = { type: 'error' }): void {
 	const type = options.type ?? 'error';
 	const group = options.group;
 	if (group) {

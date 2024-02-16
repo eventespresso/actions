@@ -1,4 +1,4 @@
-import { error, notice } from './utilities';
+import { error, annotation } from './utilities';
 import * as os from 'node:os';
 import * as fs from 'node:fs';
 import * as Path from 'node:path';
@@ -34,7 +34,7 @@ class Repository {
 	private checkPathAvailable(path: string): void {
 		if (fs.existsSync(path)) {
 			error(`Cannot perform 'git clone' as the destination path already exists!`, 'Path: ' + path);
-			notice('Cannot clone repository! (click for more details)');
+			annotation('Cannot clone repository! (click for more details)');
 			throw new Error();
 		}
 	}
