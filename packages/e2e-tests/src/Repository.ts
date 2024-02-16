@@ -1,7 +1,7 @@
-import * as os from 'os';
-import * as fs from 'fs';
-import * as Path from 'path';
-import * as core from '@actions/core';
+import { error, notice } from './utilities';
+import * as os from 'node:os';
+import * as fs from 'node:fs';
+import * as Path from 'node:path';
 
 type Parameters = {
 	name: string;
@@ -33,7 +33,9 @@ class Repository {
 
 	private checkPathAvailable(path: string): void {
 		if (fs.existsSync(path)) {
-			core.setFailed(`Given path already exists: \n${path}`);
+			error(`Cannot perform 'git clone' as the destination path already exists!`, 'Path: ' + path);
+			notice('Cannot clone repository! (click for more details)');
+			throw new Error();
 		}
 	}
 
