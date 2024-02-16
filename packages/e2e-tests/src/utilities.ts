@@ -99,15 +99,37 @@ export function warn(...message: string[]): void {
 }
 
 /**
+ * Make sure stderr is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstderr
+ */
+function stderrToString(stderr: SpawnSyncReturns<string | Buffer>['stderr']): string {
+	if (!stderr) {
+		return '';
+	}
+	return stderr.toString();
+}
+
+/**
+ * Make sure stdout is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstdout
+ */
+function stdoutToString(stdout: SpawnSyncReturns<string | Buffer>['stdout']): string {
+	if (!stdout) {
+		return '';
+	}
+	return stdout.toString();
+}
+
+/**
  * Convert output of command() function to a log message (single string)
  */
 function spawnSyncToString(spawnSync: SpawnSyncReturns<string | Buffer>): string {
 	const array: string[] = [];
-	const stderr = spawnSync.stderr.toString();
+	const stderr = stderrToString(spawnSync.stderr);
 	if (stderr.length) {
 		array.push('Stderr: ' + spawnSync.stderr.toString());
 	}
-	const stdout = spawnSync.stdout.toString();
+	const stdout = stdoutToString(spawnSync.stdout);
 	if (stdout.length) {
 		array.push('Stdout: ' + stdout);
 	}
