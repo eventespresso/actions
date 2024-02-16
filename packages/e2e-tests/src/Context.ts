@@ -1,10 +1,9 @@
-import { IOType } from 'child_process';
 import { Cache } from './Cache';
 import { SpawnSync, ExecSyncInterface } from './SpawnSync';
 import { Git } from './Git';
 import { Repository } from './Repository';
 import { Yarn } from './Yarn';
-import type { SpawnSyncOptions, ProcessEnvOptions, SpawnSyncReturns } from 'child_process';
+import type { SpawnSyncOptions, ProcessEnvOptions, SpawnSyncReturns, IOType } from 'child_process';
 
 class Context implements ExecSyncInterface {
 	private readonly spawnSync: SpawnSync;
