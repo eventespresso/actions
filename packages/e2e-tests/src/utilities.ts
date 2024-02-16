@@ -100,46 +100,46 @@ export function warn(...message: string[]): void {
 /**
  * Convert output of command() function to a log message (single string)
  */
-function commandToString(command: SpawnSyncReturns<string | Buffer>): string {
+function spawnSyncToString(spawnSync: SpawnSyncReturns<string | Buffer>): string {
 	const array: string[] = [];
-	const stderr = command.stderr.toString();
+	const stderr = spawnSync.stderr.toString();
 	if (stderr.length) {
-		array.push('Stderr: ' + command.stderr.toString());
+		array.push('Stderr: ' + spawnSync.stderr.toString());
 	}
-	const stdout = command.stdout.toString();
+	const stdout = spawnSync.stdout.toString();
 	if (stdout.length) {
 		array.push('Stdout: ' + stdout);
 	}
-	if (command.error) {
-		array.push(command.error.name + ': ' + command.error.message);
+	if (spawnSync.error) {
+		array.push(spawnSync.error.name + ': ' + spawnSync.error.message);
 	}
-	if (command.signal) {
-		array.push('Signal used to kill the subprocess: ' + command.signal.toString());
+	if (spawnSync.signal) {
+		array.push('Signal used to kill the subprocess: ' + spawnSync.signal.toString());
 	}
-	if (command.status) {
-		array.push('Exit code of the subprocess: ' + command.status.toString());
+	if (spawnSync.status) {
+		array.push('Exit code of the subprocess: ' + spawnSync.status.toString());
 	}
 	return string(array);
 }
 
 export function errorForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
-	error(string(message), commandToString(spawnSync));
+	error(string(message), spawnSyncToString(spawnSync));
 }
 
 /**
  * Alias for logForSpawnSync()
  */
 export function infoForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
-	info(string(message), commandToString(spawnSync));
+	info(string(message), spawnSyncToString(spawnSync));
 }
 
 export function logForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
-	log(string(message), commandToString(spawnSync));
+	log(string(message), spawnSyncToString(spawnSync));
 }
 
 /**
  * Alias for errorForSpawnSync()
  */
 export function warnForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, message: string[]): void {
-	warn(string(message), commandToString(spawnSync));
+	warn(string(message), spawnSyncToString(spawnSync));
 }
