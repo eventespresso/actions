@@ -3,19 +3,20 @@ import process from 'node:process';
 import * as core from '@actions/core';
 import child_process, { type SpawnSyncReturns, type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 
-export function command(binary: string, group?: string): boolean {
+/**
+ * Check if the given binary is installed
+ * @link https://askubuntu.com/questions/512770/what-is-the-bash-command-command
+ * @param binary Absolute path to a binary file
+ * @param group GitHub notice group (optional)
+ * @returns
+ */
+export function command(binary: string): boolean {
 	const bin = 'command';
 	const args = ['-v', binary] as const;
 	const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', encoding: 'utf-8', shell: true };
 	const command = child_process.spawnSync(bin, args, options);
 	if (command.status !== 0) {
-		if (group) {
-			core.startGroup(group);
-		}
-		core.error(`Did not find installed binary for '${binary}'!`);
-		if (group) {
-			core.endGroup();
-		}
+		error(`Did not find installed binary for '${binary}'!`);
 		return false;
 	}
 	return true;
