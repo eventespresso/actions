@@ -1,8 +1,7 @@
 import { Cache } from './Cache';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
-import { log } from './utilities';
-import * as core from '@actions/core';
+import { log, error, notice } from './utilities';
 
 class Git {
 	private readonly spawnSync: SpawnSync;
@@ -55,9 +54,16 @@ class Git {
 		const sha = cut.stdout;
 
 		if (!sha || sha.length === 0) {
-			core.setFailed(
-				`Failed to obtain latest commit sha for repository '${this.repo.name}' for branch '${this.repo.branch}' \ngit refs: \n${git.stdout} \ncut outcome: ${sha}`
+			error(
+				'Details of the git parameters:',
+				'Repository: ' + this.repo.name,
+				'Branch: ' + this.repo.branch,
+				'Remote refs: ' + git.stdout,
+				'Commit sha: ' + sha
 			);
+			const message = 'Failed to obtain the latest git  commit sha for the given repository and branch!';
+			notice(message + ' (click for more details)');
+			throw new Error(message);
 		}
 
 		return sha;
