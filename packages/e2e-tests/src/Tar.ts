@@ -43,7 +43,7 @@ class Tar {
 			encoding: 'utf-8',
 		});
 
-		log(command.stdout);
+		log('Successfully created tarball:', command.stdout);
 
 		if (command.status !== 0) {
 			errorForSpawnSync(command, 'Could not create tarball!');
@@ -116,7 +116,7 @@ class Tar {
 		);
 
 		if (command.status === 0) {
-			log(command.stdout);
+			log('Successfully extracted tarball files:', command.stdout);
 		}
 
 		if (command.status !== 0) {
