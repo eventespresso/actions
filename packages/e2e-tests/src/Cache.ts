@@ -1,5 +1,5 @@
 import { Repository } from './Repository';
-import { error } from './utilities';
+import { error, notice } from './utilities';
 import * as core from '@actions/core';
 import * as cache from '@actions/cache';
 
@@ -45,10 +45,11 @@ class Cache {
 	private makeKey(key: string): string {
 		// generate contextual key since we are dealing with multiple repositories
 		const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-		if (k.length > 512) {
-			// https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-			const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-			core.setFailed(msg);
+		const limit = 512; // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
+		if (k.length > limit) {
+			const message = `Cache key exceeded length of ${limit} chars: ` + k;
+			notice(message);
+			throw new Error(message);
 		}
 		return k;
 	}
