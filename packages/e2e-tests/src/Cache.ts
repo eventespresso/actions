@@ -1,6 +1,5 @@
 import { Repository } from './Repository';
 import { error, annotation } from './utilities';
-import * as core from '@actions/core';
 import * as cache from '@actions/cache';
 
 class Cache {
@@ -47,9 +46,8 @@ class Cache {
 		const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
 		const limit = 512; // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
 		if (k.length > limit) {
-			const message = `Cache key exceeded length of ${limit} chars: ` + k;
-			annotation(message);
-			throw new Error(message);
+			annotation(`Cache key exceeded length of ${limit} chars: ` + k);
+			throw new Error();
 		}
 		return k;
 	}
