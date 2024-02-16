@@ -71,7 +71,13 @@ class Artifact {
 		const absInput = arrInput.map((i) => this.absPath(i, workDir));
 		const promises = absInput.map((i) => this.inputToFiles(i));
 		const files = await Promise.all(promises);
-		return files.flat();
+		return files.flat().filter((file) => {
+			const exists = fs.existsSync(file);
+			if (!exists) {
+				error('Given artifact file does not exist: ' + file);
+			}
+			return exists;
+		});
 	}
 
 	/**
