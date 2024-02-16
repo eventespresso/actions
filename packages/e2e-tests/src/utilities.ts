@@ -108,6 +108,9 @@ export function error(...message: string[]): void {
 	_log(message, 'error');
 }
 
+/**
+ * Alias for log()
+ */
 export function info(...message: string[]): void {
 	_log(message, 'info');
 }
@@ -116,6 +119,9 @@ export function log(...message: string[]): void {
 	_log(message, 'log');
 }
 
+/**
+ * Alias for error()
+ */
 export function warn(...message: string[]): void {
 	_log(message, 'warn');
 }
@@ -149,6 +155,9 @@ export function errorForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, 
 	error(string(message), commandToString(spawnSync));
 }
 
+/**
+ * Alias for logForSpawnSync()
+ */
 export function infoForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ...message: string[]): void {
 	info(string(message), commandToString(spawnSync));
 }
@@ -157,6 +166,9 @@ export function logForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, ..
 	log(string(message), commandToString(spawnSync));
 }
 
+/**
+ * Alias for errorForSpawnSync()
+ */
 export function warnForSpawnSync(spawnSync: SpawnSyncReturns<string | Buffer>, message: string[]): void {
 	warn(string(message), commandToString(spawnSync));
 }
