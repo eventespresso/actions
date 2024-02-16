@@ -14,6 +14,15 @@ class Repository {
 	public readonly branch: string;
 	public readonly cwd: string;
 	public readonly remote: string;
+	private _commit = '❌';
+
+	set commit(sha: string) {
+		this._commit = sha;
+	}
+
+	get commit(): string {
+		return this._commit;
+	}
 
 	constructor(params: Parameters) {
 		const name = this.sanitizeName(params.name);

@@ -4,6 +4,8 @@ import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
 import { Browsers } from './Browsers';
 import { log } from './utilities';
+import * as core from '@actions/core';
+import { Repository } from './Repository';
 
 class Action {
 	private readonly browsers: Browsers;
@@ -21,11 +23,12 @@ class Action {
 		const barista = this.contexts.make('barista', this.inputs.baristaBranch());
 		const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
 		const skipTests = this.inputs.skipTests();
+		const skipBarista = this.inputs.baristaBranch().length === 0;
 
 		await cafe.git.clone();
 
 		// it is optional to clone barista repo
-		if (this.inputs.baristaBranch()) {
+		if (!skipBarista) {
 			await barista.git.clone();
 			await barista.yarn.install({ frozenLockfile: true });
 			await barista.yarn.build();
@@ -39,9 +42,29 @@ class Action {
 		this.ddev();
 		this.browsers.install(e2e);
 
+		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
+
 		if (!skipTests) {
 			await e2e.yarn.test(this.getEnvVars(cafe, barista));
 		}
+	}
+
+	private async showGitSummary(contexts: InstanceType<typeof Context>[]): Promise<void> {
+		const repos: InstanceType<typeof Repository>[] = contexts.map((context) => {
+			return context.repo;
+		});
+		core.summary.addHeading('Git information');
+		core.summary.addTable([
+			[
+				{ data: 'Repo', header: true },
+				{ data: 'Branch', header: true },
+				{ data: 'Commit', header: true },
+			],
+			...repos.map((repo) => {
+				return [repo.name, repo.branch, repo.commit.substring(0, 7)];
+			}),
+		]);
+		await core.summary.write();
 	}
 
 	private mkcert(): void {

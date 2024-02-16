@@ -7,7 +7,7 @@ class Git {
 	private readonly spawnSync: SpawnSync;
 	private readonly cache: Cache;
 
-	constructor(private readonly repo: Repository) {
+	constructor(public readonly repo: Repository) {
 		this.spawnSync = new SpawnSync(repo.cwd);
 		this.cache = new Cache(repo);
 	}
@@ -66,6 +66,8 @@ class Git {
 			);
 			throw new Error();
 		}
+
+		this.repo.commit = sha;
 
 		return sha;
 	}
