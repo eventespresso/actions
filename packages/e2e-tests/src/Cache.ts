@@ -1,5 +1,5 @@
 import { Repository } from './Repository';
-import { error, notice } from './utilities';
+import { error } from './utilities';
 import * as core from '@actions/core';
 import * as cache from '@actions/cache';
 
@@ -36,7 +36,7 @@ class Cache {
 			error(`${err}`);
 		}
 		if (typeof restore === 'undefined') {
-			notice(`Failed to retrieve cache with key: \n${k}`);
+			error(`Failed to retrieve cache with key: \n${k}`);
 			return false;
 		}
 		return true;

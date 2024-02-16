@@ -1,5 +1,5 @@
 import { SpawnSync } from './SpawnSync';
-import { error, log, notice } from './utilities';
+import { error, log } from './utilities';
 import * as cache from '@actions/cache';
 import * as os from 'node:os';
 import * as fs from 'node:fs';
@@ -41,7 +41,7 @@ class Docker {
 			return false;
 		}
 		if (!restore) {
-			notice('No cache found for docker images');
+			error('No cache found for docker images');
 			return false;
 		}
 		this.spawnSync.call('docker', ['load', '--input', filePath]);
