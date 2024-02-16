@@ -61,9 +61,10 @@ class Git {
 				'Remote refs: ' + git.stdout,
 				'Commit sha: ' + sha
 			);
-			const message = 'Failed to obtain the latest git  commit sha for the given repository and branch!';
-			notice(message + ' (click for more details)');
-			throw new Error(message);
+			notice(
+				'Failed to obtain the latest git commit sha for the given repository and branch! (click for more details)'
+			);
+			throw new Error();
 		}
 
 		return sha;
