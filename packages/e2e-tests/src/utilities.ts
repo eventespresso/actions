@@ -23,9 +23,9 @@ export function command(binary: string): boolean {
 }
 
 /**
- * Create GitHub notice for the return of command() function
+ * Create GitHub notice for the return of spawnSync() function
  */
-export function noticeForCommand({
+export function noticeForSpawnSync({
 	command,
 	group,
 	message,
