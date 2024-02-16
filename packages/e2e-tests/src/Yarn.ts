@@ -1,14 +1,15 @@
-import * as os from 'os';
-import * as path from 'path';
 import { Cache } from './Cache';
-import * as core from '@actions/core';
-import * as glob from '@actions/glob';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
 import { EnvVars } from './Action';
 import { Artifact } from './Artifact';
 import { Tar } from './Tar';
 import { GPG } from './GPG';
+import { error, log } from './utilities';
+import * as glob from '@actions/glob';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 class Yarn {
 	constructor(
@@ -44,12 +45,12 @@ class Yarn {
 		// see https://playwright.dev/docs/test-reporters#html-reporter
 		// used by CLI
 		// see https://playwright.dev/docs/test-cli#reference
-		const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+		const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
 		const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
 
 		const env = {
 			NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
-			PLAYWRIGHT_HTML_REPORT: reportPath,
+			PLAYWRIGHT_HTML_REPORT: htmlReportPath,
 			...envVars,
 		} as const;
 
@@ -62,7 +63,7 @@ class Yarn {
 		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
-			await this.saveReport(reportPath);
+			await this.saveHtmlReport(htmlReportPath);
 			await this.saveTestResults(resultsPath);
 		}
 
@@ -76,6 +77,11 @@ class Yarn {
 			expiry: number; // in days
 		}
 	): boolean | Promise<boolean> {
+		if (!fs.existsSync(file)) {
+			error('Cannot save artifact at the given path as the file is not found!', 'File path: ' + file);
+			return false;
+		}
+
 		const tarball = this.tar.create(file);
 
 		if (!tarball) {
@@ -94,7 +100,7 @@ class Yarn {
 		return this.artifact.save(fileName, rootDir, report.name, report.expiry);
 	}
 
-	private async saveReport(reportPath: string): Promise<boolean> {
+	private async saveHtmlReport(reportPath: string): Promise<boolean> {
 		// include workflow # as well as attempt # in the report (artifact) filename
 		const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
 		const expiry = 7; // days
@@ -146,13 +152,11 @@ class Yarn {
 		// if cache was found, the *outcome* of the command was cached
 		// so there is no need to waste cpu cycles running it again
 		if (cache) {
-			core.info(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
+			log(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
 			return;
 		}
 
-		core.notice(
-			`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`
-		);
+		log(`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
 
 		this.spawnSync.call('yarn', args);
 

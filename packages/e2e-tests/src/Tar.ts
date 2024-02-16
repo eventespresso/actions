@@ -1,12 +1,10 @@
-import { absPath, command, cwd, log, logSpawnSyncError } from './utilities';
+import { absPath, command, cwd, log, error, errorForSpawnSync } from './utilities';
 import child_process from 'node:child_process';
 import fs from 'node:fs';
 
 class Tar {
-	private readonly group: string = 'tar';
-
 	private isInstalled(): boolean {
-		return command('tar', this.group);
+		return command('tar');
 	}
 
 	/**
@@ -23,7 +21,7 @@ class Tar {
 
 		for (const i of inputs) {
 			if (!fs.existsSync(i)) {
-				log(`Given tar input '${i}' does not exist!`, { group: this.group });
+				error(`Given tar input '${i}' does not exist!`);
 				return false;
 			}
 		}
@@ -35,7 +33,7 @@ class Tar {
 		}
 
 		if (fs.existsSync(output)) {
-			log(`Output path for tarball already exists: '${output}' !`, { group: this.group });
+			error(`Output path for tarball already exists: '${output}' !`);
 			return false;
 		}
 
@@ -44,10 +42,10 @@ class Tar {
 			encoding: 'utf-8',
 		});
 
-		console.log(command.stdout);
+		log(command.stdout);
 
 		if (command.status !== 0) {
-			logSpawnSyncError({ command, group: this.group, message: 'Could not create tarball!' });
+			errorForSpawnSync(command, 'Could not create tarball!');
 			return false;
 		}
 
@@ -56,7 +54,7 @@ class Tar {
 
 	private getTarballPath(files: string | string[], archive?: string): string | false {
 		if (archive && archive.length === 0) {
-			log('Given empty string to tar output path!', { group: this.group });
+			error('Given empty string to tar output path!');
 			return false;
 		}
 
@@ -73,16 +71,15 @@ class Tar {
 			if (archive) {
 				return absPath(archive);
 			}
-			log('When supplying an array of files to tar, need to explicitly set archive file name!', {
-				group: this.group,
-			});
+			error('When supplying an array of files to tar, need to explicitly set archive file name!');
 			return false;
 		}
 
-		log(
-			`Tar received unsupported data type for argument 'files': ${typeof files} \nOnly supported: string, array!`,
-			{ group: this.group }
+		error(
+			`Tar received unsupported data type for argument 'files': ${typeof files}`,
+			'Only supported: string, array!'
 		);
+
 		return false;
 	}
 
@@ -100,7 +97,7 @@ class Tar {
 		const output = directory ?? cwd();
 
 		if (!fs.existsSync(input)) {
-			log(`Did not find given tarball archive '${input}'!`, { group: this.group });
+			error(`Did not find given tarball archive '${input}'!`);
 			return false;
 		}
 
@@ -117,10 +114,12 @@ class Tar {
 			{ stdio: 'pipe', encoding: 'utf-8' }
 		);
 
-		console.log(command.stdout);
+		if (command.status === 0) {
+			log(command.stdout);
+		}
 
 		if (command.status !== 0) {
-			logSpawnSyncError({ command, message: `Failed to extract tarball '${input}'!`, group: this.group });
+			errorForSpawnSync(command, `Failed to extract tarball '${input}'!`);
 			return false;
 		}
 

@@ -1,11 +1,12 @@
+import { Repository } from './Repository';
+import { error, notice } from './utilities';
 import * as core from '@actions/core';
 import * as cache from '@actions/cache';
-import { Repository } from './Repository';
 
 class Cache {
 	constructor(private readonly repo: Repository) {
 		if (!cache.isFeatureAvailable()) {
-			core.error('Cache service is not available');
+			error('Cache service is not available');
 		}
 	}
 
@@ -18,8 +19,8 @@ class Cache {
 			// .slice() is a required workaround until GitHub fixes cache
 			// https://github.com/actions/toolkit/issues/1377
 			return await cache.saveCache(paths.slice(), k);
-		} catch (error) {
-			core.error(`Failed to save cache with key: \n${k}\n${error}`);
+		} catch (err) {
+			error('Failed to save cache with key:' + k, 'Error: ' + `${err}`);
 			return false;
 		}
 	}
@@ -31,11 +32,11 @@ class Cache {
 			// .slice() is a required workaround until GitHub fixes cache
 			// https://github.com/actions/toolkit/issues/1377
 			restore = await cache.restoreCache(paths.slice(), k);
-		} catch (error) {
-			core.error(`${error}`);
+		} catch (err) {
+			error(`${err}`);
 		}
 		if (typeof restore === 'undefined') {
-			core.notice(`Failed to retrieve cache with key: \n${k}`);
+			notice(`Failed to retrieve cache with key: \n${k}`);
 			return false;
 		}
 		return true;

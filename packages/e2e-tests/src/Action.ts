@@ -2,8 +2,8 @@ import { SpawnSync } from './SpawnSync';
 import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
-import * as core from '@actions/core';
 import { Browsers } from './Browsers';
+import { log } from './utilities';
 
 class Action {
 	private readonly browsers: Browsers;
@@ -45,7 +45,7 @@ class Action {
 	}
 
 	private mkcert(): void {
-		core.info('Installing mkcert');
+		log('Installing mkcert...');
 		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
 	}
 
@@ -58,7 +58,7 @@ class Action {
 	}
 
 	private ddev(): void {
-		core.info('Installing DDEV');
+		log('Installing DDEV...');
 		const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
 		const bashArgs: string[] = [];
 		const ddevVersion = this.getDdevVersion();

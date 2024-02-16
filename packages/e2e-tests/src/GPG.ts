@@ -1,13 +1,10 @@
 import { InputFactory } from './InputFactory';
+import { absPath, command, error, errorForSpawnSync, log } from './utilities';
+import zxcvbn from 'zxcvbn';
 import child_process, { type SpawnSyncOptionsWithStringEncoding } from 'node:child_process';
 import fs from 'node:fs';
-import zxcvbn from 'zxcvbn';
-import * as core from '@actions/core';
-import { absPath, command, logSpawnSyncError } from './utilities';
 
 class GPG {
-	private readonly groupName: string = 'GPG';
-
 	constructor(private readonly inputs: InputFactory) {}
 
 	private isInstalled(): boolean {
@@ -38,10 +35,7 @@ class GPG {
 		const output = target ? absPath(target) : input.replace('.gpg', '');
 
 		if (fs.existsSync(output)) {
-			core.startGroup(this.groupName);
-			core.error('Cannot decrypt GPG file in-place!');
-			core.error(`Output path already exists: '${output}' !`);
-			core.endGroup();
+			error('Cannot decrypt GPG file in-place!', 'Output path already exists!', 'File path: ' + output);
 			return false;
 		}
 
@@ -50,11 +44,10 @@ class GPG {
 		const options: SpawnSyncOptionsWithStringEncoding = { stdio: 'pipe', input: password, encoding: 'utf-8' };
 
 		const command = child_process.spawnSync('gpg', args, options);
-		console.log(command.stdout);
+		log(command.stdout);
 
 		if (command.status !== 0) {
-			const message = `Failed to decrypt GPG file: '${input}' !`;
-			logSpawnSyncError({ command, message, group: this.groupName });
+			errorForSpawnSync(command, 'Failed to decrypt GPG file!', 'File path: ' + input);
 			return false;
 		}
 
@@ -107,11 +100,12 @@ class GPG {
 
 		const command = child_process.spawnSync('gpg', args, options);
 
-		console.log(command.stdout);
+		if (command.status === 0) {
+			log(command.stdout);
+		}
 
 		if (command.status !== 0) {
-			const message = 'GPG encryption has failed!';
-			logSpawnSyncError({ command, message, group: this.groupName });
+			errorForSpawnSync(command, 'GPG encryption has failed!', 'File path: ' + source);
 			return false;
 		}
 
@@ -121,11 +115,7 @@ class GPG {
 	private getPath(input: string): string | false {
 		const p = absPath(input);
 		if (!this.checkPath(p)) {
-			core.startGroup(this.groupName);
-			core.error('Given input path does not exist!');
-			core.error('Raw input: ' + input);
-			core.error('Absolute path: ' + p);
-			core.endGroup();
+			error('Given input path does not exist!', 'Absolute path: ' + p);
 			return false;
 		}
 		return p;
@@ -133,9 +123,7 @@ class GPG {
 
 	private checkPath(path: string): boolean {
 		if (!fs.existsSync(path)) {
-			core.startGroup(this.groupName);
-			core.error(`Given path does not exist: '${path}' !`);
-			core.endGroup();
+			error('Given path does not exist!', 'File path: ' + path);
 			return false;
 		}
 		return true;
@@ -145,19 +133,14 @@ class GPG {
 		const password = this.inputs.gpgPassword();
 
 		if (password.length === 0) {
-			core.startGroup(this.groupName);
-			core.error(`Missing value for input 'password' !`);
-			core.endGroup();
+			error(`Missing value for input 'password' !`);
 			return false;
 		}
 
 		const strength = zxcvbn(password);
 
 		if (strength.score < 3) {
-			core.startGroup(this.groupName);
-			strength.feedback.suggestions.forEach((s) => core.notice(s));
-			core.warning(strength.feedback.warning);
-			core.endGroup();
+			error(strength.feedback.warning, ...strength.feedback.suggestions);
 			return false;
 		}
 
@@ -173,10 +156,7 @@ class GPG {
 		}
 
 		if (!supportedCiphers.includes(targetCipher)) {
-			core.startGroup(this.groupName);
-			core.error(`Unsupported GPG cipher: ${targetCipher}`);
-			core.notice(`Supported GPG ciphers: ${supportedCiphers.join(', ')}`);
-			core.endGroup();
+			error(`Unsupported GPG cipher: ${targetCipher}`, `Supported GPG ciphers: ${supportedCiphers.join(', ')}`);
 			return false;
 		}
 
@@ -186,11 +166,12 @@ class GPG {
 	private getSupportedCiphers(): string[] | false {
 		const command = child_process.spawnSync('gpg', ['--version'], { stdio: 'pipe', encoding: 'utf-8' });
 
-		console.log(command.stdout);
+		if (command.status === 0) {
+			log(command.stdout);
+		}
 
 		if (command.status !== 0) {
-			const message = 'Failed to get available GPG ciphers!';
-			logSpawnSyncError({ command, message, group: this.groupName });
+			errorForSpawnSync(command, 'Failed to get available GPG ciphers!');
 			return false;
 		}
 
@@ -199,9 +180,7 @@ class GPG {
 		const ciphersIndex = stdoutArray.findIndex((s) => s.startsWith('Cipher: '));
 
 		if (!stdoutArray[ciphersIndex] || !stdoutArray[ciphersIndex + 1]) {
-			core.startGroup(this.groupName);
-			core.error('Internal error! Unable to parse available GPG ciphers! (array index error)');
-			core.endGroup();
+			error('Internal error! Unable to parse available GPG ciphers! (array index error)');
 			return false;
 		}
 

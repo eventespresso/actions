@@ -1,9 +1,9 @@
-import * as core from '@actions/core';
-import * as cache from '@actions/cache';
-import * as os from 'os';
-import * as fs from 'fs';
-import * as path from 'path';
 import { SpawnSync } from './SpawnSync';
+import { error, log, notice } from './utilities';
+import * as cache from '@actions/cache';
+import * as os from 'node:os';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 /**
  * This class add ability to save and restore docker images
@@ -15,18 +15,17 @@ class Docker {
 
 	public async saveImages(): Promise<boolean> {
 		const [fileName, workDir, filePath] = this.getParams();
-		core.notice(`Saving docker images to cache: ${fileName}`);
+		log('Saving docker images to cache: ' + fileName);
 		const imagesList = this.listImages();
 		this.spawnSync.call('docker', ['save', '--output', filePath, ...imagesList]);
 		if (!fs.existsSync(filePath)) {
-			core.error(`Failed to save docker images at ${filePath}`);
+			error('Failed to save docker images at', 'File path: ' + filePath);
 			return false;
 		}
 		try {
 			await cache.saveCache([filePath], fileName);
-		} catch (error) {
-			core.error('Failed to save docker images into cache');
-			core.error(error as string);
+		} catch (err) {
+			error('Failed to save docker images into cache', `${err}`);
 			return false;
 		}
 		return true;
@@ -37,13 +36,12 @@ class Docker {
 		let restore = undefined;
 		try {
 			restore = await cache.restoreCache([filePath], fileName, [], {});
-		} catch (error) {
-			core.notice('Failed to restore docker images from cache');
-			core.notice(error as string);
+		} catch (err) {
+			error('Failed to restore docker images from cache', `${err}`);
 			return false;
 		}
 		if (!restore) {
-			core.notice('No cache found for docker images');
+			notice('No cache found for docker images');
 			return false;
 		}
 		this.spawnSync.call('docker', ['load', '--input', filePath]);

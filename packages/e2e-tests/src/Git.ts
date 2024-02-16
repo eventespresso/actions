@@ -1,6 +1,7 @@
 import { Cache } from './Cache';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
+import { log } from './utilities';
 import * as core from '@actions/core';
 
 class Git {
@@ -30,10 +31,10 @@ class Git {
 			return this.cache.restore(key, [this.repo.cwd]);
 		};
 		if (await cloneFromCache()) {
-			core.info(`Found git repository '${this.repo.name}' in cache`);
+			log(`Found git repository '${this.repo.name}' in cache`);
 			return this;
 		}
-		core.notice(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
+		log(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
 		cloneFromRemote();
 		await this.cache.save(key, [this.repo.cwd]);
 		return this;
