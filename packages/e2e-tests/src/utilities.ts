@@ -23,15 +23,15 @@ export function command(binary: string): boolean {
 	return true;
 }
 
-type NoticeType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
+type AnnotationType = keyof Pick<typeof core, 'notice' | 'info' | 'warning' | 'error' | 'debug'>;
 
-type NoticeOptions = { type?: NoticeType; group?: string };
+type AnnotationOptions = { type?: AnnotationType; group?: string };
 
 /**
  * Create a GitHub annotation
  * @link https://github.com/actions/toolkit/tree/main/packages/core#logging
  */
-export function annotation(message: string | string[], options: NoticeOptions = { type: 'error' }): void {
+export function annotation(message: string | string[], options: AnnotationOptions = { type: 'error' }): void {
 	const type = options.type ?? 'error';
 	const group = options.group;
 	if (group) {
