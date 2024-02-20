@@ -24,12 +24,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Repository = void 0;
-const os = __importStar(require("os"));
-const fs = __importStar(require("fs"));
-const Path = __importStar(require("path"));
-const core = __importStar(require("@actions/core"));
+const utilities_1 = require("./utilities");
+const os = __importStar(require("node:os"));
+const fs = __importStar(require("node:fs"));
+const Path = __importStar(require("node:path"));
 class Repository {
+    set commit(sha) {
+        this._commit = sha;
+    }
+    get commit() {
+        return this._commit;
+    }
     constructor(params) {
+        this._commit = '❌';
         const name = this.sanitizeName(params.name);
         const cwd = this.makeCwd(name);
         this.name = name;
@@ -44,7 +51,9 @@ class Repository {
     }
     checkPathAvailable(path) {
         if (fs.existsSync(path)) {
-            core.setFailed(`Given path already exists: \n${path}`);
+            (0, utilities_1.error)(`Cannot perform 'git clone' as the destination path already exists!`, 'Path: ' + path);
+            (0, utilities_1.annotation)('Cannot clone repository! (click for more details)');
+            throw new Error();
         }
     }
     sanitizeName(name) {

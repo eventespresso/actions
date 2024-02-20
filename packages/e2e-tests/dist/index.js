@@ -67332,8 +67332,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
-const core = __importStar(__nccwpck_require__(7117));
 const Browsers_1 = __nccwpck_require__(6037);
+const utilities_1 = __nccwpck_require__(4141);
+const core = __importStar(__nccwpck_require__(7117));
 class Action {
     constructor(inputs, contexts, spawnSync) {
         this.inputs = inputs;
@@ -67347,9 +67348,10 @@ class Action {
             const barista = this.contexts.make('barista', this.inputs.baristaBranch());
             const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
             const skipTests = this.inputs.skipTests();
+            const skipBarista = this.inputs.baristaBranch().length === 0;
             yield cafe.git.clone();
             // it is optional to clone barista repo
-            if (this.inputs.baristaBranch()) {
+            if (!skipBarista) {
                 yield barista.git.clone();
                 yield barista.yarn.install({ frozenLockfile: true });
                 yield barista.yarn.build();
@@ -67360,13 +67362,33 @@ class Action {
             this.mkcert();
             this.ddev();
             this.browsers.install(e2e);
+            yield this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
             if (!skipTests) {
                 yield e2e.yarn.test(this.getEnvVars(cafe, barista));
             }
         });
     }
+    showGitSummary(contexts) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const repos = contexts.map((context) => {
+                return context.repo;
+            });
+            core.summary.addHeading('Git information', 2);
+            core.summary.addTable([
+                [
+                    { data: 'Repo', header: true },
+                    { data: 'Branch', header: true },
+                    { data: 'Commit', header: true },
+                ],
+                ...repos.map((repo) => {
+                    return [repo.name, repo.branch, repo.commit.substring(0, 7)];
+                }),
+            ]);
+            yield core.summary.write();
+        });
+    }
     mkcert() {
-        core.info('Installing mkcert');
+        (0, utilities_1.log)('Installing mkcert...');
         this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
     }
     getDdevVersion() {
@@ -67377,7 +67399,7 @@ class Action {
         return 'v' + version;
     }
     ddev() {
-        core.info('Installing DDEV');
+        (0, utilities_1.log)('Installing DDEV...');
         const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
         const bashArgs = [];
         const ddevVersion = this.getDdevVersion();
@@ -67440,10 +67462,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Artifact = void 0;
-const path = __importStar(__nccwpck_require__(9411));
-const core = __importStar(__nccwpck_require__(7117));
+const utilities_1 = __nccwpck_require__(4141);
 const glob = __importStar(__nccwpck_require__(3553));
 const artifact = __importStar(__nccwpck_require__(7814));
+const path = __importStar(__nccwpck_require__(9411));
+const fs = __importStar(__nccwpck_require__(7561));
 class Artifact {
     constructor() {
         this.client = artifact.create();
@@ -67464,21 +67487,19 @@ class Artifact {
             // code to decide if process should be stopped or not
             const options = { continueOnError: true, retentionDays: days };
             if (files.length === 0) {
-                core.notice(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
+                (0, utilities_1.error)(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
                 return false;
             }
             let upload = undefined;
             try {
                 upload = yield this.client.uploadArtifact(name, files, workDir, options);
             }
-            catch (error) {
-                core.error(`Failed to save artifact '${name}', see below for details`);
-                core.error(`${error}`);
+            catch (err) {
+                (0, utilities_1.error)('Failed to save artifact: ' + name, 'Error: ' + err);
                 return false;
             }
             if (upload.failedItems.length > 0) {
-                const failed = upload.failedItems.join('\n');
-                core.error(`Failied to upload some files for artifact '${name}':\n${failed}`);
+                (0, utilities_1.error)('Failed to upload some files for artifact', 'Artifact: ' + name, 'Files:', ...upload.failedItems);
                 return false;
             }
             return true;
@@ -67502,7 +67523,13 @@ class Artifact {
             const absInput = arrInput.map((i) => this.absPath(i, workDir));
             const promises = absInput.map((i) => this.inputToFiles(i));
             const files = yield Promise.all(promises);
-            return files.flat();
+            return files.flat().filter((file) => {
+                const exists = fs.existsSync(file);
+                if (!exists) {
+                    (0, utilities_1.error)('Given artifact file does not exist: ' + file);
+                }
+                return exists;
+            });
         });
     }
     /**
@@ -67668,13 +67695,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Cache = void 0;
-const core = __importStar(__nccwpck_require__(7117));
+const utilities_1 = __nccwpck_require__(4141);
 const cache = __importStar(__nccwpck_require__(6930));
 class Cache {
     constructor(repo) {
         this.repo = repo;
         if (!cache.isFeatureAvailable()) {
-            core.error('Cache service is not available');
+            (0, utilities_1.error)('Cache service is not available');
         }
     }
     /**
@@ -67688,8 +67715,8 @@ class Cache {
                 // https://github.com/actions/toolkit/issues/1377
                 return yield cache.saveCache(paths.slice(), k);
             }
-            catch (error) {
-                core.error(`Failed to save cache with key: \n${k}\n${error}`);
+            catch (err) {
+                (0, utilities_1.error)('Failed to save cache with key:' + k, 'Error: ' + `${err}`);
                 return false;
             }
         });
@@ -67703,11 +67730,11 @@ class Cache {
                 // https://github.com/actions/toolkit/issues/1377
                 restore = yield cache.restoreCache(paths.slice(), k);
             }
-            catch (error) {
-                core.error(`${error}`);
+            catch (err) {
+                (0, utilities_1.error)(`${err}`);
             }
             if (typeof restore === 'undefined') {
-                core.notice(`Failed to retrieve cache with key: \n${k}`);
+                (0, utilities_1.error)(`Failed to retrieve cache with key: \n${k}`);
                 return false;
             }
             return true;
@@ -67716,10 +67743,10 @@ class Cache {
     makeKey(key) {
         // generate contextual key since we are dealing with multiple repositories
         const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-        if (k.length > 512) {
-            // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-            const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-            core.setFailed(msg);
+        const limit = 512; // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
+        if (k.length > limit) {
+            (0, utilities_1.annotation)(`Cache key exceeded length of ${limit} chars: ` + k);
+            throw new Error();
         }
         return k;
     }
@@ -67800,43 +67827,19 @@ exports.ContextFactory = ContextFactory;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GPG = void 0;
+const utilities_1 = __nccwpck_require__(4141);
+const zxcvbn_1 = __importDefault(__nccwpck_require__(2327));
 const node_child_process_1 = __importDefault(__nccwpck_require__(7718));
 const node_fs_1 = __importDefault(__nccwpck_require__(7561));
-const zxcvbn_1 = __importDefault(__nccwpck_require__(2327));
-const core = __importStar(__nccwpck_require__(7117));
-const utilities_1 = __nccwpck_require__(4141);
+// LATER: refactor to use SpawnSync.ts for improved error handling
 class GPG {
     constructor(inputs) {
         this.inputs = inputs;
-        this.groupName = 'GPG';
     }
     isInstalled() {
         return (0, utilities_1.command)('gpg');
@@ -67860,19 +67863,15 @@ class GPG {
         }
         const output = target ? (0, utilities_1.absPath)(target) : input.replace('.gpg', '');
         if (node_fs_1.default.existsSync(output)) {
-            core.startGroup(this.groupName);
-            core.error('Cannot decrypt GPG file in-place!');
-            core.error(`Output path already exists: '${output}' !`);
-            core.endGroup();
+            (0, utilities_1.error)('Cannot decrypt GPG file in-place!', 'Output path already exists!', 'File path: ' + output);
             return false;
         }
         const args = ['--batch', '--decrypt', '--passphrase-fd', '0', '--output', output, input];
         const options = { stdio: 'pipe', input: password, encoding: 'utf-8' };
         const command = node_child_process_1.default.spawnSync('gpg', args, options);
-        console.log(command.stdout);
+        (0, utilities_1.log)(command.stdout);
         if (command.status !== 0) {
-            const message = `Failed to decrypt GPG file: '${input}' !`;
-            (0, utilities_1.logSpawnSyncError)({ command, message, group: this.groupName });
+            (0, utilities_1.errorForSpawnSync)(command, 'Failed to decrypt GPG file!', 'File path: ' + input);
             return false;
         }
         return output;
@@ -67912,10 +67911,11 @@ class GPG {
         ];
         const options = { stdio: 'pipe', input: password, encoding: 'utf-8' };
         const command = node_child_process_1.default.spawnSync('gpg', args, options);
-        console.log(command.stdout);
+        if (command.status === 0) {
+            (0, utilities_1.log)(command.stdout);
+        }
         if (command.status !== 0) {
-            const message = 'GPG encryption has failed!';
-            (0, utilities_1.logSpawnSyncError)({ command, message, group: this.groupName });
+            (0, utilities_1.errorForSpawnSync)(command, 'GPG encryption has failed!', 'File path: ' + source);
             return false;
         }
         return output;
@@ -67923,20 +67923,14 @@ class GPG {
     getPath(input) {
         const p = (0, utilities_1.absPath)(input);
         if (!this.checkPath(p)) {
-            core.startGroup(this.groupName);
-            core.error('Given input path does not exist!');
-            core.error('Raw input: ' + input);
-            core.error('Absolute path: ' + p);
-            core.endGroup();
+            (0, utilities_1.error)('Given input path does not exist!', 'Absolute path: ' + p);
             return false;
         }
         return p;
     }
     checkPath(path) {
         if (!node_fs_1.default.existsSync(path)) {
-            core.startGroup(this.groupName);
-            core.error(`Given path does not exist: '${path}' !`);
-            core.endGroup();
+            (0, utilities_1.error)('Given path does not exist!', 'File path: ' + path);
             return false;
         }
         return true;
@@ -67944,17 +67938,12 @@ class GPG {
     getPassword() {
         const password = this.inputs.gpgPassword();
         if (password.length === 0) {
-            core.startGroup(this.groupName);
-            core.error(`Missing value for input 'password' !`);
-            core.endGroup();
+            (0, utilities_1.error)(`Missing value for input 'password' !`);
             return false;
         }
         const strength = (0, zxcvbn_1.default)(password);
         if (strength.score < 3) {
-            core.startGroup(this.groupName);
-            strength.feedback.suggestions.forEach((s) => core.notice(s));
-            core.warning(strength.feedback.warning);
-            core.endGroup();
+            (0, utilities_1.error)(strength.feedback.warning, ...strength.feedback.suggestions);
             return false;
         }
         return password;
@@ -67966,28 +67955,24 @@ class GPG {
             return false;
         }
         if (!supportedCiphers.includes(targetCipher)) {
-            core.startGroup(this.groupName);
-            core.error(`Unsupported GPG cipher: ${targetCipher}`);
-            core.notice(`Supported GPG ciphers: ${supportedCiphers.join(', ')}`);
-            core.endGroup();
+            (0, utilities_1.error)(`Unsupported GPG cipher: ${targetCipher}`, `Supported GPG ciphers: ${supportedCiphers.join(', ')}`);
             return false;
         }
         return targetCipher;
     }
     getSupportedCiphers() {
         const command = node_child_process_1.default.spawnSync('gpg', ['--version'], { stdio: 'pipe', encoding: 'utf-8' });
-        console.log(command.stdout);
+        if (command.status === 0) {
+            (0, utilities_1.log)(command.stdout);
+        }
         if (command.status !== 0) {
-            const message = 'Failed to get available GPG ciphers!';
-            (0, utilities_1.logSpawnSyncError)({ command, message, group: this.groupName });
+            (0, utilities_1.errorForSpawnSync)(command, 'Failed to get available GPG ciphers!');
             return false;
         }
         const stdoutArray = command.stdout.split('\n').filter((s) => s.length > 0);
         const ciphersIndex = stdoutArray.findIndex((s) => s.startsWith('Cipher: '));
         if (!stdoutArray[ciphersIndex] || !stdoutArray[ciphersIndex + 1]) {
-            core.startGroup(this.groupName);
-            core.error('Internal error! Unable to parse available GPG ciphers! (array index error)');
-            core.endGroup();
+            (0, utilities_1.error)('Internal error! Unable to parse available GPG ciphers! (array index error)');
             return false;
         }
         const ciphersString = stdoutArray[ciphersIndex] + ' ' + stdoutArray[ciphersIndex + 1].trim();
@@ -68009,29 +67994,6 @@ exports.GPG = GPG;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -68045,7 +68007,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Git = void 0;
 const Cache_1 = __nccwpck_require__(4652);
 const SpawnSync_1 = __nccwpck_require__(8258);
-const core = __importStar(__nccwpck_require__(7117));
+const utilities_1 = __nccwpck_require__(4141);
 class Git {
     constructor(repo) {
         this.repo = repo;
@@ -68071,10 +68033,10 @@ class Git {
                 return this.cache.restore(key, [this.repo.cwd]);
             };
             if (yield cloneFromCache()) {
-                core.info(`Found git repository '${this.repo.name}' in cache`);
+                (0, utilities_1.log)(`Found git repository '${this.repo.name}' in cache`);
                 return this;
             }
-            core.notice(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
+            (0, utilities_1.log)(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
             cloneFromRemote();
             yield this.cache.save(key, [this.repo.cwd]);
             return this;
@@ -68091,8 +68053,11 @@ class Git {
         const cut = this.spawnSync.call('cut', ['-f', '1'], { input: git.stdout, stdin: 'pipe', stdout: 'pipe' });
         const sha = cut.stdout;
         if (!sha || sha.length === 0) {
-            core.setFailed(`Failed to obtain latest commit sha for repository '${this.repo.name}' for branch '${this.repo.branch}' \ngit refs: \n${git.stdout} \ncut outcome: ${sha}`);
+            (0, utilities_1.error)('Details of the git parameters:', 'Repository: ' + this.repo.name, 'Branch: ' + this.repo.branch, 'Remote refs: ' + git.stdout, 'Commit sha: ' + sha);
+            (0, utilities_1.annotation)('Failed to obtain the latest git commit sha for the given repository and branch! (click for more details)');
+            throw new Error();
         }
+        this.repo.commit = sha;
         return sha;
     }
 }
@@ -68199,12 +68164,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Repository = void 0;
-const os = __importStar(__nccwpck_require__(2037));
-const fs = __importStar(__nccwpck_require__(7147));
-const Path = __importStar(__nccwpck_require__(1017));
-const core = __importStar(__nccwpck_require__(7117));
+const utilities_1 = __nccwpck_require__(4141);
+const os = __importStar(__nccwpck_require__(612));
+const fs = __importStar(__nccwpck_require__(7561));
+const Path = __importStar(__nccwpck_require__(9411));
 class Repository {
+    set commit(sha) {
+        this._commit = sha;
+    }
+    get commit() {
+        return this._commit;
+    }
     constructor(params) {
+        this._commit = '❌';
         const name = this.sanitizeName(params.name);
         const cwd = this.makeCwd(name);
         this.name = name;
@@ -68219,7 +68191,9 @@ class Repository {
     }
     checkPathAvailable(path) {
         if (fs.existsSync(path)) {
-            core.setFailed(`Given path already exists: \n${path}`);
+            (0, utilities_1.error)(`Cannot perform 'git clone' as the destination path already exists!`, 'Path: ' + path);
+            (0, utilities_1.annotation)('Cannot clone repository! (click for more details)');
+            throw new Error();
         }
     }
     sanitizeName(name) {
@@ -68300,9 +68274,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SpawnSync = void 0;
-const fs = __importStar(__nccwpck_require__(7147));
-const core = __importStar(__nccwpck_require__(7117));
-const child_process = __importStar(__nccwpck_require__(2081));
+const utilities_1 = __nccwpck_require__(4141);
+const fs = __importStar(__nccwpck_require__(7561));
+const child_process = __importStar(__nccwpck_require__(7718));
 class SpawnSync {
     constructor(cwd) {
         this.cwd = cwd;
@@ -68328,7 +68302,13 @@ class SpawnSync {
         };
         const buffer = child_process.spawnSync(command, args, options);
         if (buffer.status !== 0) {
-            core.setFailed(`Failed to execute command! For more details see above! \ncommand: ${command} \nargs: ${args.join(', ')}`);
+            (0, utilities_1.errorForSpawnSync)(buffer, 'Failed to execute command!', 'Command: ' + command, 'Arguments: ' + args.join(', '));
+            if (!opts.noAnnotation) {
+                (0, utilities_1.annotation)(`Failed to execute '${command}'! (click for more details)`);
+            }
+            if (!opts.noException) {
+                throw new Error();
+            }
         }
         return buffer;
     }
@@ -68351,7 +68331,9 @@ class SpawnSync {
     getCwd(override) {
         if (override) {
             if (!fs.existsSync(override)) {
-                core.setFailed(`cwd does not exist: \n${override}`);
+                (0, utilities_1.error)(`Attempting to override 'cwd'...`, 'Given value points to a non-existing path!', 'Path: ' + override);
+                (0, utilities_1.annotation)(`Trying to use invalid value for 'cwd' when executing command!`);
+                throw new Error();
             }
             return override;
         }
@@ -68382,12 +68364,10 @@ exports.Tar = void 0;
 const utilities_1 = __nccwpck_require__(4141);
 const node_child_process_1 = __importDefault(__nccwpck_require__(7718));
 const node_fs_1 = __importDefault(__nccwpck_require__(7561));
+// LATER: refactor to use SpawnSync.ts for improved error handling
 class Tar {
-    constructor() {
-        this.group = 'tar';
-    }
     isInstalled() {
-        return (0, utilities_1.command)('tar', this.group);
+        return (0, utilities_1.command)('tar');
     }
     /**
      * @param files Files to be tarballed
@@ -68401,7 +68381,7 @@ class Tar {
         const inputs = typeof files === 'string' ? [files] : files;
         for (const i of inputs) {
             if (!node_fs_1.default.existsSync(i)) {
-                (0, utilities_1.log)(`Given tar input '${i}' does not exist!`, { group: this.group });
+                (0, utilities_1.error)(`Given tar input '${i}' does not exist!`);
                 return false;
             }
         }
@@ -68410,23 +68390,23 @@ class Tar {
             return false;
         }
         if (node_fs_1.default.existsSync(output)) {
-            (0, utilities_1.log)(`Output path for tarball already exists: '${output}' !`, { group: this.group });
+            (0, utilities_1.error)(`Output path for tarball already exists: '${output}' !`);
             return false;
         }
         const command = node_child_process_1.default.spawnSync('tar', ['--create', '--verbose', '--file', output, ...inputs], {
             stdio: 'pipe',
             encoding: 'utf-8',
         });
-        console.log(command.stdout);
+        (0, utilities_1.log)('Successfully created tarball:', command.stdout);
         if (command.status !== 0) {
-            (0, utilities_1.logSpawnSyncError)({ command, group: this.group, message: 'Could not create tarball!' });
+            (0, utilities_1.errorForSpawnSync)(command, 'Could not create tarball!');
             return false;
         }
         return output;
     }
     getTarballPath(files, archive) {
         if (archive && archive.length === 0) {
-            (0, utilities_1.log)('Given empty string to tar output path!', { group: this.group });
+            (0, utilities_1.error)('Given empty string to tar output path!');
             return false;
         }
         if (typeof files === 'string') {
@@ -68441,12 +68421,10 @@ class Tar {
             if (archive) {
                 return (0, utilities_1.absPath)(archive);
             }
-            (0, utilities_1.log)('When supplying an array of files to tar, need to explicitly set archive file name!', {
-                group: this.group,
-            });
+            (0, utilities_1.error)('When supplying an array of files to tar, need to explicitly set archive file name!');
             return false;
         }
-        (0, utilities_1.log)(`Tar received unsupported data type for argument 'files': ${typeof files} \nOnly supported: string, array!`, { group: this.group });
+        (0, utilities_1.error)(`Tar received unsupported data type for argument 'files': ${typeof files}`, 'Only supported: string, array!');
         return false;
     }
     /**
@@ -68461,7 +68439,7 @@ class Tar {
         const input = (0, utilities_1.absPath)(tarball);
         const output = directory !== null && directory !== void 0 ? directory : (0, utilities_1.cwd)();
         if (!node_fs_1.default.existsSync(input)) {
-            (0, utilities_1.log)(`Did not find given tarball archive '${input}'!`, { group: this.group });
+            (0, utilities_1.error)(`Did not find given tarball archive '${input}'!`);
             return false;
         }
         if (directory) {
@@ -68471,9 +68449,11 @@ class Tar {
             }
         }
         const command = node_child_process_1.default.spawnSync('tar', ['--extract', '--verbose', '--file', input, '--directory', output], { stdio: 'pipe', encoding: 'utf-8' });
-        console.log(command.stdout);
+        if (command.status === 0) {
+            (0, utilities_1.log)('Successfully extracted tarball files:', command.stdout);
+        }
         if (command.status !== 0) {
-            (0, utilities_1.logSpawnSyncError)({ command, message: `Failed to extract tarball '${input}'!`, group: this.group });
+            (0, utilities_1.errorForSpawnSync)(command, `Failed to extract tarball '${input}'!`);
             return false;
         }
         return output;
@@ -68523,10 +68503,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Yarn = void 0;
-const os = __importStar(__nccwpck_require__(2037));
-const path = __importStar(__nccwpck_require__(1017));
+const utilities_1 = __nccwpck_require__(4141);
 const core = __importStar(__nccwpck_require__(7117));
 const glob = __importStar(__nccwpck_require__(3553));
+const os = __importStar(__nccwpck_require__(612));
+const path = __importStar(__nccwpck_require__(9411));
+const fs = __importStar(__nccwpck_require__(7561));
 class Yarn {
     constructor(repo, spawnSync, cache, artifact, tar, gpg) {
         this.repo = repo;
@@ -68559,22 +68541,29 @@ class Yarn {
             // see https://playwright.dev/docs/test-reporters#html-reporter
             // used by CLI
             // see https://playwright.dev/docs/test-cli#reference
-            const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+            const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
             const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
-            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
+            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: htmlReportPath }, envVars);
             // if docker cache will become available, restore should be called here
             const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
                 env,
+                noAnnotation: true,
+                noException: true,
             });
             // if docker cache will become available, save should be called here
             if (buffer.status !== 0) {
-                yield this.saveReport(reportPath);
+                yield this.saveHtmlReport(htmlReportPath);
                 yield this.saveTestResults(resultsPath);
+                core.setFailed('End-to-end tests did not pass successfully!');
             }
             return this;
         });
     }
     saveArtifact(file, report) {
+        if (!fs.existsSync(file)) {
+            (0, utilities_1.error)('Cannot save artifact at the given path as the file is not found!', 'File path: ' + file);
+            return false;
+        }
         const tarball = this.tar.create(file);
         if (!tarball) {
             return false;
@@ -68587,7 +68576,7 @@ class Yarn {
         const rootDir = path.dirname(gpg);
         return this.artifact.save(fileName, rootDir, report.name, report.expiry);
     }
-    saveReport(reportPath) {
+    saveHtmlReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
             // include workflow # as well as attempt # in the report (artifact) filename
             const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
@@ -68637,10 +68626,10 @@ class Yarn {
             // if cache was found, the *outcome* of the command was cached
             // so there is no need to waste cpu cycles running it again
             if (cache) {
-                core.info(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
+                (0, utilities_1.log)(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
                 return;
             }
-            core.notice(`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
+            (0, utilities_1.log)(`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
             this.spawnSync.call('yarn', args);
             yield this.cache.save(key, paths);
         });
@@ -68683,48 +68672,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.cwd = exports.absPath = exports.log = exports.logSpawnSyncError = exports.command = void 0;
+exports.warnForSpawnSync = exports.logForSpawnSync = exports.infoForSpawnSync = exports.errorForSpawnSync = exports.warn = exports.log = exports.info = exports.error = exports.cwd = exports.absPath = exports.annotation = exports.command = void 0;
 const node_path_1 = __importDefault(__nccwpck_require__(9411));
 const node_process_1 = __importDefault(__nccwpck_require__(7742));
 const core = __importStar(__nccwpck_require__(7117));
 const node_child_process_1 = __importDefault(__nccwpck_require__(7718));
-function command(binary, group) {
+/**
+ * Check if the given binary is installed
+ * @link https://askubuntu.com/questions/512770/what-is-the-bash-command-command
+ * @param binary Absolute path to a binary file
+ * @param group GitHub notice group (optional)
+ * @returns
+ */
+// LATER: refactor to use SpawnSync.ts for improved error handling
+function command(binary) {
     const bin = 'command';
     const args = ['-v', binary];
     const options = { stdio: 'pipe', encoding: 'utf-8', shell: true };
     const command = node_child_process_1.default.spawnSync(bin, args, options);
     if (command.status !== 0) {
-        if (group) {
-            core.startGroup(group);
-        }
-        core.error(`Did not find installed binary for '${binary}'!`);
-        if (group) {
-            core.endGroup();
-        }
+        error(`Did not find installed binary for '${binary}'!`);
         return false;
     }
     return true;
 }
 exports.command = command;
-function logSpawnSyncError({ command, group, message, }) {
-    if (group) {
-        core.startGroup(group);
-    }
-    if (message) {
-        core.error(message);
-    }
-    core.error('Stderr: ' + command.stderr);
-    core.error('Signal: ' + command.signal);
-    core.error('Status: ' + command.status);
-    if (command.error) {
-        core.error('Error: ' + command.error.message);
-    }
-    if (group) {
-        core.endGroup();
-    }
-}
-exports.logSpawnSyncError = logSpawnSyncError;
-function log(message, options = { type: 'error' }) {
+/**
+ * Create a GitHub annotation
+ * @link https://github.com/actions/toolkit/tree/main/packages/core#logging
+ */
+function annotation(message, options = { type: 'error' }) {
     var _a;
     const type = (_a = options.type) !== null && _a !== void 0 ? _a : 'error';
     const group = options.group;
@@ -68741,7 +68718,7 @@ function log(message, options = { type: 'error' }) {
         core.endGroup();
     }
 }
-exports.log = log;
+exports.annotation = annotation;
 function absPath(source) {
     if (node_path_1.default.isAbsolute(source)) {
         return source;
@@ -68757,6 +68734,103 @@ function cwd() {
     return node_process_1.default.cwd();
 }
 exports.cwd = cwd;
+/**
+ * Flatten given string or an array of strings using newline as a glue
+ */
+function string(string) {
+    return Array.isArray(string) ? string.join('\n') : string;
+}
+function _log(message, type) {
+    console[type](string(message));
+}
+function error(...message) {
+    _log(message, 'error');
+}
+exports.error = error;
+/**
+ * Alias for log()
+ */
+function info(...message) {
+    _log(message, 'info');
+}
+exports.info = info;
+function log(...message) {
+    _log(message, 'log');
+}
+exports.log = log;
+/**
+ * Alias for error()
+ */
+function warn(...message) {
+    _log(message, 'warn');
+}
+exports.warn = warn;
+/**
+ * Make sure stderr is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstderr
+ */
+function stderrToString(stderr) {
+    if (!stderr) {
+        return '';
+    }
+    return stderr.toString();
+}
+/**
+ * Make sure stdout is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstdout
+ */
+function stdoutToString(stdout) {
+    if (!stdout) {
+        return '';
+    }
+    return stdout.toString();
+}
+/**
+ * Convert output of command() function to a log message (single string)
+ */
+function spawnSyncToString(spawnSync) {
+    const array = [];
+    const stderr = stderrToString(spawnSync.stderr);
+    if (stderr.length) {
+        array.push('Stderr: ' + spawnSync.stderr.toString());
+    }
+    const stdout = stdoutToString(spawnSync.stdout);
+    if (stdout.length) {
+        array.push('Stdout: ' + stdout);
+    }
+    if (spawnSync.error) {
+        array.push(spawnSync.error.name + ': ' + spawnSync.error.message);
+    }
+    if (spawnSync.signal) {
+        array.push('Signal used to kill the subprocess: ' + spawnSync.signal.toString());
+    }
+    if (spawnSync.status) {
+        array.push('Exit code of the subprocess: ' + spawnSync.status.toString());
+    }
+    return string(array);
+}
+function errorForSpawnSync(spawnSync, ...message) {
+    error(string(message), spawnSyncToString(spawnSync));
+}
+exports.errorForSpawnSync = errorForSpawnSync;
+/**
+ * Alias for logForSpawnSync()
+ */
+function infoForSpawnSync(spawnSync, ...message) {
+    info(string(message), spawnSyncToString(spawnSync));
+}
+exports.infoForSpawnSync = infoForSpawnSync;
+function logForSpawnSync(spawnSync, ...message) {
+    log(string(message), spawnSyncToString(spawnSync));
+}
+exports.logForSpawnSync = logForSpawnSync;
+/**
+ * Alias for errorForSpawnSync()
+ */
+function warnForSpawnSync(spawnSync, message) {
+    warn(string(message), spawnSyncToString(spawnSync));
+}
+exports.warnForSpawnSync = warnForSpawnSync;
 
 
 /***/ }),
@@ -68854,6 +68928,14 @@ module.exports = require("node:child_process");
 
 "use strict";
 module.exports = require("node:fs");
+
+/***/ }),
+
+/***/ 612:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:os");
 
 /***/ }),
 

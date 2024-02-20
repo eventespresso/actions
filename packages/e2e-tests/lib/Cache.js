@@ -33,13 +33,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Cache = void 0;
-const core = __importStar(require("@actions/core"));
+const utilities_1 = require("./utilities");
 const cache = __importStar(require("@actions/cache"));
 class Cache {
     constructor(repo) {
         this.repo = repo;
         if (!cache.isFeatureAvailable()) {
-            core.error('Cache service is not available');
+            (0, utilities_1.error)('Cache service is not available');
         }
     }
     /**
@@ -53,8 +53,8 @@ class Cache {
                 // https://github.com/actions/toolkit/issues/1377
                 return yield cache.saveCache(paths.slice(), k);
             }
-            catch (error) {
-                core.error(`Failed to save cache with key: \n${k}\n${error}`);
+            catch (err) {
+                (0, utilities_1.error)('Failed to save cache with key:' + k, 'Error: ' + `${err}`);
                 return false;
             }
         });
@@ -68,11 +68,11 @@ class Cache {
                 // https://github.com/actions/toolkit/issues/1377
                 restore = yield cache.restoreCache(paths.slice(), k);
             }
-            catch (error) {
-                core.error(`${error}`);
+            catch (err) {
+                (0, utilities_1.error)(`${err}`);
             }
             if (typeof restore === 'undefined') {
-                core.notice(`Failed to retrieve cache with key: \n${k}`);
+                (0, utilities_1.error)(`Failed to retrieve cache with key: \n${k}`);
                 return false;
             }
             return true;
@@ -81,10 +81,10 @@ class Cache {
     makeKey(key) {
         // generate contextual key since we are dealing with multiple repositories
         const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-        if (k.length > 512) {
-            // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-            const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-            core.setFailed(msg);
+        const limit = 512; // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
+        if (k.length > limit) {
+            (0, utilities_1.annotation)(`Cache key exceeded length of ${limit} chars: ` + k);
+            throw new Error();
         }
         return k;
     }

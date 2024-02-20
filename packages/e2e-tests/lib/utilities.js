@@ -26,48 +26,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cwd = exports.absPath = exports.log = exports.logSpawnSyncError = exports.command = void 0;
+exports.warnForSpawnSync = exports.logForSpawnSync = exports.infoForSpawnSync = exports.errorForSpawnSync = exports.warn = exports.log = exports.info = exports.error = exports.cwd = exports.absPath = exports.annotation = exports.command = void 0;
 const node_path_1 = __importDefault(require("node:path"));
 const node_process_1 = __importDefault(require("node:process"));
 const core = __importStar(require("@actions/core"));
 const node_child_process_1 = __importDefault(require("node:child_process"));
-function command(binary, group) {
+/**
+ * Check if the given binary is installed
+ * @link https://askubuntu.com/questions/512770/what-is-the-bash-command-command
+ * @param binary Absolute path to a binary file
+ * @param group GitHub notice group (optional)
+ * @returns
+ */
+// LATER: refactor to use SpawnSync.ts for improved error handling
+function command(binary) {
     const bin = 'command';
     const args = ['-v', binary];
     const options = { stdio: 'pipe', encoding: 'utf-8', shell: true };
     const command = node_child_process_1.default.spawnSync(bin, args, options);
     if (command.status !== 0) {
-        if (group) {
-            core.startGroup(group);
-        }
-        core.error(`Did not find installed binary for '${binary}'!`);
-        if (group) {
-            core.endGroup();
-        }
+        error(`Did not find installed binary for '${binary}'!`);
         return false;
     }
     return true;
 }
 exports.command = command;
-function logSpawnSyncError({ command, group, message, }) {
-    if (group) {
-        core.startGroup(group);
-    }
-    if (message) {
-        core.error(message);
-    }
-    core.error('Stderr: ' + command.stderr);
-    core.error('Signal: ' + command.signal);
-    core.error('Status: ' + command.status);
-    if (command.error) {
-        core.error('Error: ' + command.error.message);
-    }
-    if (group) {
-        core.endGroup();
-    }
-}
-exports.logSpawnSyncError = logSpawnSyncError;
-function log(message, options = { type: 'error' }) {
+/**
+ * Create a GitHub annotation
+ * @link https://github.com/actions/toolkit/tree/main/packages/core#logging
+ */
+function annotation(message, options = { type: 'error' }) {
     var _a;
     const type = (_a = options.type) !== null && _a !== void 0 ? _a : 'error';
     const group = options.group;
@@ -84,7 +72,7 @@ function log(message, options = { type: 'error' }) {
         core.endGroup();
     }
 }
-exports.log = log;
+exports.annotation = annotation;
 function absPath(source) {
     if (node_path_1.default.isAbsolute(source)) {
         return source;
@@ -100,3 +88,100 @@ function cwd() {
     return node_process_1.default.cwd();
 }
 exports.cwd = cwd;
+/**
+ * Flatten given string or an array of strings using newline as a glue
+ */
+function string(string) {
+    return Array.isArray(string) ? string.join('\n') : string;
+}
+function _log(message, type) {
+    console[type](string(message));
+}
+function error(...message) {
+    _log(message, 'error');
+}
+exports.error = error;
+/**
+ * Alias for log()
+ */
+function info(...message) {
+    _log(message, 'info');
+}
+exports.info = info;
+function log(...message) {
+    _log(message, 'log');
+}
+exports.log = log;
+/**
+ * Alias for error()
+ */
+function warn(...message) {
+    _log(message, 'warn');
+}
+exports.warn = warn;
+/**
+ * Make sure stderr is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstderr
+ */
+function stderrToString(stderr) {
+    if (!stderr) {
+        return '';
+    }
+    return stderr.toString();
+}
+/**
+ * Make sure stdout is always a string as it could be null
+ * @link https://nodejs.org/docs/latest-v16.x/api/child_process.html#subprocessstdout
+ */
+function stdoutToString(stdout) {
+    if (!stdout) {
+        return '';
+    }
+    return stdout.toString();
+}
+/**
+ * Convert output of command() function to a log message (single string)
+ */
+function spawnSyncToString(spawnSync) {
+    const array = [];
+    const stderr = stderrToString(spawnSync.stderr);
+    if (stderr.length) {
+        array.push('Stderr: ' + spawnSync.stderr.toString());
+    }
+    const stdout = stdoutToString(spawnSync.stdout);
+    if (stdout.length) {
+        array.push('Stdout: ' + stdout);
+    }
+    if (spawnSync.error) {
+        array.push(spawnSync.error.name + ': ' + spawnSync.error.message);
+    }
+    if (spawnSync.signal) {
+        array.push('Signal used to kill the subprocess: ' + spawnSync.signal.toString());
+    }
+    if (spawnSync.status) {
+        array.push('Exit code of the subprocess: ' + spawnSync.status.toString());
+    }
+    return string(array);
+}
+function errorForSpawnSync(spawnSync, ...message) {
+    error(string(message), spawnSyncToString(spawnSync));
+}
+exports.errorForSpawnSync = errorForSpawnSync;
+/**
+ * Alias for logForSpawnSync()
+ */
+function infoForSpawnSync(spawnSync, ...message) {
+    info(string(message), spawnSyncToString(spawnSync));
+}
+exports.infoForSpawnSync = infoForSpawnSync;
+function logForSpawnSync(spawnSync, ...message) {
+    log(string(message), spawnSyncToString(spawnSync));
+}
+exports.logForSpawnSync = logForSpawnSync;
+/**
+ * Alias for errorForSpawnSync()
+ */
+function warnForSpawnSync(spawnSync, message) {
+    warn(string(message), spawnSyncToString(spawnSync));
+}
+exports.warnForSpawnSync = warnForSpawnSync;

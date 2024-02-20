@@ -33,10 +33,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Artifact = void 0;
-const path = __importStar(require("node:path"));
-const core = __importStar(require("@actions/core"));
+const utilities_1 = require("./utilities");
 const glob = __importStar(require("@actions/glob"));
 const artifact = __importStar(require("@actions/artifact"));
+const path = __importStar(require("node:path"));
+const fs = __importStar(require("node:fs"));
 class Artifact {
     constructor() {
         this.client = artifact.create();
@@ -57,21 +58,19 @@ class Artifact {
             // code to decide if process should be stopped or not
             const options = { continueOnError: true, retentionDays: days };
             if (files.length === 0) {
-                core.notice(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
+                (0, utilities_1.error)(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
                 return false;
             }
             let upload = undefined;
             try {
                 upload = yield this.client.uploadArtifact(name, files, workDir, options);
             }
-            catch (error) {
-                core.error(`Failed to save artifact '${name}', see below for details`);
-                core.error(`${error}`);
+            catch (err) {
+                (0, utilities_1.error)('Failed to save artifact: ' + name, 'Error: ' + err);
                 return false;
             }
             if (upload.failedItems.length > 0) {
-                const failed = upload.failedItems.join('\n');
-                core.error(`Failied to upload some files for artifact '${name}':\n${failed}`);
+                (0, utilities_1.error)('Failed to upload some files for artifact', 'Artifact: ' + name, 'Files:', ...upload.failedItems);
                 return false;
             }
             return true;
@@ -95,7 +94,13 @@ class Artifact {
             const absInput = arrInput.map((i) => this.absPath(i, workDir));
             const promises = absInput.map((i) => this.inputToFiles(i));
             const files = yield Promise.all(promises);
-            return files.flat();
+            return files.flat().filter((file) => {
+                const exists = fs.existsSync(file);
+                if (!exists) {
+                    (0, utilities_1.error)('Given artifact file does not exist: ' + file);
+                }
+                return exists;
+            });
         });
     }
     /**

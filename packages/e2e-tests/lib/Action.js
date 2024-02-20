@@ -33,8 +33,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Action = void 0;
-const core = __importStar(require("@actions/core"));
 const Browsers_1 = require("./Browsers");
+const utilities_1 = require("./utilities");
+const core = __importStar(require("@actions/core"));
 class Action {
     constructor(inputs, contexts, spawnSync) {
         this.inputs = inputs;
@@ -48,9 +49,10 @@ class Action {
             const barista = this.contexts.make('barista', this.inputs.baristaBranch());
             const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
             const skipTests = this.inputs.skipTests();
+            const skipBarista = this.inputs.baristaBranch().length === 0;
             yield cafe.git.clone();
             // it is optional to clone barista repo
-            if (this.inputs.baristaBranch()) {
+            if (!skipBarista) {
                 yield barista.git.clone();
                 yield barista.yarn.install({ frozenLockfile: true });
                 yield barista.yarn.build();
@@ -61,13 +63,33 @@ class Action {
             this.mkcert();
             this.ddev();
             this.browsers.install(e2e);
+            yield this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
             if (!skipTests) {
                 yield e2e.yarn.test(this.getEnvVars(cafe, barista));
             }
         });
     }
+    showGitSummary(contexts) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const repos = contexts.map((context) => {
+                return context.repo;
+            });
+            core.summary.addHeading('Git information', 2);
+            core.summary.addTable([
+                [
+                    { data: 'Repo', header: true },
+                    { data: 'Branch', header: true },
+                    { data: 'Commit', header: true },
+                ],
+                ...repos.map((repo) => {
+                    return [repo.name, repo.branch, repo.commit.substring(0, 7)];
+                }),
+            ]);
+            yield core.summary.write();
+        });
+    }
     mkcert() {
-        core.info('Installing mkcert');
+        (0, utilities_1.log)('Installing mkcert...');
         this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
     }
     getDdevVersion() {
@@ -78,7 +100,7 @@ class Action {
         return 'v' + version;
     }
     ddev() {
-        core.info('Installing DDEV');
+        (0, utilities_1.log)('Installing DDEV...');
         const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
         const bashArgs = [];
         const ddevVersion = this.getDdevVersion();

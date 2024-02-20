@@ -24,9 +24,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpawnSync = void 0;
-const fs = __importStar(require("fs"));
-const core = __importStar(require("@actions/core"));
-const child_process = __importStar(require("child_process"));
+const utilities_1 = require("./utilities");
+const fs = __importStar(require("node:fs"));
+const child_process = __importStar(require("node:child_process"));
 class SpawnSync {
     constructor(cwd) {
         this.cwd = cwd;
@@ -52,7 +52,13 @@ class SpawnSync {
         };
         const buffer = child_process.spawnSync(command, args, options);
         if (buffer.status !== 0) {
-            core.setFailed(`Failed to execute command! For more details see above! \ncommand: ${command} \nargs: ${args.join(', ')}`);
+            (0, utilities_1.errorForSpawnSync)(buffer, 'Failed to execute command!', 'Command: ' + command, 'Arguments: ' + args.join(', '));
+            if (!opts.noAnnotation) {
+                (0, utilities_1.annotation)(`Failed to execute '${command}'! (click for more details)`);
+            }
+            if (!opts.noException) {
+                throw new Error();
+            }
         }
         return buffer;
     }
@@ -75,7 +81,9 @@ class SpawnSync {
     getCwd(override) {
         if (override) {
             if (!fs.existsSync(override)) {
-                core.setFailed(`cwd does not exist: \n${override}`);
+                (0, utilities_1.error)(`Attempting to override 'cwd'...`, 'Given value points to a non-existing path!', 'Path: ' + override);
+                (0, utilities_1.annotation)(`Trying to use invalid value for 'cwd' when executing command!`);
+                throw new Error();
             }
             return override;
         }

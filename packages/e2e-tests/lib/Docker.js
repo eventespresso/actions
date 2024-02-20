@@ -33,11 +33,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Docker = void 0;
-const core = __importStar(require("@actions/core"));
+const utilities_1 = require("./utilities");
 const cache = __importStar(require("@actions/cache"));
-const os = __importStar(require("os"));
-const fs = __importStar(require("fs"));
-const path = __importStar(require("path"));
+const os = __importStar(require("node:os"));
+const fs = __importStar(require("node:fs"));
+const path = __importStar(require("node:path"));
 /**
  * This class add ability to save and restore docker images
  * Currently, it is not in use due to sub-optimal performance results
@@ -50,19 +50,18 @@ class Docker {
     saveImages() {
         return __awaiter(this, void 0, void 0, function* () {
             const [fileName, workDir, filePath] = this.getParams();
-            core.notice(`Saving docker images to cache: ${fileName}`);
+            (0, utilities_1.log)('Saving docker images to cache: ' + fileName);
             const imagesList = this.listImages();
             this.spawnSync.call('docker', ['save', '--output', filePath, ...imagesList]);
             if (!fs.existsSync(filePath)) {
-                core.error(`Failed to save docker images at ${filePath}`);
+                (0, utilities_1.error)('Failed to save docker images at', 'File path: ' + filePath);
                 return false;
             }
             try {
                 yield cache.saveCache([filePath], fileName);
             }
-            catch (error) {
-                core.error('Failed to save docker images into cache');
-                core.error(error);
+            catch (err) {
+                (0, utilities_1.error)('Failed to save docker images into cache', `${err}`);
                 return false;
             }
             return true;
@@ -75,13 +74,12 @@ class Docker {
             try {
                 restore = yield cache.restoreCache([filePath], fileName, [], {});
             }
-            catch (error) {
-                core.notice('Failed to restore docker images from cache');
-                core.notice(error);
+            catch (err) {
+                (0, utilities_1.error)('Failed to restore docker images from cache', `${err}`);
                 return false;
             }
             if (!restore) {
-                core.notice('No cache found for docker images');
+                (0, utilities_1.error)('No cache found for docker images');
                 return false;
             }
             this.spawnSync.call('docker', ['load', '--input', filePath]);

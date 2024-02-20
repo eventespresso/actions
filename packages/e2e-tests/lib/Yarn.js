@@ -33,10 +33,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Yarn = void 0;
-const os = __importStar(require("os"));
-const path = __importStar(require("path"));
+const utilities_1 = require("./utilities");
 const core = __importStar(require("@actions/core"));
 const glob = __importStar(require("@actions/glob"));
+const os = __importStar(require("node:os"));
+const path = __importStar(require("node:path"));
+const fs = __importStar(require("node:fs"));
 class Yarn {
     constructor(repo, spawnSync, cache, artifact, tar, gpg) {
         this.repo = repo;
@@ -69,22 +71,29 @@ class Yarn {
             // see https://playwright.dev/docs/test-reporters#html-reporter
             // used by CLI
             // see https://playwright.dev/docs/test-cli#reference
-            const reportPath = path.resolve(os.tmpdir(), 'playwright-report');
+            const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
             const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
-            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: reportPath }, envVars);
+            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: htmlReportPath }, envVars);
             // if docker cache will become available, restore should be called here
             const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
                 env,
+                noAnnotation: true,
+                noException: true,
             });
             // if docker cache will become available, save should be called here
             if (buffer.status !== 0) {
-                yield this.saveReport(reportPath);
+                yield this.saveHtmlReport(htmlReportPath);
                 yield this.saveTestResults(resultsPath);
+                core.setFailed('End-to-end tests did not pass successfully!');
             }
             return this;
         });
     }
     saveArtifact(file, report) {
+        if (!fs.existsSync(file)) {
+            (0, utilities_1.error)('Cannot save artifact at the given path as the file is not found!', 'File path: ' + file);
+            return false;
+        }
         const tarball = this.tar.create(file);
         if (!tarball) {
             return false;
@@ -97,7 +106,7 @@ class Yarn {
         const rootDir = path.dirname(gpg);
         return this.artifact.save(fileName, rootDir, report.name, report.expiry);
     }
-    saveReport(reportPath) {
+    saveHtmlReport(reportPath) {
         return __awaiter(this, void 0, void 0, function* () {
             // include workflow # as well as attempt # in the report (artifact) filename
             const name = `playwright-report-run-${process.env.GITHUB_RUN_NUMBER}-attempt-${process.env.GITHUB_RUN_ATTEMPT}`;
@@ -147,10 +156,10 @@ class Yarn {
             // if cache was found, the *outcome* of the command was cached
             // so there is no need to waste cpu cycles running it again
             if (cache) {
-                core.info(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
+                (0, utilities_1.log)(`Found yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
                 return;
             }
-            core.notice(`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
+            (0, utilities_1.log)(`Did not find yarn cache for command 'yarn ${args.join(' ')}' in git repository '${this.repo.name}'`);
             this.spawnSync.call('yarn', args);
             yield this.cache.save(key, paths);
         });
