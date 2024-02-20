@@ -55,15 +55,19 @@ const addAssigneesAfterReviewApproved = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
-const addLabels = async (labelIds: Array<ID>, labelableId: ID): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+const addLabels = async (
+	labelIds: Array<ID>,
+	labelableId: ID
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	try {
 		// eslint-disable-next-line no-console
 		console.log('%c labelMutation', 'color: HotPink;', { labelableId, labelIds });
 		return await addLabelsMutation(labelIds, labelableId);
 	} catch (error) {
 		core.setFailed(error.message);
+		return false;
 	}
 };
 
@@ -86,18 +90,28 @@ const hasLabel = (pullRequest: PullRequest, labelableId: ID): boolean => {
 };
 
 /**
- * adds the `has fix` label to the specified Issue
+ * adds the `has fix` label to the specified Issue,
+ * since it's possible that the Issue is in the other repo
+ * we first try the label from the same issue as the PR
+ * if that fails, we try the label from the other repo
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignHasFixLabel = async (
 	labels: LabelList,
+	otherRepoLabels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	await removeAllStatusLabels(labels, labelableId, labels.statusNeedsTesting.id);
-	return await addLabels([labels.statusHasFix.id], labelableId);
+	const added = await addLabels([labels.statusHasFix.id], labelableId);
+	// label might be for the other repo, so if the above does not return false, return it
+	if (added !== false) {
+		return added;
+	}
+	// otherwise try the other repo's label
+	return await addLabels([otherRepoLabels.statusHasFix.id], labelableId);
 };
 
 /**
@@ -105,12 +119,12 @@ const assignHasFixLabel = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterClose = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusInvalid.id], labelableId);
 };
 
@@ -119,12 +133,12 @@ const assignLabelsAfterClose = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterMerge = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusCompleted.id], labelableId);
 };
 
@@ -133,12 +147,12 @@ const assignLabelsAfterMerge = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterCreated = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusNew.id], labelableId);
 };
 
@@ -147,12 +161,12 @@ const assignLabelsAfterCreated = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewApproved = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusApproved.id, labels.statusNeedsTesting.id], labelableId);
 };
 
@@ -161,12 +175,12 @@ const assignLabelsAfterReviewApproved = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewChangesRequested = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusPleaseFix.id], labelableId);
 };
 
@@ -175,12 +189,12 @@ const assignLabelsAfterReviewChangesRequested = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewRequested = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusCodeReview.id], labelableId);
 };
 
@@ -189,12 +203,12 @@ const assignLabelsAfterReviewRequested = async (
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewRequestRemoved = async (
 	labels: LabelList,
 	labelableId: ID
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	return await addLabels([labels.statusInProgress.id], labelableId);
 };
 
@@ -204,13 +218,13 @@ const assignLabelsAfterReviewRequestRemoved = async (
  * @param labels LabelList
  * @param labelableId ID
  * @param except ID 		ID of a label to exclude from removal
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const removeAllStatusLabels = async (
 	labels: LabelList,
 	labelableId: ID,
 	except: ID = ''
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	try {
 		let labelIds: Array<ID> = [
 			labels.statusNew.id,
@@ -244,17 +258,19 @@ const removeAllStatusLabels = async (
  * loops through any related closing Issues and assigns the `has fix` label
  *
  * @param closingIssues IssueConnection
- * @param labels LabelList
+ * @param repo RepoName
  */
-export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection, labels: LabelList) => {
+export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection, repo: RepoName) => {
 	// eslint-disable-next-line no-console
 	console.log('%c assignLabelsToClosingIssues', 'color: HotPink;', closingIssues);
 	if (closingIssues.totalCount > 0) {
 		const issues = closingIssues.nodes;
+		const labels = repoLabels[repo];
+		const otherRepoLabels = repoLabels[repo === 'barista' ? 'cafe' : 'barista'];
 		for (const issue of issues) {
 			// eslint-disable-next-line no-console
 			console.log('%c  closing Issue', 'color: DeepPink;', issue);
-			await assignHasFixLabel(labels, issue?.id);
+			await assignHasFixLabel(labels, otherRepoLabels, issue?.id);
 		}
 	}
 };
@@ -264,13 +280,14 @@ export const assignLabelsToClosingIssues = async (closingIssues: IssueConnection
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 export const assignLabelsToOpenPullRequests = async (
 	labels: LabelList,
-	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string> => {
-	await assignLabelsToClosingIssues(pullRequest.closingIssuesReferences, labels);
+	pullRequest: PullRequest,
+	repo: RepoName
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string | false> => {
+	await assignLabelsToClosingIssues(pullRequest.closingIssuesReferences, repo);
 	// for OPEN PRs, let's first look whether a code review has either been requested or received a response
 	// see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
 	switch (pullRequest.reviewDecision) {
@@ -304,12 +321,12 @@ export const assignLabelsToOpenPullRequests = async (
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 export const assignLabelsToClosedPullRequests = async (
 	labels: LabelList,
 	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	if (pullRequest.reviewDecision === PR_REVIEW_DECISION.APPROVED) {
 		await removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
 		return await assignLabelsAfterMerge(labels, pullRequest.id);
@@ -323,12 +340,12 @@ export const assignLabelsToClosedPullRequests = async (
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 export const assignLabelsToMergedPullRequests = async (
 	labels: LabelList,
 	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse>> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | false> => {
 	await removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
 	return await assignLabelsAfterMerge(labels, pullRequest.id);
 };
@@ -338,12 +355,12 @@ export const assignLabelsToMergedPullRequests = async (
  *
  * @param repo: RepoName
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | string | false>
  */
 export const assignStatusLabels = async (
 	repo: RepoName,
 	pullRequest: PullRequest
-): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string> => {
+): Promise<GraphQlQueryResponse<LabelsQueryResponse> | string | false> => {
 	try {
 		// eslint-disable-next-line no-console
 		console.log('%c pullRequest.state', 'color: HotPink;', pullRequest.state);
@@ -354,7 +371,7 @@ export const assignStatusLabels = async (
 		console.log('%c repoLabels', 'color: DeepPink;', labels);
 		switch (pullRequest.state) {
 			case PR_STATE.OPEN:
-				return await assignLabelsToOpenPullRequests(labels, pullRequest);
+				return await assignLabelsToOpenPullRequests(labels, pullRequest, repo);
 			case PR_STATE.CLOSED:
 				return await assignLabelsToClosedPullRequests(labels, pullRequest);
 			case PR_STATE.MERGED:
