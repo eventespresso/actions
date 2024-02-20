@@ -1,7 +1,7 @@
-import * as os from 'os';
-import * as fs from 'fs';
-import * as Path from 'path';
-import * as core from '@actions/core';
+import { error, annotation } from './utilities';
+import * as os from 'node:os';
+import * as fs from 'node:fs';
+import * as Path from 'node:path';
 
 type Parameters = {
 	name: string;
@@ -14,6 +14,15 @@ class Repository {
 	public readonly branch: string;
 	public readonly cwd: string;
 	public readonly remote: string;
+	private _commit = '❌';
+
+	set commit(sha: string) {
+		this._commit = sha;
+	}
+
+	get commit(): string {
+		return this._commit;
+	}
 
 	constructor(params: Parameters) {
 		const name = this.sanitizeName(params.name);
@@ -33,7 +42,9 @@ class Repository {
 
 	private checkPathAvailable(path: string): void {
 		if (fs.existsSync(path)) {
-			core.setFailed(`Given path already exists: \n${path}`);
+			error(`Cannot perform 'git clone' as the destination path already exists!`, 'Path: ' + path);
+			annotation('Cannot clone repository! (click for more details)');
+			throw new Error();
 		}
 	}
 

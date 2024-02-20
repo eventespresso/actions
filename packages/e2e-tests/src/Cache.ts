@@ -1,11 +1,11 @@
-import * as core from '@actions/core';
-import * as cache from '@actions/cache';
 import { Repository } from './Repository';
+import { error, annotation } from './utilities';
+import * as cache from '@actions/cache';
 
 class Cache {
 	constructor(private readonly repo: Repository) {
 		if (!cache.isFeatureAvailable()) {
-			core.error('Cache service is not available');
+			error('Cache service is not available');
 		}
 	}
 
@@ -18,8 +18,8 @@ class Cache {
 			// .slice() is a required workaround until GitHub fixes cache
 			// https://github.com/actions/toolkit/issues/1377
 			return await cache.saveCache(paths.slice(), k);
-		} catch (error) {
-			core.error(`Failed to save cache with key: \n${k}\n${error}`);
+		} catch (err) {
+			error('Failed to save cache with key:' + k, 'Error: ' + `${err}`);
 			return false;
 		}
 	}
@@ -31,11 +31,11 @@ class Cache {
 			// .slice() is a required workaround until GitHub fixes cache
 			// https://github.com/actions/toolkit/issues/1377
 			restore = await cache.restoreCache(paths.slice(), k);
-		} catch (error) {
-			core.error(`${error}`);
+		} catch (err) {
+			error(`${err}`);
 		}
 		if (typeof restore === 'undefined') {
-			core.notice(`Failed to retrieve cache with key: \n${k}`);
+			error(`Failed to retrieve cache with key: \n${k}`);
 			return false;
 		}
 		return true;
@@ -44,10 +44,10 @@ class Cache {
 	private makeKey(key: string): string {
 		// generate contextual key since we are dealing with multiple repositories
 		const k = `repo-${this.repo.name}-${this.repo.branch}-${key}`;
-		if (k.length > 512) {
-			// https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
-			const msg = `Cache key exceeded length of 512 chars: \n${k}`;
-			core.setFailed(msg);
+		const limit = 512; // https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#input-parameters-for-the-cache-action
+		if (k.length > limit) {
+			annotation(`Cache key exceeded length of ${limit} chars: ` + k);
+			throw new Error();
 		}
 		return k;
 	}

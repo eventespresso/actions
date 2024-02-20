@@ -1,8 +1,9 @@
-import * as path from 'node:path';
-import * as core from '@actions/core';
+import { error } from './utilities';
 import * as glob from '@actions/glob';
 import * as artifact from '@actions/artifact';
 import type { ArtifactClient, UploadOptions } from '@actions/artifact';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 class Artifact {
 	private readonly client: ArtifactClient;
@@ -28,9 +29,7 @@ class Artifact {
 		const options: UploadOptions = { continueOnError: true, retentionDays: days };
 
 		if (files.length === 0) {
-			core.notice(
-				`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`
-			);
+			error(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
 			return false;
 		}
 
@@ -38,15 +37,13 @@ class Artifact {
 
 		try {
 			upload = await this.client.uploadArtifact(name, files, workDir, options);
-		} catch (error) {
-			core.error(`Failed to save artifact '${name}', see below for details`);
-			core.error(`${error}`);
+		} catch (err) {
+			error('Failed to save artifact: ' + name, 'Error: ' + err);
 			return false;
 		}
 
 		if (upload.failedItems.length > 0) {
-			const failed = upload.failedItems.join('\n');
-			core.error(`Failied to upload some files for artifact '${name}':\n${failed}`);
+			error('Failed to upload some files for artifact', 'Artifact: ' + name, 'Files:', ...upload.failedItems);
 			return false;
 		}
 
@@ -71,7 +68,13 @@ class Artifact {
 		const absInput = arrInput.map((i) => this.absPath(i, workDir));
 		const promises = absInput.map((i) => this.inputToFiles(i));
 		const files = await Promise.all(promises);
-		return files.flat();
+		return files.flat().filter((file) => {
+			const exists = fs.existsSync(file);
+			if (!exists) {
+				error('Given artifact file does not exist: ' + file);
+			}
+			return exists;
+		});
 	}
 
 	/**

@@ -2,8 +2,10 @@ import { SpawnSync } from './SpawnSync';
 import { InputFactory } from './InputFactory';
 import { ContextFactory } from './ContextFactory';
 import { Context } from './Context';
-import * as core from '@actions/core';
 import { Browsers } from './Browsers';
+import { log } from './utilities';
+import * as core from '@actions/core';
+import { Repository } from './Repository';
 
 class Action {
 	private readonly browsers: Browsers;
@@ -21,11 +23,12 @@ class Action {
 		const barista = this.contexts.make('barista', this.inputs.baristaBranch());
 		const e2e = this.contexts.make('e2e', this.inputs.e2eBranch());
 		const skipTests = this.inputs.skipTests();
+		const skipBarista = this.inputs.baristaBranch().length === 0;
 
 		await cafe.git.clone();
 
 		// it is optional to clone barista repo
-		if (this.inputs.baristaBranch()) {
+		if (!skipBarista) {
 			await barista.git.clone();
 			await barista.yarn.install({ frozenLockfile: true });
 			await barista.yarn.build();
@@ -39,13 +42,33 @@ class Action {
 		this.ddev();
 		this.browsers.install(e2e);
 
+		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
+
 		if (!skipTests) {
 			await e2e.yarn.test(this.getEnvVars(cafe, barista));
 		}
 	}
 
+	private async showGitSummary(contexts: InstanceType<typeof Context>[]): Promise<void> {
+		const repos: InstanceType<typeof Repository>[] = contexts.map((context) => {
+			return context.repo;
+		});
+		core.summary.addHeading('Git information', 2);
+		core.summary.addTable([
+			[
+				{ data: 'Repo', header: true },
+				{ data: 'Branch', header: true },
+				{ data: 'Commit', header: true },
+			],
+			...repos.map((repo) => {
+				return [repo.name, repo.branch, repo.commit.substring(0, 7)];
+			}),
+		]);
+		await core.summary.write();
+	}
+
 	private mkcert(): void {
-		core.info('Installing mkcert');
+		log('Installing mkcert...');
 		this.spawnSync.call('sudo', ['apt-get', 'install', '--yes', 'libnss3-tools', 'mkcert']);
 	}
 
@@ -58,7 +81,7 @@ class Action {
 	}
 
 	private ddev(): void {
-		core.info('Installing DDEV');
+		log('Installing DDEV...');
 		const curl = this.spawnSync.call('curl', ['-fsSL', 'https://ddev.com/install.sh'], { stdout: 'pipe' });
 		const bashArgs: string[] = [];
 		const ddevVersion = this.getDdevVersion();

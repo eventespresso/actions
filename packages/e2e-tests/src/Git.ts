@@ -1,13 +1,13 @@
 import { Cache } from './Cache';
 import { SpawnSync } from './SpawnSync';
 import { Repository } from './Repository';
-import * as core from '@actions/core';
+import { log, error, annotation } from './utilities';
 
 class Git {
 	private readonly spawnSync: SpawnSync;
 	private readonly cache: Cache;
 
-	constructor(private readonly repo: Repository) {
+	constructor(public readonly repo: Repository) {
 		this.spawnSync = new SpawnSync(repo.cwd);
 		this.cache = new Cache(repo);
 	}
@@ -30,10 +30,10 @@ class Git {
 			return this.cache.restore(key, [this.repo.cwd]);
 		};
 		if (await cloneFromCache()) {
-			core.info(`Found git repository '${this.repo.name}' in cache`);
+			log(`Found git repository '${this.repo.name}' in cache`);
 			return this;
 		}
-		core.notice(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
+		log(`Did not find git repository '${this.repo.name}' in cache, cloning from remote`);
 		cloneFromRemote();
 		await this.cache.save(key, [this.repo.cwd]);
 		return this;
@@ -54,10 +54,20 @@ class Git {
 		const sha = cut.stdout;
 
 		if (!sha || sha.length === 0) {
-			core.setFailed(
-				`Failed to obtain latest commit sha for repository '${this.repo.name}' for branch '${this.repo.branch}' \ngit refs: \n${git.stdout} \ncut outcome: ${sha}`
+			error(
+				'Details of the git parameters:',
+				'Repository: ' + this.repo.name,
+				'Branch: ' + this.repo.branch,
+				'Remote refs: ' + git.stdout,
+				'Commit sha: ' + sha
 			);
+			annotation(
+				'Failed to obtain the latest git commit sha for the given repository and branch! (click for more details)'
+			);
+			throw new Error();
 		}
+
+		this.repo.commit = sha;
 
 		return sha;
 	}

@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as core from '@actions/core';
-import * as child_process from 'child_process';
+import { error, errorForSpawnSync, annotation } from './utilities';
+import * as fs from 'node:fs';
+import * as child_process from 'node:child_process';
 import type {
 	ProcessEnvOptions,
 	StdioOptions,
@@ -8,7 +8,7 @@ import type {
 	SpawnSyncReturns,
 	SpawnSyncOptions,
 	SpawnSyncOptionsWithStringEncoding,
-} from 'child_process';
+} from 'node:child_process';
 
 type Call = (
 	command: string,
@@ -38,6 +38,8 @@ class SpawnSync implements ExecSyncInterface {
 			stdout?: IOType;
 			stderr?: IOType;
 			env?: ProcessEnvOptions['env'];
+			noAnnotation?: boolean; // should GitHub annotation be silenced?
+			noException?: boolean; // should exception be *not* thrown?
 		} = {}
 	): SpawnSyncReturns<string> {
 		const [command, arg0] = this.overrideCommand(cmd);
@@ -63,11 +65,18 @@ class SpawnSync implements ExecSyncInterface {
 		const buffer = child_process.spawnSync(command, args, options);
 
 		if (buffer.status !== 0) {
-			core.setFailed(
-				`Failed to execute command! For more details see above! \ncommand: ${command} \nargs: ${args.join(
-					', '
-				)}`
+			errorForSpawnSync(
+				buffer,
+				'Failed to execute command!',
+				'Command: ' + command,
+				'Arguments: ' + args.join(', ')
 			);
+			if (!opts.noAnnotation) {
+				annotation(`Failed to execute '${command}'! (click for more details)`);
+			}
+			if (!opts.noException) {
+				throw new Error();
+			}
 		}
 
 		return buffer;
@@ -94,7 +103,13 @@ class SpawnSync implements ExecSyncInterface {
 	private getCwd(override?: SpawnSyncOptions['cwd']): SpawnSyncOptions['cwd'] {
 		if (override) {
 			if (!fs.existsSync(override)) {
-				core.setFailed(`cwd does not exist: \n${override}`);
+				error(
+					`Attempting to override 'cwd'...`,
+					'Given value points to a non-existing path!',
+					'Path: ' + override
+				);
+				annotation(`Trying to use invalid value for 'cwd' when executing command!`);
+				throw new Error();
 			}
 			return override;
 		}
