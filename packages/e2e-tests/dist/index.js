@@ -67359,6 +67359,7 @@ class Action {
             yield e2e.git.clone();
             yield e2e.yarn.install({ frozenLockfile: true });
             // install dependencies
+            this.updateAptRepoIndex();
             this.mkcert();
             this.ddev();
             this.browsers.install(e2e);
@@ -67386,6 +67387,14 @@ class Action {
             ]);
             yield core.summary.write();
         });
+    }
+    /**
+     * @link [reference](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/customizing-github-hosted-runners#installing-software-on-ubuntu-runners)
+     * @link [GitHub issue #61](https://github.com/eventespresso/actions/issues/61)
+     */
+    updateAptRepoIndex() {
+        (0, utilities_1.log)('Updating apt repository index...');
+        this.spawnSync.call('sudo', ['apt-get', 'update']);
     }
     mkcert() {
         (0, utilities_1.log)('Installing mkcert...');
