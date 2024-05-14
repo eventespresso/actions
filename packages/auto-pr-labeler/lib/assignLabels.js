@@ -71,7 +71,7 @@ const addAssigneesAfterReviewApproved = (assignableId) => __awaiter(void 0, void
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const addLabels = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -81,6 +81,7 @@ const addLabels = (labelIds, labelableId) => __awaiter(void 0, void 0, void 0, f
     }
     catch (error) {
         core.setFailed(error.message);
+        return false;
     }
 });
 /**
@@ -102,22 +103,31 @@ const hasLabel = (pullRequest, labelableId) => {
     }
 };
 /**
- * adds the `has fix` label to the specified Issue
+ * adds the `has fix` label to the specified Issue,
+ * since it's possible that the Issue is in the other repo
+ * we first try the label from the same issue as the PR
+ * if that fails, we try the label from the other repo
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
-const assignHasFixLabel = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
+const assignHasFixLabel = (labels, otherRepoLabels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     yield removeAllStatusLabels(labels, labelableId, labels.statusNeedsTesting.id);
-    return yield addLabels([labels.statusHasFix.id], labelableId);
+    const added = yield addLabels([labels.statusHasFix.id], labelableId);
+    // label might be for the other repo, so if the above does not return false, return it
+    if (added !== false) {
+        return added;
+    }
+    // otherwise try the other repo's label
+    return yield addLabels([otherRepoLabels.statusHasFix.id], labelableId);
 });
 /**
  * adds the `invalid` label to the specified Pull Request
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusInvalid.id], labelableId);
@@ -127,7 +137,7 @@ const assignLabelsAfterClose = (labels, labelableId) => __awaiter(void 0, void 0
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterMerge = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusCompleted.id], labelableId);
@@ -137,7 +147,7 @@ const assignLabelsAfterMerge = (labels, labelableId) => __awaiter(void 0, void 0
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusNew.id], labelableId);
@@ -147,7 +157,7 @@ const assignLabelsAfterCreated = (labels, labelableId) => __awaiter(void 0, void
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusApproved.id, labels.statusNeedsTesting.id], labelableId);
@@ -157,7 +167,7 @@ const assignLabelsAfterReviewApproved = (labels, labelableId) => __awaiter(void 
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewChangesRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusPleaseFix.id], labelableId);
@@ -167,7 +177,7 @@ const assignLabelsAfterReviewChangesRequested = (labels, labelableId) => __await
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewRequested = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusCodeReview.id], labelableId);
@@ -177,7 +187,7 @@ const assignLabelsAfterReviewRequested = (labels, labelableId) => __awaiter(void
  *
  * @param labels LabelList
  * @param labelableId ID
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield addLabels([labels.statusInProgress.id], labelableId);
@@ -188,7 +198,7 @@ const assignLabelsAfterReviewRequestRemoved = (labels, labelableId) => __awaiter
  * @param labels LabelList
  * @param labelableId ID
  * @param except ID 		ID of a label to exclude from removal
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -224,17 +234,19 @@ const removeAllStatusLabels = (labels, labelableId, except = '') => __awaiter(vo
  * loops through any related closing Issues and assigns the `has fix` label
  *
  * @param closingIssues IssueConnection
- * @param labels LabelList
+ * @param repo RepoName
  */
-const assignLabelsToClosingIssues = (closingIssues, labels) => __awaiter(void 0, void 0, void 0, function* () {
+const assignLabelsToClosingIssues = (closingIssues, repo) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line no-console
     console.log('%c assignLabelsToClosingIssues', 'color: HotPink;', closingIssues);
     if (closingIssues.totalCount > 0) {
         const issues = closingIssues.nodes;
+        const labels = labels_1.repoLabels[repo];
+        const otherRepoLabels = labels_1.repoLabels[repo === 'barista' ? 'cafe' : 'barista'];
         for (const issue of issues) {
             // eslint-disable-next-line no-console
             console.log('%c  closing Issue', 'color: DeepPink;', issue);
-            yield assignHasFixLabel(labels, issue === null || issue === void 0 ? void 0 : issue.id);
+            yield assignHasFixLabel(labels, otherRepoLabels, issue === null || issue === void 0 ? void 0 : issue.id);
         }
     }
 });
@@ -244,10 +256,10 @@ exports.assignLabelsToClosingIssues = assignLabelsToClosingIssues;
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
-const assignLabelsToOpenPullRequests = (labels, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, exports.assignLabelsToClosingIssues)(pullRequest.closingIssuesReferences, labels);
+const assignLabelsToOpenPullRequests = (labels, pullRequest, repo) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, exports.assignLabelsToClosingIssues)(pullRequest.closingIssuesReferences, repo);
     // for OPEN PRs, let's first look whether a code review has either been requested or received a response
     // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
     switch (pullRequest.reviewDecision) {
@@ -281,7 +293,7 @@ exports.assignLabelsToOpenPullRequests = assignLabelsToOpenPullRequests;
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsToClosedPullRequests = (labels, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     if (pullRequest.reviewDecision === constants_1.PR_REVIEW_DECISION.APPROVED) {
@@ -297,7 +309,7 @@ exports.assignLabelsToClosedPullRequests = assignLabelsToClosedPullRequests;
  *
  * @param labels LabelList
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | false>
  */
 const assignLabelsToMergedPullRequests = (labels, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     yield removeAllStatusLabels(labels, pullRequest.id, labels.statusCompleted.id);
@@ -309,7 +321,7 @@ exports.assignLabelsToMergedPullRequests = assignLabelsToMergedPullRequests;
  *
  * @param repo: RepoName
  * @param pullRequest: PullRequest
- * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse>>
+ * @returns Promise<GraphQlQueryResponse<LabelsQueryResponse> | string | false>
  */
 const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -322,7 +334,7 @@ const assignStatusLabels = (repo, pullRequest) => __awaiter(void 0, void 0, void
         console.log('%c repoLabels', 'color: DeepPink;', labels);
         switch (pullRequest.state) {
             case constants_1.PR_STATE.OPEN:
-                return yield (0, exports.assignLabelsToOpenPullRequests)(labels, pullRequest);
+                return yield (0, exports.assignLabelsToOpenPullRequests)(labels, pullRequest, repo);
             case constants_1.PR_STATE.CLOSED:
                 return yield (0, exports.assignLabelsToClosedPullRequests)(labels, pullRequest);
             case constants_1.PR_STATE.MERGED:
