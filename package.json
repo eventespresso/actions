@@ -10,6 +10,7 @@
 	},
 	"scripts": {
 		"build": "yarn workspaces run all",
+		"lint": "yarn workspaces run lint",
 		"test": "jest --watchAll",
 		"test:ci": "jest"
 	},
