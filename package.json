@@ -19,7 +19,7 @@
 		]
 	},
 	"dependencies": {
-		"@actions/artifact": "^1.1.1",
+		"@actions/artifact": "^2.1.7",
 		"@actions/cache": "^3.2.2",
 		"@actions/core": "^1.2.6",
 		"@actions/exec": "^1.0.4",
