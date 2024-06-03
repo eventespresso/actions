@@ -3258,9 +3258,9 @@ iterator.prototype@^1.1.2:
     set-function-name "^2.0.1"
 
 jackspeak@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-3.2.0.tgz#54e5abaa1c673bace97873d0599f3dab0e22b850"
-  integrity sha512-eXIwN9gutMuB1AMW241gIHSEeaSMafWnxWXb/JGYWqifway4QgqBJLl7nYlmhGrxnHQ3wNc/QYFZ95aDtHHzpA==
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-3.2.2.tgz#339552ff327a1e868f386b913bf6a43aa4a0515a"
+  integrity sha512-GOiuoMy/WAey5iJLbg/xbcvA8jwgJQDwV1RmMQXtGWTEhLkaxBjrR8r2i6GVljbDM/He3k8ovbDY96kXUqXnKw==
   dependencies:
     "@isaacs/cliui" "^8.0.2"
   optionalDependencies:
