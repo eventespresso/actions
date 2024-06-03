@@ -5,6 +5,9 @@
 	"name": "@eventespresso-actions/remove-files",
 	"private": true,
 	"version": "0.0.1",
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",

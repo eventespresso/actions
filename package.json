@@ -5,6 +5,9 @@
 	"author": "Event Espresso",
 	"license": "GPL-3.0",
 	"private": true,
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"build": "yarn workspaces run all",
 		"test": "jest --watchAll",
