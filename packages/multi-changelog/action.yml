@@ -6,5 +6,5 @@ inputs:
         description: 'Personal access token (PAT) used to fetch the repository.'
         default: ${{ github.token }}
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

@@ -11,5 +11,5 @@ inputs:
     output-as-json:
         description: 'Whether to convert the output value to JSON'
 runs:
-    using: 'node16'
+    using: 'node20'
     main: 'dist/index.js'
