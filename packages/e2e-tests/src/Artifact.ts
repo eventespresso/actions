@@ -18,7 +18,7 @@ class Artifact {
 	public async save(input: string | string[], workDir: string, name: string, days: number): Promise<boolean> {
 		const files = await this.getFiles(input, workDir);
 
-		// there is no point to zip compression as report with contain image and video files, text-based info will account for <3% of total archive size
+		// there is no point in zip compression as report contains image and video files whereas text-based info will account for <3% of the total archive size
 		const options: UploadArtifactOptions = { retentionDays: days, compressionLevel: 0 };
 
 		if (files.length === 0) {
