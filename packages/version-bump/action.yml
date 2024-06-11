@@ -21,5 +21,5 @@ inputs:
         description: 'Custom value for setting the release type or bump type (reset).'
         default: ''
 runs:
-    using: 'node16'
+    using: 'node20'
     main: 'dist/index.js'

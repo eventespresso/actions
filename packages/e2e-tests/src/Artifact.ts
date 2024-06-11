@@ -1,17 +1,12 @@
 import { error } from './utilities';
 import * as glob from '@actions/glob';
-import * as artifact from '@actions/artifact';
-import type { ArtifactClient, UploadOptions } from '@actions/artifact';
+import client from '@actions/artifact';
+
+import type { UploadArtifactOptions } from '@actions/artifact';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 class Artifact {
-	private readonly client: ArtifactClient;
-
-	constructor() {
-		this.client = artifact.create();
-	}
-
 	/**
 	 * Save given files/folders as an GitHub artifact
 	 * @param input A path or an array of paths to files or directories
@@ -23,27 +18,18 @@ class Artifact {
 	public async save(input: string | string[], workDir: string, name: string, days: number): Promise<boolean> {
 		const files = await this.getFiles(input, workDir);
 
-		// no need to abort CI runner if artifact upload fails
-		// this method returns true/false which allows the invoking
-		// code to decide if process should be stopped or not
-		const options: UploadOptions = { continueOnError: true, retentionDays: days };
+		// there is no point in zip compression as report contains image and video files whereas text-based info will account for <3% of the total archive size
+		const options: UploadArtifactOptions = { retentionDays: days, compressionLevel: 0 };
 
 		if (files.length === 0) {
 			error(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
 			return false;
 		}
 
-		let upload = undefined;
-
 		try {
-			upload = await this.client.uploadArtifact(name, files, workDir, options);
+			await client.uploadArtifact(name, files, workDir, options);
 		} catch (err) {
 			error('Failed to save artifact: ' + name, 'Error: ' + err);
-			return false;
-		}
-
-		if (upload.failedItems.length > 0) {
-			error('Failed to upload some files for artifact', 'Artifact: ' + name, 'Files:', ...upload.failedItems);
 			return false;
 		}
 

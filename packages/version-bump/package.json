@@ -5,6 +5,9 @@
 	"name": "@eventespresso-actions/version-bump",
 	"private": true,
 	"version": "0.0.2",
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"build": "tsc",
 		"format": "prettier --write **/*.ts",

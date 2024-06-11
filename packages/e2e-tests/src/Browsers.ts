@@ -9,7 +9,7 @@ class Browsers {
 	public install(ctx: Context): void {
 		this.installBrowsers(ctx);
 		this.initChromium(ctx);
-		this.initFirefox(ctx);
+		this.initFirefox(/* ctx */);
 		this.importCARoot();
 	}
 
@@ -39,7 +39,7 @@ class Browsers {
 		]);
 	}
 
-	private initFirefox(ctx: Context): void {
+	private initFirefox(/* ctx: Context */): void {
 		// blocked by https://github.com/FiloSottile/mkcert/pull/520
 		// mkcert does not support firefox-nightly cert store which is what Playwright uses for Firefox browser (Nightly as opposed to stable)
 		// workaround would be problematic because ddev detects presence

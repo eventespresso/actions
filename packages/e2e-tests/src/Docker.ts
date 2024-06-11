@@ -14,7 +14,7 @@ class Docker {
 	constructor(private readonly spawnSync: SpawnSync) {}
 
 	public async saveImages(): Promise<boolean> {
-		const [fileName, workDir, filePath] = this.getParams();
+		const [fileName /* workDir */, , filePath] = this.getParams();
 		log('Saving docker images to cache: ' + fileName);
 		const imagesList = this.listImages();
 		this.spawnSync.call('docker', ['save', '--output', filePath, ...imagesList]);
@@ -32,7 +32,7 @@ class Docker {
 	}
 
 	public async loadImages(): Promise<boolean> {
-		const [fileName, workDir, filePath] = this.getParams();
+		const [fileName /* workDir */, , filePath] = this.getParams();
 		let restore = undefined;
 		try {
 			restore = await cache.restoreCache([filePath], fileName, [], {});
