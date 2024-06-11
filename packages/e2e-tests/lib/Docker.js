@@ -49,7 +49,7 @@ class Docker {
     }
     saveImages() {
         return __awaiter(this, void 0, void 0, function* () {
-            const [fileName, workDir, filePath] = this.getParams();
+            const [fileName /* workDir */, , filePath] = this.getParams();
             (0, utilities_1.log)('Saving docker images to cache: ' + fileName);
             const imagesList = this.listImages();
             this.spawnSync.call('docker', ['save', '--output', filePath, ...imagesList]);
@@ -69,7 +69,7 @@ class Docker {
     }
     loadImages() {
         return __awaiter(this, void 0, void 0, function* () {
-            const [fileName, workDir, filePath] = this.getParams();
+            const [fileName /* workDir */, , filePath] = this.getParams();
             let restore = undefined;
             try {
                 restore = yield cache.restoreCache([filePath], fileName, [], {});

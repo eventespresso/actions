@@ -31,17 +31,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Artifact = void 0;
 const utilities_1 = require("./utilities");
 const glob = __importStar(require("@actions/glob"));
-const artifact = __importStar(require("@actions/artifact"));
+const artifact_1 = __importDefault(require("@actions/artifact"));
 const path = __importStar(require("node:path"));
 const fs = __importStar(require("node:fs"));
 class Artifact {
-    constructor() {
-        this.client = artifact.create();
-    }
     /**
      * Save given files/folders as an GitHub artifact
      * @param input A path or an array of paths to files or directories
@@ -53,24 +53,17 @@ class Artifact {
     save(input, workDir, name, days) {
         return __awaiter(this, void 0, void 0, function* () {
             const files = yield this.getFiles(input, workDir);
-            // no need to abort CI runner if artifact upload fails
-            // this method returns true/false which allows the invoking
-            // code to decide if process should be stopped or not
-            const options = { continueOnError: true, retentionDays: days };
+            // there is no point in zip compression as report contains image and video files whereas text-based info will account for <3% of the total archive size
+            const options = { retentionDays: days, compressionLevel: 0 };
             if (files.length === 0) {
                 (0, utilities_1.error)(`Cannot save '${this.inputToStr(input)}' from the directory '${workDir}' as the directory is empty`);
                 return false;
             }
-            let upload = undefined;
             try {
-                upload = yield this.client.uploadArtifact(name, files, workDir, options);
+                yield artifact_1.default.uploadArtifact(name, files, workDir, options);
             }
             catch (err) {
                 (0, utilities_1.error)('Failed to save artifact: ' + name, 'Error: ' + err);
-                return false;
-            }
-            if (upload.failedItems.length > 0) {
-                (0, utilities_1.error)('Failed to upload some files for artifact', 'Artifact: ' + name, 'Files:', ...upload.failedItems);
                 return false;
             }
             return true;
