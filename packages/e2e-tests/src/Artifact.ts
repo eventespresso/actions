@@ -26,10 +26,8 @@ class Artifact {
 			return false;
 		}
 
-		let upload = undefined;
-
 		try {
-			upload = await client.uploadArtifact(name, files, workDir, options);
+			await client.uploadArtifact(name, files, workDir, options);
 		} catch (err) {
 			error('Failed to save artifact: ' + name, 'Error: ' + err);
 			return false;
