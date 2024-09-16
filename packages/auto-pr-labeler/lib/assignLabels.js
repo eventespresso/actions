@@ -264,6 +264,9 @@ const assignLabelsToOpenPullRequests = (labels, pullRequest, repo) => __awaiter(
     // see: https://docs.github.com/en/graphql/reference/enums#pullrequestreviewdecision
     switch (pullRequest.reviewDecision) {
         case constants_1.PR_REVIEW_DECISION.APPROVED:
+            if (hasLabel(pullRequest, labels.statusInProgress.id)) {
+                return 'PR in progress... you no touchy!';
+            }
             if (hasLabel(pullRequest, labels.statusMerge.id)) {
                 return 'PR ready for merge';
             }
