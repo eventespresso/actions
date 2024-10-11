@@ -22,6 +22,10 @@ inputs:
 runs:
     using: 'composite'
     steps:
+        - name: Install SVN
+          run: sudo apt-get install -y subversion
+          shell: bash
+
         - run: ${{ github.action_path }}/install-wp-tests.sh ${{ inputs.database }} ${{ inputs.username }} ${{ inputs.password }} ${{ inputs.host }} ${{ inputs.wp-version }}
           shell: bash
 
