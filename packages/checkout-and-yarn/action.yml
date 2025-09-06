@@ -23,6 +23,9 @@ runs:
               fetch-depth: ${{ inputs.fetch-depth }}
               token: ${{ inputs.token }}
 
+        - name: Enable Corepack
+          run: corepack enable
+
         - name: Set up Node
           uses: actions/setup-node@v3
           with:
