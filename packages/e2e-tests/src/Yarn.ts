@@ -57,7 +57,7 @@ class Yarn {
 
 		// if docker cache will become available, restore should be called here
 
-		const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
+		const buffer = this.spawnSync.call('yarn', ['test', `--output=${resultsPath}`], {
 			env,
 			noAnnotation: true,
 			noException: true,
