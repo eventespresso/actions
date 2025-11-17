@@ -46,6 +46,7 @@ class Action {
 		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
 
 		if (!skipTests) {
+			await e2e.yarn.setup(this.getEnvVars(cafe, barista));
 			await e2e.yarn.test(this.getEnvVars(cafe, barista));
 		}
 	}
