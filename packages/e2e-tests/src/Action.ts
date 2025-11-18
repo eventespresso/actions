@@ -55,6 +55,9 @@ class Action {
 		const repos: InstanceType<typeof Repository>[] = contexts.map((context) => {
 			return context.repo;
 		});
+		// there is no ready-made way to include action commit sha in this table
+		// reference: https://github.com/orgs/community/discussions/54516
+		//            https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
 		core.summary.addHeading('Git information', 2);
 		core.summary.addTable([
 			[
