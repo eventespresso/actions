@@ -74,8 +74,8 @@ class Yarn {
 		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
-			await this.saveHtmlReport(htmlReportPath);
-			await this.saveTestResults(resultsPath);
+			if (fs.existsSync(htmlReportPath)) await this.saveHtmlReport(htmlReportPath);
+			if (fs.existsSync(resultsPath)) await this.saveTestResults(resultsPath);
 			core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
 			// throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
 			throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
