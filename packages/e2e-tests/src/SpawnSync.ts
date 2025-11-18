@@ -75,7 +75,7 @@ class SpawnSync implements ExecSyncInterface {
 				annotation(`Failed to execute '${command}'! (click for more details)`);
 			}
 			if (!opts.noException) {
-				throw new Error();
+				throw new Error(buffer?.error?.message ?? buffer.stderr);
 			}
 		}
 
