@@ -68,7 +68,7 @@ class Yarn {
 		const buffer = this.spawnSync.call('yarn', [npmScript, `--output=${resultsPath}`], {
 			env,
 			noAnnotation: true,
-			noException: true,
+			noException: true, // required to save artifact
 		});
 
 		// if docker cache will become available, save should be called here
@@ -77,6 +77,8 @@ class Yarn {
 			await this.saveHtmlReport(htmlReportPath);
 			await this.saveTestResults(resultsPath);
 			core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
+			// throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
+			throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
 		}
 
 		return this;
