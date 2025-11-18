@@ -25,6 +25,8 @@ class Action {
 		const skipTests = this.inputs.skipTests();
 		const skipBarista = this.inputs.baristaBranch().length === 0;
 
+		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
+
 		await cafe.git.clone();
 
 		// it is optional to clone barista repo
@@ -42,8 +44,6 @@ class Action {
 		this.mkcert();
 		this.ddev();
 		this.browsers.install(e2e);
-
-		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
 
 		if (!skipTests) {
 			await e2e.yarn.setup(this.getEnvVars(cafe, barista));
