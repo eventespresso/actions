@@ -25,19 +25,20 @@ class Action {
 		const skipTests = this.inputs.skipTests();
 		const skipBarista = this.inputs.baristaBranch().length === 0;
 
-		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
-
 		await cafe.git.clone();
-
-		// it is optional to clone barista repo
+		await e2e.git.clone();
 		if (!skipBarista) {
 			await barista.git.clone();
+		}
+
+		// requires repositories to be cloned first
+		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
+
+		await e2e.yarn.install({ frozenLockfile: true });
+		if (!skipBarista) {
 			await barista.yarn.install({ frozenLockfile: true });
 			await barista.yarn.build();
 		}
-
-		await e2e.git.clone();
-		await e2e.yarn.install({ frozenLockfile: true });
 
 		// install dependencies
 		this.updateAptRepoIndex();
