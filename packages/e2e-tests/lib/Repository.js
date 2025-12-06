@@ -36,7 +36,7 @@ class Repository {
         return this._commit;
     }
     constructor(params) {
-        this._commit = '❌';
+        this._commit = '❌ (hint: did not clone yet)';
         const name = this.sanitizeName(params.name);
         const cwd = this.makeCwd(name);
         this.name = name;

@@ -32,7 +32,7 @@ class SpawnSync {
         this.cwd = cwd;
     }
     call(cmd, args = [], opts = {}) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         const [command, arg0] = this.overrideCommand(cmd);
         const cwd = this.getCwd(opts.cwd);
         const stdin = (_a = opts.stdin) !== null && _a !== void 0 ? _a : 'inherit';
@@ -57,7 +57,7 @@ class SpawnSync {
                 (0, utilities_1.annotation)(`Failed to execute '${command}'! (click for more details)`);
             }
             if (!opts.noException) {
-                throw new Error();
+                throw new Error((_e = (_d = buffer === null || buffer === void 0 ? void 0 : buffer.error) === null || _d === void 0 ? void 0 : _d.message) !== null && _e !== void 0 ? _e : buffer.stderr);
             }
         }
         return buffer;

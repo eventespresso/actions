@@ -64,29 +64,57 @@ class Yarn {
             return this;
         });
     }
-    test(envVars) {
+    makeEnvVars(envVars) {
         return __awaiter(this, void 0, void 0, function* () {
-            const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
-            // used by env var NODE_EXTRA_CA_CERTS
-            // see https://playwright.dev/docs/test-reporters#html-reporter
-            // used by CLI
-            // see https://playwright.dev/docs/test-cli#reference
-            const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
-            const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
-            const env = Object.assign({ NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`, PLAYWRIGHT_HTML_REPORT: htmlReportPath }, envVars);
+            const caRoot = yield this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
+            const { htmlReportPath } = this.getPlaywrightPaths();
+            const envBase = {
+                NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
+                PLAYWRIGHT_HTML_REPORT: htmlReportPath,
+            };
+            return Object.assign(Object.assign({}, envBase), envVars);
+        });
+    }
+    getPlaywrightPaths() {
+        const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
+        const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
+        return { htmlReportPath, resultsPath };
+    }
+    /**
+     * Runs the given `npmScript`
+     * (assumes will call Playwright, special logic for saving Playwright artifacts)
+     */
+    runPlaywrightAsNpmScript(npmScript, envVars) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const env = yield this.makeEnvVars(envVars);
+            const { resultsPath, htmlReportPath } = this.getPlaywrightPaths();
             // if docker cache will become available, restore should be called here
-            const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
+            const buffer = this.spawnSync.call('yarn', [npmScript, `--output=${resultsPath}`], {
                 env,
                 noAnnotation: true,
-                noException: true,
+                noException: true, // required to save artifact
             });
             // if docker cache will become available, save should be called here
             if (buffer.status !== 0) {
-                yield this.saveHtmlReport(htmlReportPath);
-                yield this.saveTestResults(resultsPath);
-                core.setFailed('End-to-end tests did not pass successfully!');
+                if (fs.existsSync(htmlReportPath))
+                    yield this.saveHtmlReport(htmlReportPath);
+                if (fs.existsSync(resultsPath))
+                    yield this.saveTestResults(resultsPath);
+                core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
+                // throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
+                throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
             }
             return this;
+        });
+    }
+    setup(envVars) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.runPlaywrightAsNpmScript('setup', envVars);
+        });
+    }
+    test(envVars) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.runPlaywrightAsNpmScript('test', envVars);
         });
     }
     saveArtifact(file, report) {
