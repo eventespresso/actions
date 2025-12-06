@@ -39,39 +39,57 @@ class Yarn {
 		return this;
 	}
 
-	public async test(envVars: EnvVars): Promise<Yarn> {
-		const caRoot = this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
-
-		// used by env var NODE_EXTRA_CA_CERTS
-		// see https://playwright.dev/docs/test-reporters#html-reporter
-		// used by CLI
-		// see https://playwright.dev/docs/test-cli#reference
-		const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
-		const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
-
-		const env = {
+	protected async makeEnvVars(envVars: EnvVars): Promise<Record<string, string>> {
+		const caRoot = await this.spawnSync.call('mkcert', ['-CAROOT'], { stdout: 'pipe' }).stdout.trim();
+		const { htmlReportPath } = this.getPlaywrightPaths();
+		const envBase = {
 			NODE_EXTRA_CA_CERTS: `${caRoot}/rootCA.pem`,
 			PLAYWRIGHT_HTML_REPORT: htmlReportPath,
-			...envVars,
-		} as const;
+		} as const satisfies Record<string, string>;
+		return { ...envBase, ...envVars };
+	}
+
+	protected getPlaywrightPaths(): Record<string, string> {
+		const htmlReportPath = path.resolve(os.tmpdir(), 'playwright-report');
+		const resultsPath = path.resolve(os.tmpdir(), 'playwright-test-results');
+		return { htmlReportPath, resultsPath };
+	}
+
+	/**
+	 * Runs the given `npmScript`
+	 * (assumes will call Playwright, special logic for saving Playwright artifacts)
+	 */
+	protected async runPlaywrightAsNpmScript(npmScript: string, envVars: EnvVars): Promise<Yarn> {
+		const env = await this.makeEnvVars(envVars);
+		const { resultsPath, htmlReportPath } = this.getPlaywrightPaths();
 
 		// if docker cache will become available, restore should be called here
 
-		const buffer = this.spawnSync.call('yarn', ['playwright', 'test', `--output=${resultsPath}`], {
+		const buffer = this.spawnSync.call('yarn', [npmScript, `--output=${resultsPath}`], {
 			env,
 			noAnnotation: true,
-			noException: true,
+			noException: true, // required to save artifact
 		});
 
 		// if docker cache will become available, save should be called here
 
 		if (buffer.status !== 0) {
-			await this.saveHtmlReport(htmlReportPath);
-			await this.saveTestResults(resultsPath);
-			core.setFailed('End-to-end tests did not pass successfully!');
+			if (fs.existsSync(htmlReportPath)) await this.saveHtmlReport(htmlReportPath);
+			if (fs.existsSync(resultsPath)) await this.saveTestResults(resultsPath);
+			core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
+			// throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
+			throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
 		}
 
 		return this;
+	}
+
+	public async setup(envVars: EnvVars): Promise<Yarn> {
+		return this.runPlaywrightAsNpmScript('setup', envVars);
+	}
+
+	public async test(envVars: EnvVars): Promise<Yarn> {
+		return this.runPlaywrightAsNpmScript('test', envVars);
 	}
 
 	private saveArtifact(

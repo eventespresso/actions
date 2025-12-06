@@ -14,7 +14,7 @@ class Repository {
 	public readonly branch: string;
 	public readonly cwd: string;
 	public readonly remote: string;
-	private _commit = '❌';
+	private _commit = '❌ (hint: did not clone yet)';
 
 	set commit(sha: string) {
 		this._commit = sha;

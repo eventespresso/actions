@@ -26,16 +26,19 @@ class Action {
 		const skipBarista = this.inputs.baristaBranch().length === 0;
 
 		await cafe.git.clone();
-
-		// it is optional to clone barista repo
+		await e2e.git.clone();
 		if (!skipBarista) {
 			await barista.git.clone();
+		}
+
+		// requires repositories to be cloned first
+		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
+
+		await e2e.yarn.install({ frozenLockfile: true });
+		if (!skipBarista) {
 			await barista.yarn.install({ frozenLockfile: true });
 			await barista.yarn.build();
 		}
-
-		await e2e.git.clone();
-		await e2e.yarn.install({ frozenLockfile: true });
 
 		// install dependencies
 		this.updateAptRepoIndex();
@@ -43,9 +46,8 @@ class Action {
 		this.ddev();
 		this.browsers.install(e2e);
 
-		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
-
 		if (!skipTests) {
+			await e2e.yarn.setup(this.getEnvVars(cafe, barista));
 			await e2e.yarn.test(this.getEnvVars(cafe, barista));
 		}
 	}
@@ -54,6 +56,9 @@ class Action {
 		const repos: InstanceType<typeof Repository>[] = contexts.map((context) => {
 			return context.repo;
 		});
+		// there is no ready-made way to include action commit sha in this table
+		// reference: https://github.com/orgs/community/discussions/54516
+		//            https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context
 		core.summary.addHeading('Git information', 2);
 		core.summary.addTable([
 			[
