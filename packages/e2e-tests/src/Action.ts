@@ -34,6 +34,9 @@ class Action {
 		// requires repositories to be cloned first
 		await this.showGitSummary(skipBarista ? [cafe, e2e] : [cafe, barista, e2e]);
 
+		// required for Yarn v4 (global setting, backwards compatible with Yarn classic v1)
+		this.enableCorepack();
+
 		await e2e.yarn.install({ frozenLockfile: true });
 		if (!skipBarista) {
 			await barista.yarn.install({ frozenLockfile: true });
@@ -105,6 +108,11 @@ class Action {
 			bashArgs.push(ddevVersion);
 		}
 		this.spawnSync.call('bash', bashArgs, { stdin: 'pipe', input: curl.stdout });
+	}
+
+	private enableCorepack(): void {
+		log('Enabling corepack...');
+		this.spawnSync.call('corepack', ['enable']);
 	}
 
 	private getEnvVars(cafe: Context, barista: Context): EnvVars {
