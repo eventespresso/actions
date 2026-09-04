@@ -6,7 +6,7 @@
 	"license": "GPL-3.0",
 	"private": true,
 	"engines": {
-		"node": ">=20"
+		"node": ">=24"
 	},
 	"scripts": {
 		"build": "yarn workspaces run all",
