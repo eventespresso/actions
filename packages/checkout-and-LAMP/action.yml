@@ -48,7 +48,7 @@ runs:
     using: 'composite'
     steps:
         - name: Checkout the commit
-          uses: actions/checkout@v3
+          uses: actions/checkout@v7
           with:
               fetch-depth: ${{ inputs.fetch-depth }}
               ref: ${{ inputs.checkout-ref }}
@@ -74,7 +74,7 @@ runs:
           run: sudo systemctl start mysql.service
 
         - name: Composer install
-          uses: 'ramsey/composer-install@v2'
+          uses: 'ramsey/composer-install@4.0.0'
           with:
               composer-options: ${{ inputs.composer-options }}  --ansi
               custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}

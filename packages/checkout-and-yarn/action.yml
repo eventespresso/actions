@@ -18,7 +18,7 @@ runs:
     using: 'composite'
     steps:
         - name: Checkout the commit
-          uses: actions/checkout@v3
+          uses: actions/checkout@v7
           with:
               fetch-depth: ${{ inputs.fetch-depth }}
               token: ${{ inputs.token }}
@@ -28,13 +28,13 @@ runs:
           shell: bash
 
         - name: Set up Node
-          uses: actions/setup-node@v3
+          uses: actions/setup-node@v7
           with:
               node-version: 24
 
         - name: Cache dependencies
           id: cache-deps
-          uses: actions/cache@v3
+          uses: actions/cache@v6
           with:
               path: '**/node_modules'
               key: ${{ runner.os }}-modules-${{ inputs.cache-version }}-${{ hashFiles('**/yarn.lock') }}
