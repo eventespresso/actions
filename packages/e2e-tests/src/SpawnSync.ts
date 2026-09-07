@@ -75,7 +75,11 @@ class SpawnSync implements ExecSyncInterface {
 				annotation(`Failed to execute '${command}'! (click for more details)`);
 			}
 			if (!opts.noException) {
-				throw new Error(buffer?.error?.message ?? buffer.stderr);
+				// `stderr` is null whenever it is inherited (the default), so it
+				// cannot be relied upon as the message; falling through to it
+				// used to produce an error with no message at all
+				const reason = buffer.error?.message ?? buffer.stderr;
+				throw new Error(reason || `Command '${command}' failed with exit code ${buffer.status}`);
 			}
 		}
 
