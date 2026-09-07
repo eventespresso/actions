@@ -57,4 +57,7 @@ typings/
 # next.js build output
 .next
 
+#local settings and config
+.vscode
+
 .DS_Store
