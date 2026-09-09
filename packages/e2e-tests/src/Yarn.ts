@@ -1,5 +1,6 @@
 import { Cache } from './Cache';
 import { SpawnSync } from './SpawnSync';
+import type { SpawnSyncReturns } from 'node:child_process';
 import { Repository } from './Repository';
 import { EnvVars } from './Action';
 import { Artifact } from './Artifact';
@@ -76,12 +77,27 @@ class Yarn {
 		if (buffer.status !== 0) {
 			if (fs.existsSync(htmlReportPath)) await this.saveHtmlReport(htmlReportPath);
 			if (fs.existsSync(resultsPath)) await this.saveTestResults(resultsPath);
-			core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
+			// `stdio` is inherited so the script's own output is already in the
+			// job log; `buffer.stdout`/`buffer.stderr` are null and cannot be
+			// used as the reason, hence report how the process ended instead
+			const reason = buffer.error?.message ?? this.describeExit(buffer);
+			core.setFailed(`NPM script '${npmScript}' did not pass successfully! (${reason})`);
 			// throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
-			throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
+			throw new Error(`NPM script '${npmScript}' has failed! (${reason})`);
 		}
 
 		return this;
+	}
+
+	/**
+	 * Describe how the child process ended; a process killed by a signal
+	 * reports a null exit code, which on its own reads as a success
+	 */
+	private describeExit(buffer: SpawnSyncReturns<string>): string {
+		if (buffer.signal) {
+			return `terminated by signal ${buffer.signal}`;
+		}
+		return `exit code ${buffer.status}`;
 	}
 
 	public async setup(envVars: EnvVars): Promise<Yarn> {
