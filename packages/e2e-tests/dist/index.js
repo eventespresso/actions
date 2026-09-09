@@ -89179,7 +89179,11 @@ class SpawnSync {
                 (0, utilities_1.annotation)(`Failed to execute '${command}'! (click for more details)`);
             }
             if (!opts.noException) {
-                throw new Error((_e = (_d = buffer === null || buffer === void 0 ? void 0 : buffer.error) === null || _d === void 0 ? void 0 : _d.message) !== null && _e !== void 0 ? _e : buffer.stderr);
+                // `stderr` is null whenever it is inherited (the default), so it
+                // cannot be relied upon as the message; falling through to it
+                // used to produce an error with no message at all
+                const reason = (_e = (_d = buffer.error) === null || _d === void 0 ? void 0 : _d.message) !== null && _e !== void 0 ? _e : buffer.stderr;
+                throw new Error(reason || `Command '${command}' failed with exit code ${buffer.status}`);
             }
         }
         return buffer;
@@ -89427,6 +89431,7 @@ class Yarn {
      * (assumes will call Playwright, special logic for saving Playwright artifacts)
      */
     runPlaywrightAsNpmScript(npmScript, envVars) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const env = yield this.makeEnvVars(envVars);
             const { resultsPath, htmlReportPath } = this.getPlaywrightPaths();
@@ -89442,12 +89447,26 @@ class Yarn {
                     yield this.saveHtmlReport(htmlReportPath);
                 if (fs.existsSync(resultsPath))
                     yield this.saveTestResults(resultsPath);
-                core.setFailed(`NPM script '${npmScript}' did not pass successfully!`);
+                // `stdio` is inherited so the script's own output is already in the
+                // job log; `buffer.stdout`/`buffer.stderr` are null and cannot be
+                // used as the reason, hence report how the process ended instead
+                const reason = (_b = (_a = buffer.error) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : this.describeExit(buffer);
+                core.setFailed(`NPM script '${npmScript}' did not pass successfully! (${reason})`);
                 // throw the error to terminate the script; `core.setFailed` does NOT terminate script's execution!
-                throw new Error(`NPM script '${npmScript}' has failed!`, { cause: buffer.stderr });
+                throw new Error(`NPM script '${npmScript}' has failed! (${reason})`);
             }
             return this;
         });
+    }
+    /**
+     * Describe how the child process ended; a process killed by a signal
+     * reports a null exit code, which on its own reads as a success
+     */
+    describeExit(buffer) {
+        if (buffer.signal) {
+            return `terminated by signal ${buffer.signal}`;
+        }
+        return `exit code ${buffer.status}`;
     }
     setup(envVars) {
         return __awaiter(this, void 0, void 0, function* () {

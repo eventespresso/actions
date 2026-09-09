@@ -57,7 +57,11 @@ class SpawnSync {
                 (0, utilities_1.annotation)(`Failed to execute '${command}'! (click for more details)`);
             }
             if (!opts.noException) {
-                throw new Error((_e = (_d = buffer === null || buffer === void 0 ? void 0 : buffer.error) === null || _d === void 0 ? void 0 : _d.message) !== null && _e !== void 0 ? _e : buffer.stderr);
+                // `stderr` is null whenever it is inherited (the default), so it
+                // cannot be relied upon as the message; falling through to it
+                // used to produce an error with no message at all
+                const reason = (_e = (_d = buffer.error) === null || _d === void 0 ? void 0 : _d.message) !== null && _e !== void 0 ? _e : buffer.stderr;
+                throw new Error(reason || `Command '${command}' failed with exit code ${buffer.status}`);
             }
         }
         return buffer;
