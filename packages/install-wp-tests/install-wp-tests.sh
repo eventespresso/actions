@@ -37,6 +37,15 @@ else
 	WP_TESTS_TAG="tags/$LATEST_VERSION"
 fi
 
+# Self-hosted: one WP per version under WP_CACHE_ROOT, reused across jobs; later steps (phpunit) need the paths.
+if [ -n "${WP_CACHE_ROOT:-}" ]; then
+	WP_CACHE_DIR="$WP_CACHE_ROOT/${LATEST_VERSION:-$WP_VERSION}"
+	WP_TESTS_DIR="$WP_CACHE_DIR/tests-lib"
+	WP_CORE_DIR="$WP_CACHE_DIR/wordpress/"
+	echo "WP_TESTS_DIR=$WP_TESTS_DIR" >> "$GITHUB_ENV"
+	echo "WP_CORE_DIR=$WP_CORE_DIR" >> "$GITHUB_ENV"
+fi
+
 set -ex
 
 install_wp() {
