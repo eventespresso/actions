@@ -12,6 +12,12 @@ This action installs WP for unit tests
 | `host`       | The database host. [=localhost]       |
 | `wp-version` | WordPress version to use. [=latest]   |
 
+## MySQL authentication
+
+PHP before 7.4.4 can't log in with `caching_sha2_password`, MySQL 8's default. For those PHP versions the action
+switches the database user to `mysql_native_password`, and turns that plugin on first when the server has it off
+(MySQL 8.4+, as on the `ubuntu-26.04` image). On PHP 7.4.4 and later it changes nothing.
+
 ## Self-hosted runners
 
 When `runner.environment` is `self-hosted`, the action expects the `ee-runner` image:

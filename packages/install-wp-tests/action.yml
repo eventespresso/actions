@@ -44,6 +44,23 @@ runs:
               # The ee-runner image prefetches WordPress into /opt/wp/<version>.
               WP_CACHE_ROOT: ${{ runner.environment == 'self-hosted' && '/opt/wp' || '' }}
 
-        - name: Fix MySQL authentication for PHP < 7.4
-          run: mysql --user="${{ inputs.username }}" --password="${{ inputs.password }}" --database="${{ inputs.database }}" --execute="ALTER USER '${{ inputs.username }}'@'${{ inputs.host }}' IDENTIFIED WITH mysql_native_password BY '${{ inputs.password }}';"
+        # PHP before 7.4.4 can't log in with caching_sha2_password (MySQL 8's default), so switch the user to
+        # mysql_native_password. MySQL 8.4+ (ubuntu-26.04 image) ships that plugin off, so turn it on first.
+        - name: Fix MySQL authentication for PHP < 7.4.4
+          env:
+              DB_NAME: ${{ inputs.database }}
+              DB_USER: ${{ inputs.username }}
+              DB_PASS: ${{ inputs.password }}
+              DB_HOST: ${{ inputs.host }}
+          run: |
+              if php -r 'exit(PHP_VERSION_ID >= 70404 ? 0 : 1);' 2>/dev/null; then
+                  echo "PHP $(php -r 'echo PHP_VERSION;') supports caching_sha2_password; nothing to change."
+                  exit 0
+              fi
+              status=$(mysql --user="$DB_USER" --password="$DB_PASS" --skip-column-names --execute="SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME = 'mysql_native_password';")
+              if [ "$status" != "ACTIVE" ]; then
+                  printf '[mysqld]\nmysql_native_password = ON\n' | sudo tee /etc/mysql/conf.d/mysql-native-password.cnf >/dev/null
+                  sudo systemctl restart mysql.service
+              fi
+              mysql --user="$DB_USER" --password="$DB_PASS" --database="$DB_NAME" --execute="ALTER USER '$DB_USER'@'$DB_HOST' IDENTIFIED WITH mysql_native_password BY '$DB_PASS';"
           shell: bash
