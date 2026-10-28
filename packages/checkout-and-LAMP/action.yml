@@ -47,12 +47,19 @@ inputs:
 runs:
     using: 'composite'
     steps:
+        # Self-hosted runners (the ee-runner image) keep the workspace, vendor/, PHP and MySQL between jobs.
         - name: Checkout the commit
           uses: actions/checkout@v7
           with:
+              clean: ${{ runner.environment != 'self-hosted' }}
               fetch-depth: ${{ inputs.fetch-depth }}
               ref: ${{ inputs.checkout-ref }}
               token: ${{ inputs.token }}
+
+        - name: Clean the workspace but keep vendor/ (self-hosted)
+          if: runner.environment == 'self-hosted'
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+          run: git clean -ffdx -e vendor/
 
         - name: Set Timestamp
           id: timestamp
@@ -60,18 +67,40 @@ runs:
           run: echo "hour=$(date +'%Y-%m-%d-%H')" >> $GITHUB_OUTPUT
 
         - name: Setup PHP
+          if: runner.environment != 'self-hosted'
           uses: shivammathur/setup-php@v2
           with:
               php-version: ${{ inputs.php-version }}
               tools: ${{ inputs.php-tools }}
+
+        # The image ships composer and phpunit shims, so php-tools is not used here.
+        - name: Select PHP (self-hosted)
+          if: runner.environment == 'self-hosted'
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+          env:
+              PHP_VERSION: ${{ inputs.php-version }}
+          run: |
+              bin="/opt/php/${PHP_VERSION}/bin"
+              if [ ! -x "$bin/php" ]; then
+                  echo "::error::PHP ${PHP_VERSION} is not installed on this runner (no $bin/php)."
+                  exit 1
+              fi
+              echo "$bin" >> "$GITHUB_PATH"
 
         - name: Check PHP Version
           shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
           run: php -v
 
         - name: Start mysql service
+          if: runner.environment != 'self-hosted'
           shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
           run: sudo systemctl start mysql.service
+
+        # The image's entrypoint starts MySQL; fail here with a clear message if it is down.
+        - name: Check mysql service (self-hosted)
+          if: runner.environment == 'self-hosted'
+          shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+          run: mysqladmin --wait=10 ping
 
         - name: Composer install
           uses: 'ramsey/composer-install@4.0.0'
@@ -79,4 +108,6 @@ runs:
               composer-options: ${{ inputs.composer-options }}  --ansi
               custom-cache-key: ${{ inputs.cache-key }}-${{ steps.timestamp.outputs.hour }}
               dependency-versions: ${{ inputs.composer-dependencies }}
+              # vendor/ persists on self-hosted; restoring the GitHub cache over home broadband is slower.
+              ignore-cache: ${{ runner.environment == 'self-hosted' }}
               working-directory: ${{ inputs.composer-path }}

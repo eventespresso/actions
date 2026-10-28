@@ -14,6 +14,17 @@ This action checks out the commit, sets up LAMP stack and runs composer install.
 | `php-version` | The PHP version to set up. | | **true**
 | `token`       | Personal access token (PAT) used to fetch the repository. | ${{ github.token }} |
 
+## Self-hosted runners
+
+When `runner.environment` is `self-hosted`, the action expects the `ee-runner` image (PHP versions in
+`/opt/php/<version>/bin`, MySQL running with root/root on the local socket, `composer` and `phpunit` shims):
+
+- Checkout keeps the workspace and cleans it with `git clean -ffdx -e vendor/`, so `vendor/` survives between jobs.
+- PHP is selected by adding `/opt/php/<php-version>/bin` to the path. `php-tools` is ignored.
+- MySQL is checked, not started.
+- Composer runs without the GitHub cache.
+
+GitHub-hosted runners use the original steps.
 
 
 ## Example Workflow File

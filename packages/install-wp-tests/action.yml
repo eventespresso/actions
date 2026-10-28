@@ -23,11 +23,26 @@ runs:
     using: 'composite'
     steps:
         - name: Install SVN
+          if: runner.environment != 'self-hosted'
           run: sudo apt-get install -y subversion
+          shell: bash
+
+        # Self-hosted runners keep the test DB between jobs; install-wp-tests.sh expects to create it.
+        - name: Drop the test database (self-hosted)
+          if: runner.environment == 'self-hosted'
+          env:
+              DB_NAME: ${{ inputs.database }}
+              DB_USER: ${{ inputs.username }}
+              DB_PASS: ${{ inputs.password }}
+              DB_HOST: ${{ inputs.host }}
+          run: mysql --user="$DB_USER" --password="$DB_PASS" --host="$DB_HOST" --execute="DROP DATABASE IF EXISTS \`$DB_NAME\`"
           shell: bash
 
         - run: ${{ github.action_path }}/install-wp-tests.sh ${{ inputs.database }} ${{ inputs.username }} ${{ inputs.password }} ${{ inputs.host }} ${{ inputs.wp-version }}
           shell: bash
+          env:
+              # The ee-runner image prefetches WordPress into /opt/wp/<version>.
+              WP_CACHE_ROOT: ${{ runner.environment == 'self-hosted' && '/opt/wp' || '' }}
 
         - name: Fix MySQL authentication for PHP < 7.4
           run: mysql --user="${{ inputs.username }}" --password="${{ inputs.password }}" --database="${{ inputs.database }}" --execute="ALTER USER '${{ inputs.username }}'@'${{ inputs.host }}' IDENTIFIED WITH mysql_native_password BY '${{ inputs.password }}';"
